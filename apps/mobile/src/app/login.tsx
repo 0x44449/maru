@@ -125,8 +125,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing[12],
   },
   logoIcon: {
-    width: 280,
-    height: 280,
+    width: 320,
+    height: 320,
     marginBottom: spacing[3],
   },
   logoText: {

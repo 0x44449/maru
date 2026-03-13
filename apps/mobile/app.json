@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "마루",
+    "slug": "maru",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/maru-icon.png",
+    "scheme": "maru",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "icon": "./assets/maru-ios.icon",
+      "bundleIdentifier": "app.sandori.maru"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/images/maru-icon-foreground.png",
+        "backgroundImage": "./assets/images/maru-icon-background.png",
+        "monochromeImage": "./assets/images/maru-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "app.sandori.maru"
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#208AEF",
+          "android": {
+            "image": "./assets/images/maru-icon-foreground.png",
+            "imageWidth": 76
+          }
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atena — Primary Color Pick</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #fff; color: #171717; padding: 40px; line-height: 1.6;
+    transition: background 0.3s, color 0.3s;
+  }
+  body.dark { background: #0a0a0a; color: #fafafa; }
+
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 15px; color: #737373; margin-bottom: 48px; }
+  .dark-toggle {
+    position: fixed; top: 20px; right: 20px; z-index: 100;
+    padding: 8px 16px; border-radius: 8px; border: 1px solid #d4d4d4;
+    background: #fff; font-family: 'Pretendard', sans-serif;
+    font-size: 13px; cursor: pointer; font-weight: 500; transition: all 0.2s;
+  }
+  body.dark .dark-toggle { background: #262626; color: #fafafa; border-color: #404040; }
+
+  .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); gap: 28px; }
+  .option {
+    border: 1px solid #e5e5e5; border-radius: 12px; padding: 28px;
+    background: #fff; transition: all 0.2s;
+  }
+  .option:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.08); }
+  body.dark .option { background: #171717; border-color: #262626; }
+  body.dark .option:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+
+  .opt-header { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+  .opt-dot { width: 14px; height: 14px; border-radius: 99px; }
+  .opt-title { font-size: 17px; font-weight: 600; }
+  .opt-desc { font-size: 13px; color: #737373; margin-bottom: 20px; }
+
+  .palette { display: flex; gap: 3px; margin-bottom: 20px; }
+  .sw { width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 500; }
+  .sw.lt { color: #171717; } .sw.dk { color: #fff; }
+
+  .demo { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+  .btn-d {
+    height: 40px; padding: 0 16px; border-radius: 8px; border: none;
+    font-family: 'Pretendard', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-o { background: transparent; border: 1.5px solid; }
+  .btn-g { background: transparent; border: none; }
+  .badge-d { padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 500; }
+  .input-d {
+    height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #d4d4d4;
+    font-family: 'Pretendard', sans-serif; font-size: 14px; outline: none;
+    width: 180px; transition: border-color 0.15s; background: transparent; color: inherit;
+  }
+  body.dark .input-d { border-color: #404040; }
+  .avatar-d {
+    width: 40px; height: 40px; border-radius: 99px; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 14px; font-weight: 600;
+  }
+  .card-d {
+    border: 1px solid #e5e5e5; border-radius: 8px; padding: 16px;
+    max-width: 280px; margin-top: 4px;
+  }
+  body.dark .card-d { border-color: #262626; }
+  .card-d .ct { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .card-d .cd { font-size: 13px; color: #737373; margin-bottom: 12px; }
+  .card-d .cl { font-size: 13px; font-weight: 500; text-decoration: none; }
+
+  .toast-d {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    border-radius: 8px; font-size: 13px; border: 1px solid #e5e5e5;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08); max-width: 300px; margin-top: 4px;
+  }
+  body.dark .toast-d { border-color: #262626; box-shadow: 0 4px 12px rgba(0,0,0,0.3); background: #171717; }
+
+  .label { font-size: 11px; color: #a3a3a3; margin-top: 16px; margin-bottom: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+</style>
+</head>
+<body>
+
+<button class="dark-toggle" onclick="document.body.classList.toggle('dark')">Light / Dark</button>
+
+<h1>Primary Color 재선택</h1>
+<p class="subtitle">양산형 탈출 — 좀 더 개성 있는 후보들. 라이트/다크 모두 확인해보세요.</p>
+
+<div class="options">
+
+  <!-- ═══ A: Violet ═══ -->
+  <div class="option">
+    <div class="opt-header"><div class="opt-dot" style="background:#7c3aed;"></div><div class="opt-title">A — Violet</div></div>
+    <div class="opt-desc">보라 계열. 인디고보다 더 깊고 감각적. 크리에이티브한 느낌.</div>
+    <div class="palette">
+      <div class="sw lt" style="background:#f5f3ff">50</div>
+      <div class="sw lt" style="background:#ede9fe">100</div>
+      <div class="sw lt" style="background:#ddd6fe">200</div>
+      <div class="sw lt" style="background:#c4b5fd">300</div>
+      <div class="sw dk" style="background:#a78bfa">400</div>
+      <div class="sw dk" style="background:#8b5cf6">500</div>
+      <div class="sw dk" style="background:#7c3aed">600</div>
+      <div class="sw dk" style="background:#6d28d9">700</div>
+      <div class="sw dk" style="background:#5b21b6">800</div>
+      <div class="sw dk" style="background:#4c1d95">900</div>
+    </div>
+    <div class="demo">
+      <button class="btn-d" style="background:#7c3aed; color:#fff;">Button</button>
+      <button class="btn-d btn-o" style="color:#7c3aed; border-color:#7c3aed;">Outline</button>
+      <button class="btn-d btn-g" style="color:#7c3aed;">Ghost</button>
+      <span class="badge-d" style="background:#f5f3ff; color:#6d28d9;">Badge</span>
+    </div>
+    <div class="demo">
+      <input class="input-d" placeholder="Input..." onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor=''" />
+      <div class="avatar-d" style="background:#ede9fe; color:#6d28d9;">AT</div>
+    </div>
+    <div class="card-d">
+      <div class="ct">Card Title</div>
+      <div class="cd">카드 컴포넌트 미리보기</div>
+      <a href="#" class="cl" style="color:#7c3aed;">자세히 보기 →</a>
+    </div>
+    <div class="toast-d" style="margin-top:12px;">
+      <i data-lucide="info" style="width:18px;height:18px;color:#7c3aed;flex-shrink:0;"></i> 새 알림이 있습니다.
+    </div>
+  </div>
+
+  <!-- ═══ B: Slate ═══ -->
+  <div class="option">
+    <div class="opt-header"><div class="opt-dot" style="background:#475569;"></div><div class="opt-title">B — Slate</div></div>
+    <div class="opt-desc">블루그레이. 무채색에 가까운 절제미. 가장 세련되고 고급스러운 느낌.</div>
+    <div class="palette">
+      <div class="sw lt" style="background:#f8fafc">50</div>
+      <div class="sw lt" style="background:#f1f5f9">100</div>
+      <div class="sw lt" style="background:#e2e8f0">200</div>
+      <div class="sw lt" style="background:#cbd5e1">300</div>
+      <div class="sw dk" style="background:#94a3b8">400</div>
+      <div class="sw dk" style="background:#64748b">500</div>
+      <div class="sw dk" style="background:#475569">600</div>
+      <div class="sw dk" style="background:#334155">700</div>
+      <div class="sw dk" style="background:#1e293b">800</div>
+      <div class="sw dk" style="background:#0f172a">900</div>
+    </div>
+    <div class="demo">
+      <button class="btn-d" style="background:#475569; color:#fff;">Button</button>
+      <button class="btn-d btn-o" style="color:#475569; border-color:#475569;">Outline</button>
+      <button class="btn-d btn-g" style="color:#475569;">Ghost</button>
+      <span class="badge-d" style="background:#f1f5f9; color:#334155;">Badge</span>
+    </div>
+    <div class="demo">
+      <input class="input-d" placeholder="Input..." onfocus="this.style.borderColor='#475569'" onblur="this.style.borderColor=''" />
+      <div class="avatar-d" style="background:#e2e8f0; color:#334155;">AT</div>
+    </div>
+    <div class="card-d">
+      <div class="ct">Card Title</div>
+      <div class="cd">카드 컴포넌트 미리보기</div>
+      <a href="#" class="cl" style="color:#475569;">자세히 보기 →</a>
+    </div>
+    <div class="toast-d" style="margin-top:12px;">
+      <i data-lucide="info" style="width:18px;height:18px;color:#475569;flex-shrink:0;"></i> 새 알림이 있습니다.
+    </div>
+  </div>
+
+  <!-- ═══ C: Rose (Soft) ═══ -->
+  <div class="option">
+    <div class="opt-header"><div class="opt-dot" style="background:#fb7185;"></div><div class="opt-title">C — Rose (Soft)</div></div>
+    <div class="opt-desc">부드러운 로즈. 채도를 낮추고 밝기를 올려 따뜻하고 편안한 핑크톤.</div>
+    <div class="palette">
+      <div class="sw lt" style="background:#fff1f2">50</div>
+      <div class="sw lt" style="background:#ffe4e6">100</div>
+      <div class="sw lt" style="background:#fecdd3">200</div>
+      <div class="sw lt" style="background:#fda4af">300</div>
+      <div class="sw dk" style="background:#fb7185">400</div>
+      <div class="sw dk" style="background:#f43f5e">500</div>
+      <div class="sw dk" style="background:#e11d48">600</div>
+      <div class="sw dk" style="background:#be123c">700</div>
+      <div class="sw dk" style="background:#9f1239">800</div>
+      <div class="sw dk" style="background:#881337">900</div>
+    </div>
+    <div class="demo">
+      <button class="btn-d" style="background:#fb7185; color:#fff;">Button</button>
+      <button class="btn-d btn-o" style="color:#fb7185; border-color:#fb7185;">Outline</button>
+      <button class="btn-d btn-g" style="color:#fb7185;">Ghost</button>
+      <span class="badge-d" style="background:#fff1f2; color:#e11d48;">Badge</span>
+    </div>
+    <div class="demo">
+      <input class="input-d" placeholder="Input..." onfocus="this.style.borderColor='#fb7185'" onblur="this.style.borderColor=''" />
+      <div class="avatar-d" style="background:#ffe4e6; color:#e11d48;">AT</div>
+    </div>
+    <div class="card-d">
+      <div class="ct">Card Title</div>
+      <div class="cd">카드 컴포넌트 미리보기</div>
+      <a href="#" class="cl" style="color:#fb7185;">자세히 보기 →</a>
+    </div>
+    <div class="toast-d" style="margin-top:12px;">
+      <i data-lucide="info" style="width:18px;height:18px;color:#fb7185;flex-shrink:0;"></i> 새 알림이 있습니다.
+    </div>
+  </div>
+
+  <!-- ═══ D: Emerald ═══ -->
+  <div class="option">
+    <div class="opt-header"><div class="opt-dot" style="background:#059669;"></div><div class="opt-title">D — Emerald</div></div>
+    <div class="opt-desc">깊은 에메랄드. Teal보다 진하고 고급스러운 그린. 금융/생산성 앱에 잘 어울림.</div>
+    <div class="palette">
+      <div class="sw lt" style="background:#ecfdf5">50</div>
+      <div class="sw lt" style="background:#d1fae5">100</div>
+      <div class="sw lt" style="background:#a7f3d0">200</div>
+      <div class="sw lt" style="background:#6ee7b7">300</div>
+      <div class="sw dk" style="background:#34d399">400</div>
+      <div class="sw dk" style="background:#10b981">500</div>
+      <div class="sw dk" style="background:#059669">600</div>
+      <div class="sw dk" style="background:#047857">700</div>
+      <div class="sw dk" style="background:#065f46">800</div>
+      <div class="sw dk" style="background:#064e3b">900</div>
+    </div>
+    <div class="demo">
+      <button class="btn-d" style="background:#059669; color:#fff;">Button</button>
+      <button class="btn-d btn-o" style="color:#059669; border-color:#059669;">Outline</button>
+      <button class="btn-d btn-g" style="color:#059669;">Ghost</button>
+      <span class="badge-d" style="background:#ecfdf5; color:#047857;">Badge</span>
+    </div>
+    <div class="demo">
+      <input class="input-d" placeholder="Input..." onfocus="this.style.borderColor='#059669'" onblur="this.style.borderColor=''" />
+      <div class="avatar-d" style="background:#d1fae5; color:#047857;">AT</div>
+    </div>
+    <div class="card-d">
+      <div class="ct">Card Title</div>
+      <div class="cd">카드 컴포넌트 미리보기</div>
+      <a href="#" class="cl" style="color:#059669;">자세히 보기 →</a>
+    </div>
+    <div class="toast-d" style="margin-top:12px;">
+      <i data-lucide="info" style="width:18px;height:18px;color:#059669;flex-shrink:0;"></i> 새 알림이 있습니다.
+    </div>
+  </div>
+
+  <!-- ═══ E: Custom Navy ═══ -->
+  <div class="option">
+    <div class="opt-header"><div class="opt-dot" style="background:#2563eb;"></div><div class="opt-title">E — Deep Blue</div></div>
+    <div class="opt-desc">인디고가 아닌 진한 블루. 인디고의 보라끼를 빼고 깊이감을 더한 버전.</div>
+    <div class="palette">
+      <div class="sw lt" style="background:#eff6ff">50</div>
+      <div class="sw lt" style="background:#dbeafe">100</div>
+      <div class="sw lt" style="background:#bfdbfe">200</div>
+      <div class="sw lt" style="background:#93c5fd">300</div>
+      <div class="sw dk" style="background:#60a5fa">400</div>
+      <div class="sw dk" style="background:#3b82f6">500</div>
+      <div class="sw dk" style="background:#2563eb">600</div>
+      <div class="sw dk" style="background:#1d4ed8">700</div>
+      <div class="sw dk" style="background:#1e40af">800</div>
+      <div class="sw dk" style="background:#1e3a8a">900</div>
+    </div>
+    <div class="demo">
+      <button class="btn-d" style="background:#2563eb; color:#fff;">Button</button>
+      <button class="btn-d btn-o" style="color:#2563eb; border-color:#2563eb;">Outline</button>
+      <button class="btn-d btn-g" style="color:#2563eb;">Ghost</button>
+      <span class="badge-d" style="background:#eff6ff; color:#1d4ed8;">Badge</span>
+    </div>
+    <div class="demo">
+      <input class="input-d" placeholder="Input..." onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor=''" />
+      <div class="avatar-d" style="background:#dbeafe; color:#1d4ed8;">AT</div>
+    </div>
+    <div class="card-d">
+      <div class="ct">Card Title</div>
+      <div class="cd">카드 컴포넌트 미리보기</div>
+      <a href="#" class="cl" style="color:#2563eb;">자세히 보기 →</a>
+    </div>
+    <div class="toast-d" style="margin-top:12px;">
+      <i data-lucide="info" style="width:18px;height:18px;color:#2563eb;flex-shrink:0;"></i> 새 알림이 있습니다.
+    </div>
+  </div>
+
+  <!-- ═══ G: Amber ═══ -->
+  <div class="option">
+    <div class="opt-header"><div class="opt-dot" style="background:#d97706;"></div><div class="opt-title">G — Amber</div></div>
+    <div class="opt-desc">따뜻한 앰버. 에너지 있고 친근한 느낌. 오렌지보다 절제된 톤.</div>
+    <div class="palette">
+      <div class="sw lt" style="background:#fffbeb">50</div>
+      <div class="sw lt" style="background:#fef3c7">100</div>
+      <div class="sw lt" style="background:#fde68a">200</div>
+      <div class="sw lt" style="background:#fcd34d">300</div>
+      <div class="sw dk" style="background:#fbbf24">400</div>
+      <div class="sw dk" style="background:#f59e0b">500</div>
+      <div class="sw dk" style="background:#d97706">600</div>
+      <div class="sw dk" style="background:#b45309">700</div>
+      <div class="sw dk" style="background:#92400e">800</div>
+      <div class="sw dk" style="background:#78350f">900</div>
+    </div>
+    <div class="demo">
+      <button class="btn-d" style="background:#d97706; color:#fff;">Button</button>
+      <button class="btn-d btn-o" style="color:#d97706; border-color:#d97706;">Outline</button>
+      <button class="btn-d btn-g" style="color:#d97706;">Ghost</button>
+      <span class="badge-d" style="background:#fffbeb; color:#b45309;">Badge</span>
+    </div>
+    <div class="demo">
+      <input class="input-d" placeholder="Input..." onfocus="this.style.borderColor='#d97706'" onblur="this.style.borderColor=''" />
+      <div class="avatar-d" style="background:#fef3c7; color:#b45309;">AT</div>
+    </div>
+    <div class="card-d">
+      <div class="ct">Card Title</div>
+      <div class="cd">카드 컴포넌트 미리보기</div>
+      <a href="#" class="cl" style="color:#d97706;">자세히 보기 →</a>
+    </div>
+    <div class="toast-d" style="margin-top:12px;">
+      <i data-lucide="info" style="width:18px;height:18px;color:#d97706;flex-shrink:0;"></i> 새 알림이 있습니다.
+    </div>
+  </div>
+
+  <!-- ═══ H: Orange (Vivid) ═══ -->
+  <div class="option">
+    <div class="opt-header"><div class="opt-dot" style="background:#f97316;"></div><div class="opt-title">H — Orange (Vivid)</div></div>
+    <div class="opt-desc">선명한 오렌지. 채도를 높여 활기차고 눈에 확 들어오는 톤.</div>
+    <div class="palette">
+      <div class="sw lt" style="background:#fff7ed">50</div>
+      <div class="sw lt" style="background:#ffedd5">100</div>
+      <div class="sw lt" style="background:#fed7aa">200</div>
+      <div class="sw lt" style="background:#fdba74">300</div>
+      <div class="sw dk" style="background:#fb923c">400</div>
+      <div class="sw dk" style="background:#f97316">500</div>
+      <div class="sw dk" style="background:#ea580c">600</div>
+      <div class="sw dk" style="background:#c2410c">700</div>
+      <div class="sw dk" style="background:#9a3412">800</div>
+      <div class="sw dk" style="background:#7c2d12">900</div>
+    </div>
+    <div class="demo">
+      <button class="btn-d" style="background:#f97316; color:#fff;">Button</button>
+      <button class="btn-d btn-o" style="color:#f97316; border-color:#f97316;">Outline</button>
+      <button class="btn-d btn-g" style="color:#f97316;">Ghost</button>
+      <span class="badge-d" style="background:#fff7ed; color:#ea580c;">Badge</span>
+    </div>
+    <div class="demo">
+      <input class="input-d" placeholder="Input..." onfocus="this.style.borderColor='#f97316'" onblur="this.style.borderColor=''" />
+      <div class="avatar-d" style="background:#ffedd5; color:#ea580c;">AT</div>
+    </div>
+    <div class="card-d">
+      <div class="ct">Card Title</div>
+      <div class="cd">카드 컴포넌트 미리보기</div>
+      <a href="#" class="cl" style="color:#f97316;">자세히 보기 →</a>
+    </div>
+    <div class="toast-d" style="margin-top:12px;">
+      <i data-lucide="info" style="width:18px;height:18px;color:#f97316;flex-shrink:0;"></i> 새 알림이 있습니다.
+    </div>
+  </div>
+
+  <!-- ═══ F: Zinc Black ═══ -->
+  <div class="option">
+    <div class="opt-header"><div class="opt-dot" style="background:#18181b;"></div><div class="opt-title">F — Zinc (Black Minimal)</div></div>
+    <div class="opt-desc">거의 블랙. Apple/Vercel 스타일의 극한 미니멀. 콘텐츠 자체가 주인공.</div>
+    <div class="palette">
+      <div class="sw lt" style="background:#fafafa">50</div>
+      <div class="sw lt" style="background:#f4f4f5">100</div>
+      <div class="sw lt" style="background:#e4e4e7">200</div>
+      <div class="sw lt" style="background:#d4d4d8">300</div>
+      <div class="sw dk" style="background:#a1a1aa">400</div>
+      <div class="sw dk" style="background:#71717a">500</div>
+      <div class="sw dk" style="background:#52525b">600</div>
+      <div class="sw dk" style="background:#3f3f46">700</div>
+      <div class="sw dk" style="background:#27272a">800</div>
+      <div class="sw dk" style="background:#18181b">900</div>
+    </div>
+    <div class="demo">
+      <button class="btn-d" style="background:#18181b; color:#fff;">Button</button>
+      <button class="btn-d btn-o" style="color:#18181b; border-color:#18181b;">Outline</button>
+      <button class="btn-d btn-g" style="color:#18181b;">Ghost</button>
+      <span class="badge-d" style="background:#f4f4f5; color:#3f3f46;">Badge</span>
+    </div>
+    <div class="demo">
+      <input class="input-d" placeholder="Input..." onfocus="this.style.borderColor='#18181b'" onblur="this.style.borderColor=''" />
+      <div class="avatar-d" style="background:#e4e4e7; color:#3f3f46;">AT</div>
+    </div>
+    <div class="card-d">
+      <div class="ct">Card Title</div>
+      <div class="cd">카드 컴포넌트 미리보기</div>
+      <a href="#" class="cl" style="color:#18181b; text-decoration:underline;">자세히 보기 →</a>
+    </div>
+    <div class="toast-d" style="margin-top:12px;">
+      <i data-lucide="info" style="width:18px;height:18px;color:#52525b;flex-shrink:0;"></i> 새 알림이 있습니다.
+    </div>
+  </div>
+
+</div>
+
+<div style="height:80px;"></div>
+<script>
+  lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });
+</script>
+</body>
+</html>

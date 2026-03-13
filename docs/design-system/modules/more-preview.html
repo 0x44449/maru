@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atena — More Components Preview</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* ─── Theme Variables ─── */
+  :root {
+    --bg: #ffffff; --surface: #fafafa; --surface-raised: #ffffff;
+    --border: #e5e5e5; --border-strong: #d4d4d4;
+    --text-1: #171717; --text-2: #525252; --text-3: #737373;
+    --neutral-400: #a3a3a3;
+    --primary-50: #f5f3ff; --primary-100: #ede9fe; --primary-600: #7c3aed;
+    --error: #ef4444;
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  body.dark {
+    --bg: #0a0a0a; --surface: #171717; --surface-raised: #262626;
+    --border: #262626; --border-strong: #404040;
+    --text-1: #fafafa; --text-2: #a3a3a3; --text-3: #737373;
+    --primary-50: rgba(124,58,237,0.1);
+    --error: #f87171;
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--surface); color: var(--text-1); padding: 40px;
+    line-height: 1.5; transition: all 0.2s;
+  }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 14px; color: var(--text-3); margin-bottom: 48px; }
+  .dark-toggle {
+    position: fixed; top: 16px; right: 16px; z-index: 200;
+    padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border-strong);
+    background: var(--surface-raised); color: var(--text-1);
+    font-family: 'Pretendard'; font-size: 12px; cursor: pointer;
+  }
+
+  /* ─── Section Shell ─── */
+  .comp {
+    margin-bottom: 56px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+  .comp-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .comp-title { font-size: 16px; font-weight: 600; }
+  .comp-num { font-size: 13px; color: var(--text-3); }
+  .comp-body { padding: 24px; }
+  .comp-body.gray { background: var(--surface); }
+  .comp-label {
+    font-size: 11px; font-weight: 600; color: var(--text-3);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; margin-top: 20px;
+  }
+  .comp-label:first-child { margin-top: 0; }
+
+  /* ─── Phone Frame (375px) ─── */
+  .phone-frame {
+    width: 375px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden;
+  }
+
+  /* ─── 1. More Header ─── */
+  .mr-header {
+    height: 56px; background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 16px;
+  }
+  .mr-header-title { font-size: 20px; font-weight: 700; color: var(--text-1); }
+
+  /* ─── 2. Profile Section ─── */
+  .mr-profile {
+    padding: 16px; background: var(--bg);
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+  }
+  .mr-profile:active { background: var(--surface); }
+  .mr-avatar {
+    width: 48px; height: 48px; min-width: 48px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 600;
+  }
+  .mr-profile-info { flex: 1; min-width: 0; }
+  .mr-profile-name {
+    font-size: 16px; font-weight: 600; color: var(--text-1);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .mr-profile-dept {
+    font-size: 13px; font-weight: 400; color: var(--text-3);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-top: 2px;
+  }
+  .mr-profile-chevron { color: var(--text-3); display: flex; align-items: center; flex-shrink: 0; }
+
+  /* ─── 3. Menu Group ─── */
+  .mr-menu-group {
+    background: var(--bg);
+    margin-top: 8px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .mr-menu-item {
+    height: 48px; padding: 0 16px;
+    display: flex; align-items: center;
+    cursor: pointer; background: none; border: none;
+    font-family: inherit; width: 100%;
+  }
+  .mr-menu-item:active { background: var(--surface); }
+  .mr-menu-left {
+    display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;
+  }
+  .mr-menu-icon { color: var(--text-2); display: flex; align-items: center; flex-shrink: 0; }
+  .mr-menu-label { font-size: 15px; font-weight: 400; color: var(--text-1); }
+  .mr-menu-chevron { color: var(--text-3); display: flex; align-items: center; flex-shrink: 0; }
+  .mr-menu-divider {
+    height: 1px; background: var(--border);
+    margin-left: 48px;
+  }
+
+  /* ─── 3-5. Menu Item Version Text ─── */
+  .mr-menu-version { font-size: 13px; font-weight: 400; color: var(--text-3); margin-right: 4px; }
+
+  /* ─── 4. Logout Button ─── */
+  .mr-logout-group {
+    background: var(--bg);
+    margin-top: 8px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .mr-logout {
+    height: 48px; padding: 0 16px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer; background: none; border: none;
+    font-family: inherit; width: 100%;
+  }
+  .mr-logout:active { background: var(--surface); }
+  .mr-logout-icon { color: var(--error); display: flex; align-items: center; flex-shrink: 0; }
+  .mr-logout-label { font-size: 15px; font-weight: 400; color: var(--error); }
+</style>
+</head>
+<body>
+
+<button class="dark-toggle" onclick="document.body.classList.toggle('dark')">Light / Dark</button>
+
+<h1>More — Components Preview</h1>
+<p class="subtitle">더보기 컴포넌트 프리뷰. 규격은 more.md 참고.</p>
+
+
+<!-- ═══ 1. More Header ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">1. More Header</span>
+    <span class="comp-num">56px · 제목만</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="phone-frame" style="border:none; border-radius:0;">
+      <div class="mr-header">
+        <span class="mr-header-title">더보기</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 2. Profile Section ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">2. Profile Section</span>
+    <span class="comp-num">48px 아바타 · 프로필 관리 진입</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="phone-frame" style="border:none; border-radius:0;">
+      <div class="mr-profile">
+        <div class="mr-avatar" style="background:#e0e7ff;color:#3730a3;">DH</div>
+        <div class="mr-profile-info">
+          <div class="mr-profile-name">김도현</div>
+          <div class="mr-profile-dept">개발팀 · 백엔드 개발</div>
+        </div>
+        <span class="mr-profile-chevron"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 3. Menu Group ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">3. Menu Group</span>
+    <span class="comp-num">48px 아이템 · chevron 포함</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="phone-frame" style="border:none; border-radius:0;">
+      <div class="mr-menu-group" style="margin-top:0; border-top:none;">
+        <button class="mr-menu-item">
+          <div class="mr-menu-left">
+            <span class="mr-menu-icon"><i data-lucide="circle-user-round" style="width:20px;height:20px;"></i></span>
+            <span class="mr-menu-label">계정 정보</span>
+          </div>
+          <span class="mr-menu-chevron"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></span>
+        </button>
+        <div class="mr-menu-divider"></div>
+        <button class="mr-menu-item">
+          <div class="mr-menu-left">
+            <span class="mr-menu-icon"><i data-lucide="settings" style="width:20px;height:20px;"></i></span>
+            <span class="mr-menu-label">설정</span>
+          </div>
+          <span class="mr-menu-chevron"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></span>
+        </button>
+        <div class="mr-menu-divider"></div>
+        <button class="mr-menu-item">
+          <div class="mr-menu-left">
+            <span class="mr-menu-icon"><i data-lucide="info" style="width:20px;height:20px;"></i></span>
+            <span class="mr-menu-label">앱 정보</span>
+          </div>
+          <span class="mr-menu-version">v1.0.0</span>
+          <span class="mr-menu-chevron"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 4. Logout Button ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">4. Logout Button</span>
+    <span class="comp-num">error 색상</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="phone-frame" style="border:none; border-radius:0;">
+      <div class="mr-logout-group" style="margin-top:0; border-top:none;">
+        <button class="mr-logout">
+          <span class="mr-logout-icon"><i data-lucide="log-out" style="width:20px;height:20px;"></i></span>
+          <span class="mr-logout-label">로그아웃</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ BONUS: Full Assembly ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">Full Assembly</span>
+    <span class="comp-num">전체 조합 프리뷰</span>
+  </div>
+  <div class="comp-body gray" style="padding:24px;">
+    <div class="phone-frame" style="max-height:700px; display:flex; flex-direction:column;">
+
+      <!-- Header -->
+      <div class="mr-header" style="flex-shrink:0;">
+        <span class="mr-header-title">더보기</span>
+      </div>
+
+      <!-- Scrollable -->
+      <div style="flex:1; overflow-y:auto; background:var(--surface);">
+
+        <!-- Profile Section -->
+        <div class="mr-profile">
+          <div class="mr-avatar" style="background:#e0e7ff;color:#3730a3;">DH</div>
+          <div class="mr-profile-info">
+            <div class="mr-profile-name">김도현</div>
+            <div class="mr-profile-dept">개발팀 · 백엔드 개발</div>
+          </div>
+          <span class="mr-profile-chevron"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></span>
+        </div>
+
+        <!-- Menu Group -->
+        <div class="mr-menu-group">
+          <button class="mr-menu-item">
+            <div class="mr-menu-left">
+              <span class="mr-menu-icon"><i data-lucide="circle-user-round" style="width:20px;height:20px;"></i></span>
+              <span class="mr-menu-label">계정 정보</span>
+            </div>
+            <span class="mr-menu-chevron"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></span>
+          </button>
+          <div class="mr-menu-divider"></div>
+          <button class="mr-menu-item">
+            <div class="mr-menu-left">
+              <span class="mr-menu-icon"><i data-lucide="settings" style="width:20px;height:20px;"></i></span>
+              <span class="mr-menu-label">설정</span>
+            </div>
+            <span class="mr-menu-chevron"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></span>
+          </button>
+          <div class="mr-menu-divider"></div>
+          <button class="mr-menu-item">
+            <div class="mr-menu-left">
+              <span class="mr-menu-icon"><i data-lucide="info" style="width:20px;height:20px;"></i></span>
+              <span class="mr-menu-label">앱 정보</span>
+            </div>
+            <span class="mr-menu-version">v1.0.0</span>
+            <span class="mr-menu-chevron"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></span>
+          </button>
+        </div>
+
+        <!-- Logout -->
+        <div class="mr-logout-group">
+          <button class="mr-logout">
+            <span class="mr-logout-icon"><i data-lucide="log-out" style="width:20px;height:20px;"></i></span>
+            <span class="mr-logout-label">로그아웃</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });
+</script>
+</body>
+</html>

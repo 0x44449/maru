@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atena — Contacts Components Preview</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* ─── Theme Variables ─── */
+  :root {
+    --bg: #ffffff; --surface: #fafafa; --surface-raised: #ffffff;
+    --border: #e5e5e5; --border-strong: #d4d4d4;
+    --text-1: #171717; --text-2: #525252; --text-3: #737373;
+    --neutral-400: #a3a3a3;
+    --primary-50: #f5f3ff; --primary-100: #ede9fe; --primary-600: #7c3aed;
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  body.dark {
+    --bg: #0a0a0a; --surface: #171717; --surface-raised: #262626;
+    --border: #262626; --border-strong: #404040;
+    --text-1: #fafafa; --text-2: #a3a3a3; --text-3: #737373;
+    --primary-50: rgba(124,58,237,0.1);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--surface); color: var(--text-1); padding: 40px;
+    line-height: 1.5; transition: all 0.2s;
+  }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 14px; color: var(--text-3); margin-bottom: 48px; }
+  .dark-toggle {
+    position: fixed; top: 16px; right: 16px; z-index: 200;
+    padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border-strong);
+    background: var(--surface-raised); color: var(--text-1);
+    font-family: 'Pretendard'; font-size: 12px; cursor: pointer;
+  }
+
+  /* ─── Section Shell ─── */
+  .comp {
+    margin-bottom: 56px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+  .comp-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .comp-title { font-size: 16px; font-weight: 600; }
+  .comp-num { font-size: 13px; color: var(--text-3); }
+  .comp-body { padding: 24px; }
+  .comp-body.gray { background: var(--surface); }
+  .comp-label {
+    font-size: 11px; font-weight: 600; color: var(--text-3);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; margin-top: 20px;
+  }
+  .comp-label:first-child { margin-top: 0; }
+
+  /* ─── Phone Frame (375px) ─── */
+  .phone-frame {
+    width: 375px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden;
+  }
+
+  /* ─── 1. Contacts Header ─── */
+  .ct-header {
+    height: 56px; background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 4px 0 16px;
+  }
+  .ct-header-title { font-size: 20px; font-weight: 700; color: var(--text-1); flex: 1; }
+  .ct-header-actions { display: flex; align-items: center; }
+  .ct-header-btn {
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    background: none; border: none; cursor: pointer;
+    border-radius: 8px; color: var(--text-2);
+  }
+
+  /* ─── 2. Section Header ─── */
+  .ct-section {
+    height: 40px; padding: 0 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; background: var(--bg);
+  }
+  .ct-section:active { background: var(--surface); }
+  .ct-section-left { display: flex; align-items: center; gap: 4px; }
+  .ct-section-name { font-size: 13px; font-weight: 600; color: var(--text-3); }
+  .ct-section-count { font-size: 13px; font-weight: 400; color: var(--text-3); }
+  .ct-section-chevron {
+    color: var(--text-3); display: flex; align-items: center;
+    transition: transform 0.2s;
+  }
+  .ct-section-chevron.collapsed { transform: rotate(180deg); }
+
+  /* ─── 3. Contact Item ─── */
+  .ct-item {
+    height: 56px; padding: 0 16px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+  }
+  .ct-item:active { background: var(--surface); }
+  .ct-avatar {
+    width: 36px; height: 36px; min-width: 36px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600;
+  }
+  .ct-info { flex: 1; min-width: 0; }
+  .ct-name {
+    font-size: 15px; font-weight: 400; color: var(--text-1);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .ct-role {
+    font-size: 13px; font-weight: 400; color: var(--text-3);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-top: 2px;
+  }
+
+  /* ─── 4. Empty State ─── */
+  .ct-empty {
+    padding: 80px 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .ct-empty-icon { color: var(--text-3); margin-bottom: 12px; }
+  .ct-empty-title { font-size: 16px; font-weight: 600; color: var(--text-2); }
+  .ct-empty-desc { font-size: 14px; font-weight: 400; color: var(--text-3); margin-top: 4px; }
+
+  /* ─── 5. Settings Popup Menu ─── */
+  .ct-popup-anchor { position: relative; }
+  .ct-popup {
+    position: absolute; top: 100%; right: 0;
+    min-width: 180px; background: var(--surface-raised);
+    border: 1px solid var(--border); border-radius: 12px;
+    box-shadow: var(--shadow-md); padding: 4px 0;
+    z-index: 1200;
+  }
+  .ct-popup-item {
+    height: 44px; padding: 0 16px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer; background: none; border: none;
+    font-family: inherit; font-size: 14px; font-weight: 400;
+    color: var(--text-1); width: 100%;
+  }
+  .ct-popup-item:active { background: var(--surface); }
+  .ct-popup-item-icon { color: var(--text-2); display: flex; align-items: center; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<button class="dark-toggle" onclick="document.body.classList.toggle('dark')">Light / Dark</button>
+
+<h1>Contacts — Components Preview</h1>
+<p class="subtitle">연락처 컴포넌트 프리뷰. 규격은 contacts.md 참고.</p>
+
+
+<!-- ═══ 1. Contacts Header ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">1. Contacts Header</span>
+    <span class="comp-num">56px · 검색 + 설정</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="phone-frame" style="border:none; border-radius:0;">
+      <div class="ct-header">
+        <span class="ct-header-title">연락처</span>
+        <div class="ct-header-actions">
+          <button class="ct-header-btn"><i data-lucide="search" style="width:24px;height:24px;"></i></button>
+          <button class="ct-header-btn"><i data-lucide="settings" style="width:24px;height:24px;"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 2. Section Header ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">2. Section Header</span>
+    <span class="comp-num">40px · 접기/펼치기</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="comp-label" style="padding:20px 24px 0;">EXPANDED (DEFAULT)</div>
+    <div class="phone-frame" style="border:none; border-radius:0;">
+      <div class="ct-section">
+        <div class="ct-section-left">
+          <span class="ct-section-name">즐겨찾기</span>
+          <span class="ct-section-count">2</span>
+        </div>
+        <span class="ct-section-chevron"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
+      </div>
+    </div>
+
+    <div class="comp-label" style="padding:20px 24px 0;">DEPARTMENT</div>
+    <div class="phone-frame" style="border:none; border-radius:0;">
+      <div class="ct-section">
+        <div class="ct-section-left">
+          <span class="ct-section-name">개발팀</span>
+          <span class="ct-section-count">5</span>
+        </div>
+        <span class="ct-section-chevron"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
+      </div>
+    </div>
+
+    <div class="comp-label" style="padding:20px 24px 0;">COLLAPSED</div>
+    <div class="phone-frame" style="border:none; border-radius:0;">
+      <div class="ct-section">
+        <div class="ct-section-left">
+          <span class="ct-section-name">디자인팀</span>
+          <span class="ct-section-count">3</span>
+        </div>
+        <span class="ct-section-chevron collapsed"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 3. Contact Item ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">3. Contact Item</span>
+    <span class="comp-num">56px · 36px 아바타</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="comp-label" style="padding:20px 24px 0;">WITH ROLE</div>
+    <div class="phone-frame" style="border:none; border-radius:0;">
+      <div class="ct-item">
+        <div class="ct-avatar" style="background:#dbeafe;color:#1d4ed8;">JY</div>
+        <div class="ct-info">
+          <div class="ct-name">Jiyoung Park</div>
+          <div class="ct-role">프로덕트 디자이너</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label" style="padding:20px 24px 0;">WITHOUT ROLE</div>
+    <div class="phone-frame" style="border:none; border-radius:0;">
+      <div class="ct-item">
+        <div class="ct-avatar" style="background:#fef3c7;color:#92400e;">SH</div>
+        <div class="ct-info">
+          <div class="ct-name">Sunghoon Lee</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 4. Empty State ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">4. Empty State</span>
+    <span class="comp-num">빈 상태</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="phone-frame" style="border:none; border-radius:0;">
+      <div class="ct-empty">
+        <div class="ct-empty-icon"><i data-lucide="book-user" style="width:48px;height:48px;"></i></div>
+        <div class="ct-empty-title">조직 구성원이 없습니다</div>
+        <div class="ct-empty-desc">아직 등록된 구성원이 없어요</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 5. Settings Popup Menu ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">5. Settings Popup Menu</span>
+    <span class="comp-num">드롭다운 메뉴</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="comp-label" style="padding:20px 24px 12px;">HEADER WITH POPUP</div>
+    <div style="position:relative; height:160px;">
+      <div class="ct-header" style="position:relative;">
+        <span class="ct-header-title">연락처</span>
+        <div class="ct-header-actions">
+          <button class="ct-header-btn"><i data-lucide="search" style="width:24px;height:24px;"></i></button>
+          <div class="ct-popup-anchor">
+            <button class="ct-header-btn"><i data-lucide="settings" style="width:24px;height:24px;"></i></button>
+            <div class="ct-popup" style="position:absolute; top:44px; right:0;">
+              <button class="ct-popup-item">
+                <span class="ct-popup-item-icon"><i data-lucide="pencil" style="width:20px;height:20px;"></i></span>
+                즐겨찾기 편집
+              </button>
+              <button class="ct-popup-item">
+                <span class="ct-popup-item-icon"><i data-lucide="arrow-up-down" style="width:20px;height:20px;"></i></span>
+                정렬
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ BONUS: Full Assembly ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">Full Assembly</span>
+    <span class="comp-num">전체 조합 프리뷰</span>
+  </div>
+  <div class="comp-body gray" style="padding:24px;">
+    <div class="phone-frame" style="max-height:700px; display:flex; flex-direction:column;">
+
+      <!-- Header -->
+      <div class="ct-header" style="flex-shrink:0;">
+        <span class="ct-header-title">연락처</span>
+        <div class="ct-header-actions">
+          <button class="ct-header-btn"><i data-lucide="search" style="width:24px;height:24px;"></i></button>
+          <button class="ct-header-btn"><i data-lucide="settings" style="width:24px;height:24px;"></i></button>
+        </div>
+      </div>
+
+      <!-- Scrollable -->
+      <div style="flex:1; overflow-y:auto;">
+
+        <!-- Favorites -->
+        <div class="ct-section">
+          <div class="ct-section-left">
+            <span class="ct-section-name">즐겨찾기</span>
+            <span class="ct-section-count">2</span>
+          </div>
+          <span class="ct-section-chevron"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
+        </div>
+        <div class="ct-item">
+          <div class="ct-avatar" style="background:#dbeafe;color:#1d4ed8;">JY</div>
+          <div class="ct-info">
+            <div class="ct-name">Jiyoung Park</div>
+            <div class="ct-role">프로덕트 디자이너</div>
+          </div>
+        </div>
+        <div class="ct-item">
+          <div class="ct-avatar" style="background:#dcfce7;color:#15803d;">TH</div>
+          <div class="ct-info">
+            <div class="ct-name">Taehyun Kim</div>
+            <div class="ct-role">백엔드 개발</div>
+          </div>
+        </div>
+
+        <!-- 개발팀 -->
+        <div class="ct-section">
+          <div class="ct-section-left">
+            <span class="ct-section-name">개발팀</span>
+            <span class="ct-section-count">4</span>
+          </div>
+          <span class="ct-section-chevron"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
+        </div>
+        <div class="ct-item">
+          <div class="ct-avatar" style="background:#dcfce7;color:#15803d;">TH</div>
+          <div class="ct-info">
+            <div class="ct-name">Taehyun Kim</div>
+            <div class="ct-role">백엔드 개발</div>
+          </div>
+        </div>
+        <div class="ct-item">
+          <div class="ct-avatar" style="background:#fef3c7;color:#92400e;">DW</div>
+          <div class="ct-info">
+            <div class="ct-name">Dongwoo Seo</div>
+            <div class="ct-role">프론트엔드 개발</div>
+          </div>
+        </div>
+        <div class="ct-item">
+          <div class="ct-avatar" style="background:#e0e7ff;color:#3730a3;">YJ</div>
+          <div class="ct-info">
+            <div class="ct-name">Yujin Han</div>
+            <div class="ct-role">iOS 개발</div>
+          </div>
+        </div>
+        <div class="ct-item">
+          <div class="ct-avatar" style="background:#fef3c7;color:#92400e;">SH</div>
+          <div class="ct-info">
+            <div class="ct-name">Sunghoon Lee</div>
+            <div class="ct-role">백엔드 개발</div>
+          </div>
+        </div>
+
+        <!-- 디자인팀 -->
+        <div class="ct-section">
+          <div class="ct-section-left">
+            <span class="ct-section-name">디자인팀</span>
+            <span class="ct-section-count">2</span>
+          </div>
+          <span class="ct-section-chevron"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
+        </div>
+        <div class="ct-item">
+          <div class="ct-avatar" style="background:#dbeafe;color:#1d4ed8;">JY</div>
+          <div class="ct-info">
+            <div class="ct-name">Jiyoung Park</div>
+            <div class="ct-role">프로덕트 디자이너</div>
+          </div>
+        </div>
+        <div class="ct-item">
+          <div class="ct-avatar" style="background:#fce7f3;color:#be185d;">MK</div>
+          <div class="ct-info">
+            <div class="ct-name">Mikyung Choi</div>
+            <div class="ct-role">UX 디자이너</div>
+          </div>
+        </div>
+
+        <!-- 관리팀 -->
+        <div class="ct-section">
+          <div class="ct-section-left">
+            <span class="ct-section-name">관리팀</span>
+            <span class="ct-section-count">1</span>
+          </div>
+          <span class="ct-section-chevron"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
+        </div>
+        <div class="ct-item">
+          <div class="ct-avatar" style="background:#f3e8ff;color:#7c3aed;">HJ</div>
+          <div class="ct-info">
+            <div class="ct-name">Hyejin Yoon</div>
+            <div class="ct-role">인사/총무</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });
+</script>
+</body>
+</html>

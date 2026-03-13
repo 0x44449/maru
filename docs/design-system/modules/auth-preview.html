@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atena — Auth Components Preview</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* ─── Theme Variables ─── */
+  :root {
+    --bg: #ffffff; --surface: #fafafa; --surface-raised: #ffffff;
+    --border: #e5e5e5; --border-strong: #d4d4d4;
+    --text-1: #171717; --text-2: #525252; --text-3: #737373;
+    --primary-50: #f5f3ff; --primary-100: #ede9fe; --primary-600: #7c3aed;
+    --error: #ef4444;
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  body.dark {
+    --bg: #0a0a0a; --surface: #171717; --surface-raised: #262626;
+    --border: #262626; --border-strong: #404040;
+    --text-1: #fafafa; --text-2: #a3a3a3; --text-3: #737373;
+    --primary-50: rgba(124,58,237,0.1);
+    --error: #f87171;
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--surface); color: var(--text-1); padding: 40px;
+    line-height: 1.5; transition: all 0.2s;
+  }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 14px; color: var(--text-3); margin-bottom: 48px; }
+  .dark-toggle {
+    position: fixed; top: 16px; right: 16px; z-index: 200;
+    padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border-strong);
+    background: var(--surface-raised); color: var(--text-1);
+    font-family: 'Pretendard'; font-size: 12px; cursor: pointer;
+  }
+
+  /* ─── Section Shell ─── */
+  .comp {
+    margin-bottom: 56px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+  .comp-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .comp-title { font-size: 16px; font-weight: 600; }
+  .comp-num { font-size: 13px; color: var(--text-3); }
+  .comp-body { padding: 24px; }
+  .comp-body.gray { background: var(--surface); }
+  .comp-label {
+    font-size: 11px; font-weight: 600; color: var(--text-3);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; margin-top: 20px;
+  }
+  .comp-label:first-child { margin-top: 0; }
+
+  /* ─── Phone Frame (375px) ─── */
+  .phone-frame {
+    width: 375px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden;
+  }
+
+  /* ─── 1. Login Screen ─── */
+  .au-login {
+    padding: 0 24px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 580px;
+  }
+  .au-logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 48px; }
+  .au-logo-icon { color: var(--primary-600); margin-bottom: 12px; }
+  .au-logo-name { font-size: 24px; font-weight: 700; color: var(--text-1); }
+  .au-form { width: 100%; }
+  .au-input {
+    height: 48px; width: 100%; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 0 16px; font-family: inherit;
+    font-size: 15px; color: var(--text-1);
+    outline: none;
+  }
+  .au-input::placeholder { color: var(--text-3); }
+  .au-input:focus { border-color: var(--primary-600); }
+  .au-input + .au-input-wrap,
+  .au-input + .au-input { margin-top: 12px; }
+  .au-input-wrap { position: relative; width: 100%; }
+  .au-input-wrap + .au-input-wrap { margin-top: 12px; }
+  .au-input-wrap .au-input { width: 100%; padding-right: 48px; }
+  .au-input-toggle {
+    position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+    width: 44px; height: 44px; background: none; border: none;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-3); cursor: pointer;
+  }
+  .au-btn {
+    height: 48px; width: 100%; border: none; border-radius: 12px;
+    font-family: inherit; font-size: 16px; font-weight: 600;
+    cursor: pointer; margin-top: 24px;
+    background: var(--primary-600); color: #ffffff;
+  }
+  .au-btn.disabled { opacity: 0.5; cursor: default; }
+  .au-link {
+    margin-top: 24px; text-align: center;
+    font-size: 14px; color: var(--text-3);
+  }
+  .au-link a, .au-link span.link {
+    font-weight: 600; color: var(--primary-600);
+    text-decoration: none; cursor: pointer;
+  }
+  .au-error {
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 12px; width: 100%;
+  }
+  .au-error-icon { color: var(--error); display: flex; align-items: center; flex-shrink: 0; }
+  .au-error-text { font-size: 13px; color: var(--error); }
+
+  /* ─── 2. Register Screen ─── */
+  .au-header {
+    height: 56px; background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 16px 0 4px;
+  }
+  .au-header-back {
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    background: none; border: none; cursor: pointer; color: var(--text-1);
+  }
+  .au-header-title { font-size: 17px; font-weight: 600; color: var(--text-1); margin-left: 4px; }
+  .au-register-form { padding: 24px; }
+
+  /* ─── 3. Workspace Select Screen ─── */
+  .au-ws-select { padding: 0 24px; min-height: 580px; }
+  .au-ws-title-area { padding-top: 80px; text-align: center; margin-bottom: 32px; }
+  .au-ws-title { font-size: 20px; font-weight: 700; color: var(--text-1); }
+  .au-ws-desc { font-size: 14px; color: var(--text-3); margin-top: 8px; }
+  .au-ws-list {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+  }
+  .au-ws-item {
+    height: 64px; padding: 0 16px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer; background: none; border: none;
+    font-family: inherit; width: 100%;
+  }
+  .au-ws-item:active { background: var(--surface); }
+  .au-ws-icon-wrap {
+    width: 40px; height: 40px; min-width: 40px;
+    background: var(--primary-50); border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .au-ws-icon-wrap i { color: var(--primary-600); }
+  .au-ws-info { flex: 1; min-width: 0; text-align: left; }
+  .au-ws-name {
+    font-size: 16px; font-weight: 600; color: var(--text-1);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .au-ws-members { font-size: 13px; color: var(--text-3); margin-top: 2px; }
+  .au-ws-chevron { color: var(--text-3); display: flex; align-items: center; flex-shrink: 0; }
+  .au-ws-divider { height: 1px; background: var(--border); margin-left: 68px; }
+  .au-ws-create {
+    height: 56px; margin-top: 12px; width: 100%;
+    background: var(--bg); border: 1px dashed var(--border);
+    border-radius: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-family: inherit;
+  }
+  .au-ws-create:active { background: var(--surface); }
+  .au-ws-create-icon { color: var(--primary-600); display: flex; align-items: center; }
+  .au-ws-create-label { font-size: 15px; font-weight: 500; color: var(--primary-600); }
+
+  /* ─── 3-5. Empty State ─── */
+  .au-ws-empty {
+    padding: 48px 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .au-ws-empty-icon { color: var(--text-3); margin-bottom: 12px; }
+  .au-ws-empty-title { font-size: 16px; font-weight: 600; color: var(--text-2); }
+  .au-ws-empty-desc { font-size: 14px; color: var(--text-3); margin-top: 4px; }
+
+  /* ─── 4. Workspace Create Screen ─── */
+  .au-wsc-logo-area {
+    padding-top: 32px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .au-wsc-logo-box {
+    width: 64px; height: 64px; border-radius: 20px;
+    background: var(--surface); border: 1px dashed var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text-3);
+  }
+  .au-wsc-logo-box:active { background: var(--border); }
+  .au-wsc-logo-hint { font-size: 13px; color: var(--text-3); margin-top: 8px; }
+  .au-wsc-field { padding: 32px 24px 0; }
+  .au-wsc-label { font-size: 14px; font-weight: 600; color: var(--text-1); margin-bottom: 8px; }
+  .au-wsc-btn-area { padding: 32px 24px 0; }
+</style>
+</head>
+<body>
+
+<button class="dark-toggle" onclick="document.body.classList.toggle('dark')">Light / Dark</button>
+
+<h1>Auth — Components Preview</h1>
+<p class="subtitle">인증 및 워크스페이스 컴포넌트 프리뷰. 규격은 auth.md 참고.</p>
+
+
+<!-- ═══ 1. Login Screen ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">1. Login Screen</span>
+    <span class="comp-num">로그인</span>
+  </div>
+  <div class="comp-body gray" style="padding:24px;">
+
+    <div class="comp-label" style="margin-top:0;">DEFAULT</div>
+    <div class="phone-frame">
+      <div class="au-login">
+        <div class="au-logo">
+          <div class="au-logo-icon"><i data-lucide="shield" style="width:48px;height:48px;"></i></div>
+          <span class="au-logo-name">Atena</span>
+        </div>
+        <div class="au-form">
+          <input class="au-input" type="text" placeholder="이메일" />
+          <div class="au-input-wrap" style="margin-top:12px;">
+            <input class="au-input" type="password" placeholder="비밀번호" />
+            <button class="au-input-toggle"><i data-lucide="eye-off" style="width:20px;height:20px;"></i></button>
+          </div>
+          <button class="au-btn disabled">로그인</button>
+          <div class="au-link">계정이 없으신가요? <span class="link">회원가입</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">WITH INPUT</div>
+    <div class="phone-frame">
+      <div class="au-login">
+        <div class="au-logo">
+          <div class="au-logo-icon"><i data-lucide="shield" style="width:48px;height:48px;"></i></div>
+          <span class="au-logo-name">Atena</span>
+        </div>
+        <div class="au-form">
+          <input class="au-input" type="text" value="dohyun.kim@company.com" />
+          <div class="au-input-wrap" style="margin-top:12px;">
+            <input class="au-input" type="password" value="••••••••" />
+            <button class="au-input-toggle"><i data-lucide="eye-off" style="width:20px;height:20px;"></i></button>
+          </div>
+          <button class="au-btn">로그인</button>
+          <div class="au-link">계정이 없으신가요? <span class="link">회원가입</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">ERROR STATE</div>
+    <div class="phone-frame">
+      <div class="au-login">
+        <div class="au-logo">
+          <div class="au-logo-icon"><i data-lucide="shield" style="width:48px;height:48px;"></i></div>
+          <span class="au-logo-name">Atena</span>
+        </div>
+        <div class="au-form">
+          <div class="au-error">
+            <span class="au-error-icon"><i data-lucide="alert-circle" style="width:14px;height:14px;"></i></span>
+            <span class="au-error-text">이메일 또는 비밀번호가 올바르지 않습니다</span>
+          </div>
+          <input class="au-input" type="text" value="dohyun.kim@company.com" style="border-color:var(--error);" />
+          <div class="au-input-wrap" style="margin-top:12px;">
+            <input class="au-input" type="password" value="••••••" style="border-color:var(--error);" />
+            <button class="au-input-toggle"><i data-lucide="eye-off" style="width:20px;height:20px;"></i></button>
+          </div>
+          <button class="au-btn">로그인</button>
+          <div class="au-link">계정이 없으신가요? <span class="link">회원가입</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 2. Register Screen ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">2. Register Screen</span>
+    <span class="comp-num">회원가입</span>
+  </div>
+  <div class="comp-body gray" style="padding:24px;">
+    <div class="phone-frame">
+      <div class="au-header">
+        <button class="au-header-back"><i data-lucide="arrow-left" style="width:24px;height:24px;"></i></button>
+        <span class="au-header-title">회원가입</span>
+      </div>
+      <div class="au-register-form">
+        <input class="au-input" type="text" placeholder="이름" />
+        <div class="au-input-wrap" style="margin-top:12px;">
+          <input class="au-input" type="text" placeholder="이메일" />
+        </div>
+        <div class="au-input-wrap" style="margin-top:12px;">
+          <input class="au-input" type="password" placeholder="비밀번호" />
+          <button class="au-input-toggle"><i data-lucide="eye-off" style="width:20px;height:20px;"></i></button>
+        </div>
+        <div class="au-input-wrap" style="margin-top:12px;">
+          <input class="au-input" type="password" placeholder="비밀번호 확인" />
+          <button class="au-input-toggle"><i data-lucide="eye-off" style="width:20px;height:20px;"></i></button>
+        </div>
+        <button class="au-btn disabled">가입하기</button>
+        <div class="au-link">이미 계정이 있으신가요? <span class="link">로그인</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 3. Workspace Select Screen ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">3. Workspace Select Screen</span>
+    <span class="comp-num">워크스페이스 선택</span>
+  </div>
+  <div class="comp-body gray" style="padding:24px;">
+
+    <div class="comp-label" style="margin-top:0;">WITH WORKSPACES</div>
+    <div class="phone-frame">
+      <div class="au-ws-select">
+        <div class="au-ws-title-area">
+          <div class="au-ws-title">워크스페이스 선택</div>
+          <div class="au-ws-desc">참여할 워크스페이스를 선택하세요</div>
+        </div>
+
+        <div class="au-ws-list">
+          <button class="au-ws-item">
+            <div class="au-ws-icon-wrap"><i data-lucide="building-2" style="width:24px;height:24px;"></i></div>
+            <div class="au-ws-info">
+              <div class="au-ws-name">주식회사 아테나</div>
+              <div class="au-ws-members">구성원 24명</div>
+            </div>
+            <span class="au-ws-chevron"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></span>
+          </button>
+          <div class="au-ws-divider"></div>
+          <button class="au-ws-item">
+            <div class="au-ws-icon-wrap"><i data-lucide="building-2" style="width:24px;height:24px;"></i></div>
+            <div class="au-ws-info">
+              <div class="au-ws-name">데모 워크스페이스</div>
+              <div class="au-ws-members">구성원 3명</div>
+            </div>
+            <span class="au-ws-chevron"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></span>
+          </button>
+        </div>
+
+        <button class="au-ws-create">
+          <span class="au-ws-create-icon"><i data-lucide="plus" style="width:20px;height:20px;"></i></span>
+          <span class="au-ws-create-label">새 워크스페이스 만들기</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="comp-label">EMPTY STATE</div>
+    <div class="phone-frame">
+      <div class="au-ws-select">
+        <div class="au-ws-title-area">
+          <div class="au-ws-title">워크스페이스 선택</div>
+          <div class="au-ws-desc">참여할 워크스페이스를 선택하세요</div>
+        </div>
+
+        <div class="au-ws-empty">
+          <div class="au-ws-empty-icon"><i data-lucide="building-2" style="width:48px;height:48px;"></i></div>
+          <div class="au-ws-empty-title">초대받은 워크스페이스가 없습니다</div>
+          <div class="au-ws-empty-desc">새 워크스페이스를 만들어 시작하세요</div>
+        </div>
+
+        <button class="au-ws-create">
+          <span class="au-ws-create-icon"><i data-lucide="plus" style="width:20px;height:20px;"></i></span>
+          <span class="au-ws-create-label">새 워크스페이스 만들기</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 4. Workspace Create Screen ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">4. Workspace Create Screen</span>
+    <span class="comp-num">워크스페이스 생성</span>
+  </div>
+  <div class="comp-body gray" style="padding:24px;">
+    <div class="phone-frame">
+      <div class="au-header">
+        <button class="au-header-back"><i data-lucide="arrow-left" style="width:24px;height:24px;"></i></button>
+        <span class="au-header-title">워크스페이스 만들기</span>
+      </div>
+
+      <div class="au-wsc-logo-area">
+        <div class="au-wsc-logo-box"><i data-lucide="building-2" style="width:28px;height:28px;"></i></div>
+        <span class="au-wsc-logo-hint">로고 추가 (선택)</span>
+      </div>
+
+      <div class="au-wsc-field">
+        <div class="au-wsc-label">회사/팀 이름</div>
+        <input class="au-input" type="text" placeholder="워크스페이스 이름" />
+      </div>
+
+      <div class="au-wsc-btn-area">
+        <button class="au-btn disabled">만들기</button>
+      </div>
+    </div>
+
+    <div class="comp-label">WITH INPUT</div>
+    <div class="phone-frame">
+      <div class="au-header">
+        <button class="au-header-back"><i data-lucide="arrow-left" style="width:24px;height:24px;"></i></button>
+        <span class="au-header-title">워크스페이스 만들기</span>
+      </div>
+
+      <div class="au-wsc-logo-area">
+        <div class="au-wsc-logo-box" style="background:#e0e7ff;border-style:solid;color:#3730a3;font-size:20px;font-weight:700;">A</div>
+        <span class="au-wsc-logo-hint">로고 변경</span>
+      </div>
+
+      <div class="au-wsc-field">
+        <div class="au-wsc-label">회사/팀 이름</div>
+        <input class="au-input" type="text" value="주식회사 아테나" />
+      </div>
+
+      <div class="au-wsc-btn-area">
+        <button class="au-btn">만들기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });
+</script>
+</body>
+</html>

@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atena — Approval Components Preview</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* ─── Theme Variables ─── */
+  :root {
+    --bg: #ffffff; --surface: #fafafa; --surface-raised: #ffffff;
+    --border: #e5e5e5; --border-strong: #d4d4d4;
+    --text-1: #171717; --text-2: #525252; --text-3: #737373;
+    --neutral-400: #a3a3a3;
+    --primary-50: #f5f3ff; --primary-100: #ede9fe; --primary-600: #7c3aed;
+    --success: #22c55e; --success-light: #dcfce7;
+    --warning: #eab308; --warning-light: #fef9c3;
+    --error: #ef4444; --error-light: #fee2e2;
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  body.dark {
+    --bg: #0a0a0a; --surface: #171717; --surface-raised: #262626;
+    --border: #262626; --border-strong: #404040;
+    --text-1: #fafafa; --text-2: #a3a3a3; --text-3: #737373;
+    --primary-50: rgba(124,58,237,0.1);
+    --success-light: rgba(34,197,94,0.15);
+    --warning-light: rgba(234,179,8,0.15);
+    --error-light: rgba(239,68,68,0.15);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--surface); color: var(--text-1); padding: 40px;
+    line-height: 1.5; transition: all 0.2s;
+  }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 14px; color: var(--text-3); margin-bottom: 48px; }
+  .dark-toggle {
+    position: fixed; top: 16px; right: 16px; z-index: 200;
+    padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border-strong);
+    background: var(--surface-raised); color: var(--text-1);
+    font-family: 'Pretendard'; font-size: 12px; cursor: pointer;
+  }
+
+  /* ─── Section Shell ─── */
+  .comp {
+    margin-bottom: 56px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+  .comp-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .comp-title { font-size: 16px; font-weight: 600; }
+  .comp-num { font-size: 13px; color: var(--text-3); }
+  .comp-body { padding: 24px; }
+  .comp-body.gray { background: var(--surface); }
+  .comp-label {
+    font-size: 11px; font-weight: 600; color: var(--text-3);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; margin-top: 20px;
+  }
+  .comp-label:first-child { margin-top: 0; }
+
+  /* ─── Phone Frame (375px) ─── */
+  .phone-frame {
+    width: 375px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden;
+  }
+
+  /* ─── 1. Approval Header ─── */
+  .ap-header {
+    height: 56px; background: var(--bg);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 4px 0 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ap-header-title { font-size: 20px; font-weight: 700; color: var(--text-1); }
+  .ap-header-btn {
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    background: none; border: none; cursor: pointer;
+    border-radius: 8px; color: var(--text-2);
+  }
+
+  /* ─── 2. Mailbox Selector ─── */
+  .ap-selector {
+    height: 48px; padding: 0 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--bg); border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .ap-selector:active { background: var(--surface); }
+  .ap-selector-left {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .ap-selector-icon { color: var(--text-2); display: flex; align-items: center; }
+  .ap-selector-name { font-size: 15px; font-weight: 600; color: var(--text-1); }
+  .ap-selector-chevron { color: var(--text-3); display: flex; align-items: center; margin-left: 4px; }
+  .ap-selector-count { font-size: 14px; font-weight: 400; color: var(--text-3); }
+
+  /* Dropdown */
+  .ap-dropdown-wrap { position: relative; }
+  .ap-dropdown {
+    position: absolute; top: 4px; left: 16px; right: 16px;
+    background: var(--surface-raised); border: 1px solid var(--border);
+    border-radius: 12px; box-shadow: var(--shadow-md);
+    padding: 4px 0; z-index: 1400;
+  }
+  .ap-dropdown-item {
+    height: 48px; padding: 0 16px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer; background: none; border: none;
+    font-family: inherit; font-size: 15px; font-weight: 400;
+    color: var(--text-1); width: 100%;
+  }
+  .ap-dropdown-item:active { background: var(--surface); }
+  .ap-dropdown-item-icon { color: var(--text-2); display: flex; align-items: center; flex-shrink: 0; }
+  .ap-dropdown-item-check { color: var(--primary-600); display: flex; align-items: center; margin-left: auto; flex-shrink: 0; }
+
+  /* ─── 3. Approval Item ─── */
+  .ap-item {
+    padding: 14px 16px;
+    display: flex; gap: 12px;
+    cursor: pointer; background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .ap-item:active { background: var(--surface); }
+  .ap-item-icon {
+    color: var(--text-3); display: flex; flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .ap-item-body { flex: 1; min-width: 0; }
+  .ap-item-title {
+    font-size: 15px; font-weight: 400; color: var(--text-1);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .ap-item-requester {
+    font-size: 13px; font-weight: 400; color: var(--text-3);
+    margin-top: 2px;
+  }
+  .ap-item-date {
+    font-size: 13px; font-weight: 400; color: var(--text-3);
+    margin-top: 2px;
+  }
+  .ap-item-badge {
+    align-self: flex-start; flex-shrink: 0;
+  }
+
+  /* Status Badge (shared) */
+  .ap-badge {
+    font-size: 12px; font-weight: 500; padding: 4px 8px;
+    border-radius: 6px; white-space: nowrap;
+  }
+  .ap-badge.pending { background: var(--warning-light); color: var(--warning); }
+  .ap-badge.approved { background: var(--success-light); color: var(--success); }
+  .ap-badge.rejected { background: var(--error-light); color: var(--error); }
+
+  /* ─── 4. Empty State ─── */
+  .ap-empty {
+    padding: 80px 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .ap-empty-icon { color: var(--text-3); margin-bottom: 12px; }
+  .ap-empty-title { font-size: 16px; font-weight: 600; color: var(--text-2); }
+  .ap-empty-desc { font-size: 14px; font-weight: 400; color: var(--text-3); margin-top: 4px; }
+
+  /* ─── 5. Approval Detail Screen ─── */
+
+  /* 5-1. Detail Header */
+  .ap-detail-header {
+    height: 56px; background: var(--bg);
+    display: flex; align-items: center;
+    padding: 0 16px 0 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ap-detail-back {
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    background: none; border: none; cursor: pointer;
+    color: var(--text-1);
+  }
+  .ap-detail-header-title {
+    font-size: 17px; font-weight: 600; color: var(--text-1);
+    margin-left: 4px;
+  }
+
+  /* 5-2. Document Info */
+  .ap-doc {
+    background: var(--bg); padding: 20px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ap-doc-top {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+  }
+  .ap-doc-title { font-size: 18px; font-weight: 600; color: var(--text-1); }
+  .ap-doc-type {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 13px; font-weight: 400; color: var(--text-3);
+    margin-top: 8px;
+  }
+  .ap-doc-type-icon { display: flex; align-items: center; color: var(--text-3); }
+  .ap-doc-requester {
+    font-size: 14px; font-weight: 400; color: var(--text-2);
+    margin-top: 12px;
+  }
+  .ap-doc-date {
+    font-size: 14px; font-weight: 400; color: var(--text-3);
+    margin-top: 4px;
+  }
+
+  /* 5-3. Approval Line */
+  .ap-line {
+    background: var(--bg); padding: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ap-line-title {
+    font-size: 13px; font-weight: 600; color: var(--text-3);
+    margin-bottom: 12px;
+  }
+  .ap-line-steps {
+    display: flex; align-items: flex-start;
+  }
+  .ap-line-step {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; position: relative;
+  }
+  .ap-line-avatar {
+    width: 36px; height: 36px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600; position: relative; z-index: 1;
+  }
+  .ap-line-name {
+    font-size: 13px; font-weight: 500; color: var(--text-1);
+    margin-top: 8px; text-align: center;
+  }
+  .ap-line-status {
+    font-size: 12px; font-weight: 400; margin-top: 2px; text-align: center;
+  }
+  .ap-line-status.draft { color: var(--text-3); }
+  .ap-line-status.approve { color: var(--success); }
+  .ap-line-status.wait { color: var(--warning); }
+  .ap-line-status.reject { color: var(--error); }
+  .ap-line-status.none { color: var(--text-3); }
+
+  /* Connector line between steps */
+  .ap-line-step:not(:last-child)::after {
+    content: ''; position: absolute;
+    top: 18px; left: calc(50% + 18px); right: calc(-50% + 18px);
+    height: 1px; background: var(--border); z-index: 0;
+  }
+
+  /* 5-4. Attachment */
+  .ap-attach {
+    background: var(--bg); padding: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ap-attach-title {
+    font-size: 13px; font-weight: 600; color: var(--text-3);
+    margin-bottom: 12px;
+  }
+  .ap-attach-item {
+    height: 44px; display: flex; align-items: center; gap: 8px;
+    cursor: pointer; border-radius: 8px; padding: 0 8px; margin: 0 -8px;
+  }
+  .ap-attach-item:active { background: var(--surface); }
+  .ap-attach-icon { color: var(--text-3); display: flex; align-items: center; }
+  .ap-attach-name { font-size: 14px; font-weight: 400; color: var(--primary-600); }
+
+  /* 5-5. Action Bar */
+  .ap-action-bar {
+    height: 68px; background: var(--bg);
+    border-top: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .ap-action-btn {
+    flex: 1; height: 44px; border-radius: 10px;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    font-family: inherit;
+  }
+  .ap-action-btn.reject {
+    background: var(--bg); color: var(--error);
+    border: 1px solid var(--border);
+  }
+  .ap-action-btn.approve {
+    background: var(--primary-600); color: #fff;
+    border: none;
+  }
+</style>
+</head>
+<body>
+
+<button class="dark-toggle" onclick="document.body.classList.toggle('dark')">Light / Dark</button>
+
+<h1>Approval — Components Preview</h1>
+<p class="subtitle">결재 컴포넌트 프리뷰. 규격은 approval.md 참고.</p>
+
+
+<!-- ═══ 1. Approval Header ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">1. Approval Header</span>
+    <span class="comp-num">56px · 검색</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="phone-frame" style="border:none; border-radius:0;">
+      <div class="ap-header">
+        <span class="ap-header-title">결재</span>
+        <button class="ap-header-btn"><i data-lucide="search" style="width:24px;height:24px;"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 2. Mailbox Selector ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">2. Mailbox Selector</span>
+    <span class="comp-num">48px · 드롭다운 셀렉터</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="comp-label" style="padding:20px 24px 0;">결재 대기 (DEFAULT)</div>
+    <div class="phone-frame" style="border:none; border-radius:0;">
+      <div class="ap-selector">
+        <div class="ap-selector-left">
+          <span class="ap-selector-icon"><i data-lucide="inbox" style="width:20px;height:20px;"></i></span>
+          <span class="ap-selector-name">결재 대기</span>
+          <span class="ap-selector-chevron"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
+        </div>
+        <span class="ap-selector-count">3건</span>
+      </div>
+    </div>
+
+    <div class="comp-label" style="padding:20px 24px 0;">기안 SELECTED</div>
+    <div class="phone-frame" style="border:none; border-radius:0;">
+      <div class="ap-selector">
+        <div class="ap-selector-left">
+          <span class="ap-selector-icon"><i data-lucide="pen-line" style="width:20px;height:20px;"></i></span>
+          <span class="ap-selector-name">기안</span>
+          <span class="ap-selector-chevron"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
+        </div>
+        <span class="ap-selector-count">5건</span>
+      </div>
+    </div>
+
+    <div class="comp-label" style="padding:20px 24px 0;">참조 (0건)</div>
+    <div class="phone-frame" style="border:none; border-radius:0;">
+      <div class="ap-selector">
+        <div class="ap-selector-left">
+          <span class="ap-selector-icon"><i data-lucide="eye" style="width:20px;height:20px;"></i></span>
+          <span class="ap-selector-name">참조</span>
+          <span class="ap-selector-chevron"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label" style="padding:20px 24px 0;">DROPDOWN OPEN</div>
+    <div style="position:relative; height:280px;">
+      <div class="phone-frame" style="border:none; border-radius:0; position:relative;">
+        <div class="ap-selector">
+          <div class="ap-selector-left">
+            <span class="ap-selector-icon"><i data-lucide="inbox" style="width:20px;height:20px;"></i></span>
+            <span class="ap-selector-name">결재 대기</span>
+            <span class="ap-selector-chevron"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
+          </div>
+          <span class="ap-selector-count">3건</span>
+        </div>
+        <div class="ap-dropdown" style="position:absolute; top:48px; left:16px; right:16px;">
+          <button class="ap-dropdown-item">
+            <span class="ap-dropdown-item-icon"><i data-lucide="inbox" style="width:20px;height:20px;"></i></span>
+            결재 대기
+            <span class="ap-dropdown-item-check"><i data-lucide="check" style="width:16px;height:16px;"></i></span>
+          </button>
+          <button class="ap-dropdown-item">
+            <span class="ap-dropdown-item-icon"><i data-lucide="check-circle" style="width:20px;height:20px;"></i></span>
+            처리 완료
+          </button>
+          <button class="ap-dropdown-item">
+            <span class="ap-dropdown-item-icon"><i data-lucide="pen-line" style="width:20px;height:20px;"></i></span>
+            기안
+          </button>
+          <button class="ap-dropdown-item">
+            <span class="ap-dropdown-item-icon"><i data-lucide="eye" style="width:20px;height:20px;"></i></span>
+            참조
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 3. Approval Item ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">3. Approval Item</span>
+    <span class="comp-num">결재 아이템</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="comp-label" style="padding:20px 24px 0;">PENDING</div>
+    <div class="phone-frame" style="border:none; border-radius:0;">
+      <div class="ap-item" style="border-bottom:none;">
+        <span class="ap-item-icon"><i data-lucide="file-text" style="width:20px;height:20px;"></i></span>
+        <div class="ap-item-body">
+          <div class="ap-item-title">휴가 신청서</div>
+          <div class="ap-item-requester">김도현 · 개발팀</div>
+          <div class="ap-item-date">2024년 3월 10일</div>
+        </div>
+        <span class="ap-item-badge"><span class="ap-badge pending">대기 중</span></span>
+      </div>
+    </div>
+
+    <div class="comp-label" style="padding:20px 24px 0;">APPROVED</div>
+    <div class="phone-frame" style="border:none; border-radius:0;">
+      <div class="ap-item" style="border-bottom:none;">
+        <span class="ap-item-icon"><i data-lucide="file-text" style="width:20px;height:20px;"></i></span>
+        <div class="ap-item-body">
+          <div class="ap-item-title">비품 구매 요청</div>
+          <div class="ap-item-requester">김도현 · 개발팀</div>
+          <div class="ap-item-date">2024년 3월 8일</div>
+        </div>
+        <span class="ap-item-badge"><span class="ap-badge approved">승인됨</span></span>
+      </div>
+    </div>
+
+    <div class="comp-label" style="padding:20px 24px 0;">REJECTED</div>
+    <div class="phone-frame" style="border:none; border-radius:0;">
+      <div class="ap-item" style="border-bottom:none;">
+        <span class="ap-item-icon"><i data-lucide="file-text" style="width:20px;height:20px;"></i></span>
+        <div class="ap-item-body">
+          <div class="ap-item-title">출장 보고서</div>
+          <div class="ap-item-requester">김도현 · 개발팀</div>
+          <div class="ap-item-date">2024년 3월 5일</div>
+        </div>
+        <span class="ap-item-badge"><span class="ap-badge rejected">반려됨</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 4. Empty State ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">4. Empty State</span>
+    <span class="comp-num">빈 상태</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="phone-frame" style="border:none; border-radius:0;">
+      <div class="ap-empty">
+        <div class="ap-empty-icon"><i data-lucide="file-check" style="width:48px;height:48px;"></i></div>
+        <div class="ap-empty-title">결재 내역이 없습니다</div>
+        <div class="ap-empty-desc">현재 조건에 맞는 결재가 없어요</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 5. Approval Detail Screen ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">5. Approval Detail Screen</span>
+    <span class="comp-num">결재 상세 화면</span>
+  </div>
+  <div class="comp-body gray" style="padding:24px;">
+    <div class="phone-frame" style="background:var(--surface); display:flex; flex-direction:column;">
+
+      <!-- 5-1. Detail Header -->
+      <div class="ap-detail-header" style="flex-shrink:0;">
+        <button class="ap-detail-back">
+          <i data-lucide="arrow-left" style="width:24px;height:24px;"></i>
+        </button>
+        <span class="ap-detail-header-title">결재 상세</span>
+      </div>
+
+      <!-- Scrollable content -->
+      <div style="flex:1; overflow-y:auto;">
+
+        <!-- 5-2. Document Info -->
+        <div class="ap-doc">
+          <div class="ap-doc-top">
+            <div style="flex:1;">
+              <div class="ap-doc-title">휴가 신청서</div>
+            </div>
+            <span class="ap-badge pending">대기 중</span>
+          </div>
+          <div class="ap-doc-type">
+            <span class="ap-doc-type-icon"><i data-lucide="file-text" style="width:16px;height:16px;"></i></span>
+            휴가 신청
+          </div>
+          <div class="ap-doc-requester">김도현 · 개발팀</div>
+          <div class="ap-doc-date">2024년 3월 10일</div>
+        </div>
+
+        <!-- 5-3. Approval Line -->
+        <div class="ap-line">
+          <div class="ap-line-title">결재선</div>
+          <div class="ap-line-steps">
+            <div class="ap-line-step">
+              <div class="ap-line-avatar" style="background:#dcfce7;color:#15803d;">DH</div>
+              <div class="ap-line-name">김도현</div>
+              <div class="ap-line-status draft">기안</div>
+            </div>
+            <div class="ap-line-step">
+              <div class="ap-line-avatar" style="background:#dbeafe;color:#1d4ed8;">JY</div>
+              <div class="ap-line-name">박지영</div>
+              <div class="ap-line-status wait">대기 중</div>
+            </div>
+            <div class="ap-line-step">
+              <div class="ap-line-avatar" style="background:#f3e8ff;color:#7c3aed;">HJ</div>
+              <div class="ap-line-name">윤혜진</div>
+              <div class="ap-line-status none">-</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5-4. Attachment -->
+        <div class="ap-attach">
+          <div class="ap-attach-title">첨부파일</div>
+          <div class="ap-attach-item">
+            <span class="ap-attach-icon"><i data-lucide="paperclip" style="width:16px;height:16px;"></i></span>
+            <span class="ap-attach-name">휴가신청서.pdf</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 5-5. Action Bar -->
+      <div class="ap-action-bar" style="flex-shrink:0;">
+        <button class="ap-action-btn reject">반려</button>
+        <button class="ap-action-btn approve">승인</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 5. Detail — Approved State ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">5. Detail — Approved</span>
+    <span class="comp-num">승인 완료 상태</span>
+  </div>
+  <div class="comp-body gray" style="padding:24px;">
+    <div class="phone-frame" style="background:var(--surface); display:flex; flex-direction:column;">
+
+      <div class="ap-detail-header" style="flex-shrink:0;">
+        <button class="ap-detail-back">
+          <i data-lucide="arrow-left" style="width:24px;height:24px;"></i>
+        </button>
+        <span class="ap-detail-header-title">결재 상세</span>
+      </div>
+
+      <div style="flex:1; overflow-y:auto;">
+        <div class="ap-doc">
+          <div class="ap-doc-top">
+            <div style="flex:1;">
+              <div class="ap-doc-title">비품 구매 요청</div>
+            </div>
+            <span class="ap-badge approved">승인됨</span>
+          </div>
+          <div class="ap-doc-type">
+            <span class="ap-doc-type-icon"><i data-lucide="file-text" style="width:16px;height:16px;"></i></span>
+            구매 요청
+          </div>
+          <div class="ap-doc-requester">김도현 · 개발팀</div>
+          <div class="ap-doc-date">2024년 3월 8일</div>
+        </div>
+
+        <div class="ap-line">
+          <div class="ap-line-title">결재선</div>
+          <div class="ap-line-steps">
+            <div class="ap-line-step">
+              <div class="ap-line-avatar" style="background:#dcfce7;color:#15803d;">DH</div>
+              <div class="ap-line-name">김도현</div>
+              <div class="ap-line-status draft">기안</div>
+            </div>
+            <div class="ap-line-step">
+              <div class="ap-line-avatar" style="background:#dbeafe;color:#1d4ed8;">JY</div>
+              <div class="ap-line-name">박지영</div>
+              <div class="ap-line-status approve">승인</div>
+            </div>
+            <div class="ap-line-step">
+              <div class="ap-line-avatar" style="background:#f3e8ff;color:#7c3aed;">HJ</div>
+              <div class="ap-line-name">윤혜진</div>
+              <div class="ap-line-status approve">승인</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ap-attach">
+          <div class="ap-attach-title">첨부파일</div>
+          <div class="ap-attach-item">
+            <span class="ap-attach-icon"><i data-lucide="paperclip" style="width:16px;height:16px;"></i></span>
+            <span class="ap-attach-name">비품구매요청서.pdf</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- No action bar for approved -->
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ BONUS: Full Assembly — List ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">Full Assembly — List</span>
+    <span class="comp-num">결재 목록 전체 조합</span>
+  </div>
+  <div class="comp-body gray" style="padding:24px;">
+    <div class="phone-frame" style="max-height:700px; display:flex; flex-direction:column;">
+
+      <!-- Header -->
+      <div class="ap-header" style="flex-shrink:0;">
+        <span class="ap-header-title">결재</span>
+        <button class="ap-header-btn"><i data-lucide="search" style="width:24px;height:24px;"></i></button>
+      </div>
+
+      <!-- Mailbox Selector -->
+      <div class="ap-selector" style="flex-shrink:0;">
+        <div class="ap-selector-left">
+          <span class="ap-selector-icon"><i data-lucide="inbox" style="width:20px;height:20px;"></i></span>
+          <span class="ap-selector-name">결재 대기</span>
+          <span class="ap-selector-chevron"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
+        </div>
+        <span class="ap-selector-count">3건</span>
+      </div>
+
+      <!-- Scrollable -->
+      <div style="flex:1; overflow-y:auto;">
+
+        <!-- Items -->
+        <div class="ap-item">
+          <span class="ap-item-icon"><i data-lucide="file-text" style="width:20px;height:20px;"></i></span>
+          <div class="ap-item-body">
+            <div class="ap-item-title">휴가 신청서</div>
+            <div class="ap-item-requester">김도현 · 개발팀</div>
+            <div class="ap-item-date">2024년 3월 10일</div>
+          </div>
+          <span class="ap-item-badge"><span class="ap-badge pending">대기 중</span></span>
+        </div>
+
+        <div class="ap-item">
+          <span class="ap-item-icon"><i data-lucide="file-text" style="width:20px;height:20px;"></i></span>
+          <div class="ap-item-body">
+            <div class="ap-item-title">비품 구매 요청</div>
+            <div class="ap-item-requester">김도현 · 개발팀</div>
+            <div class="ap-item-date">2024년 3월 8일</div>
+          </div>
+          <span class="ap-item-badge"><span class="ap-badge approved">승인됨</span></span>
+        </div>
+
+        <div class="ap-item">
+          <span class="ap-item-icon"><i data-lucide="file-text" style="width:20px;height:20px;"></i></span>
+          <div class="ap-item-body">
+            <div class="ap-item-title">출장 보고서</div>
+            <div class="ap-item-requester">김도현 · 개발팀</div>
+            <div class="ap-item-date">2024년 3월 5일</div>
+          </div>
+          <span class="ap-item-badge"><span class="ap-badge rejected">반려됨</span></span>
+        </div>
+
+        <div class="ap-item">
+          <span class="ap-item-icon"><i data-lucide="file-text" style="width:20px;height:20px;"></i></span>
+          <div class="ap-item-body">
+            <div class="ap-item-title">야근 수당 신청</div>
+            <div class="ap-item-requester">서동우 · 개발팀</div>
+            <div class="ap-item-date">2024년 3월 4일</div>
+          </div>
+          <span class="ap-item-badge"><span class="ap-badge pending">대기 중</span></span>
+        </div>
+
+        <div class="ap-item">
+          <span class="ap-item-icon"><i data-lucide="file-text" style="width:20px;height:20px;"></i></span>
+          <div class="ap-item-body">
+            <div class="ap-item-title">교육비 지원 신청</div>
+            <div class="ap-item-requester">한유진 · 개발팀</div>
+            <div class="ap-item-date">2024년 3월 1일</div>
+          </div>
+          <span class="ap-item-badge"><span class="ap-badge approved">승인됨</span></span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });
+</script>
+</body>
+</html>

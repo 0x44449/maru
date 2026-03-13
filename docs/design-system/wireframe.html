@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atena — Wireframe Flow v3</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #ffffff; --surface: #f5f5f5; --border: #e0e0e0;
+    --text-1: #1a1a1a; --text-2: #666666; --text-3: #999999;
+    --primary: #7c3aed; --primary-light: #f3eeff;
+    --error: #ef4444; --success: #22c55e;
+    --warning-light: #fef9c3; --warning: #a16207;
+    --success-light: #dcfce7; --success-dark: #15803d;
+    --error-light: #fee2e2;
+  }
+  body {
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    background: #e8e8e8; display: flex; flex-direction: column;
+    align-items: center; padding: 40px 20px; min-height: 100vh;
+  }
+  h1 { font-size: 24px; font-weight: 700; color: var(--text-1); margin-bottom: 4px; text-align: center; }
+  .page-subtitle { font-size: 13px; color: var(--text-3); margin-bottom: 24px; text-align: center; }
+
+  /* ─── Flow Nav ─── */
+  .flow-section { margin-bottom: 8px; text-align: center; }
+  .flow-section-label { font-size: 11px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .flow-nav { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 12px; max-width: 650px; }
+  .flow-btn {
+    padding: 5px 12px; border-radius: 8px; border: 1px solid var(--border);
+    background: #fff; color: var(--text-2); font-family: inherit;
+    font-size: 11px; cursor: pointer; white-space: nowrap;
+  }
+  .flow-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .flow-btn.personal { border-left: 3px solid var(--success); }
+  .flow-btn.org { border-left: 3px solid var(--primary); }
+
+  /* ─── Phone ─── */
+  .phone {
+    width: 375px; height: 740px; background: var(--bg);
+    border-radius: 24px; box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+    overflow: hidden; position: relative;
+    display: flex; flex-direction: column; margin-top: 16px;
+  }
+  .screen { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+  .screen.active { display: flex; }
+
+  /* ─── Common ─── */
+  .header {
+    height: 56px; background: var(--bg); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 16px; flex-shrink: 0;
+  }
+  .header-back {
+    width: 44px; height: 44px; display: flex; align-items: center;
+    justify-content: center; background: none; border: none;
+    cursor: pointer; color: var(--text-1); margin-left: -12px;
+  }
+  .header-title { font-size: 17px; font-weight: 600; color: var(--text-1); }
+  .header-title-lg { font-size: 20px; font-weight: 700; color: var(--text-1); }
+  .header-right { margin-left: auto; display: flex; align-items: center; }
+  .header-btn {
+    width: 44px; height: 44px; display: flex; align-items: center;
+    justify-content: center; background: none; border: none;
+    cursor: pointer; color: var(--text-2);
+  }
+  .scroll-area { flex: 1; overflow-y: auto; }
+  .input-field {
+    height: 48px; width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 0 16px; font-family: inherit; font-size: 15px;
+    color: var(--text-1); outline: none;
+  }
+  .input-field::placeholder { color: var(--text-3); }
+  .input-field:focus { border-color: var(--primary); }
+  .btn-primary {
+    height: 48px; width: 100%; border: none; border-radius: 12px;
+    background: var(--primary); color: #fff; font-family: inherit;
+    font-size: 16px; font-weight: 600; cursor: pointer;
+  }
+  .btn-primary.disabled { opacity: 0.5; }
+  .avatar {
+    border-radius: 16px; display: flex; align-items: center;
+    justify-content: center; font-weight: 600; flex-shrink: 0;
+  }
+
+  /* ─── Tab Bar ─── */
+  .tab-bar {
+    height: 56px; background: var(--bg); border-top: 1px solid var(--border);
+    display: flex; flex-shrink: 0;
+  }
+  .tab-item {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text-3); background: none; border: none;
+  }
+  .tab-item.active { color: var(--primary); }
+
+  /* ─── Profile Context Indicator ─── */
+  .ctx-bar {
+    height: 44px; background: var(--bg); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 16px; flex-shrink: 0;
+    cursor: pointer; gap: 8px;
+  }
+  .ctx-icon {
+    width: 28px; height: 28px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .ctx-icon.personal { background: var(--success-light); color: var(--success-dark); }
+  .ctx-icon.org { background: var(--primary-light); color: var(--primary); }
+  .ctx-name { font-size: 14px; font-weight: 600; flex: 1; }
+  .ctx-badge {
+    min-width: 18px; height: 18px; border-radius: 99px; background: var(--error);
+    color: #fff; font-size: 10px; font-weight: 700; display: flex;
+    align-items: center; justify-content: center; padding: 0 5px;
+  }
+  .ctx-chevron { color: var(--text-3); display: flex; align-items: center; }
+
+  /* ─── Profile Switcher Dropdown ─── */
+  .switcher-overlay {
+    position: absolute; inset: 0; background: rgba(0,0,0,0.3);
+    z-index: 100; display: none;
+  }
+  .switcher-overlay.show { display: block; }
+  .switcher-dropdown {
+    position: absolute; top: 44px; left: 12px; right: 12px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    overflow: hidden; z-index: 101;
+  }
+  .sw-section-label {
+    font-size: 11px; font-weight: 600; color: var(--text-3);
+    padding: 12px 16px 4px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .sw-item {
+    height: 52px; padding: 0 16px; display: flex; align-items: center;
+    gap: 10px; cursor: pointer; width: 100%; background: none;
+    border: none; font-family: inherit;
+  }
+  .sw-item:active { background: var(--surface); }
+  .sw-item-icon {
+    width: 32px; height: 32px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .sw-item-icon.personal { background: var(--success-light); color: var(--success-dark); }
+  .sw-item-icon.org { background: var(--primary-light); color: var(--primary); }
+  .sw-item-name { font-size: 14px; font-weight: 500; flex: 1; text-align: left; }
+  .sw-item-check { color: var(--primary); display: flex; align-items: center; }
+  .sw-item-badge {
+    min-width: 18px; height: 18px; border-radius: 99px; background: var(--error);
+    color: #fff; font-size: 10px; font-weight: 700; display: flex;
+    align-items: center; justify-content: center; padding: 0 5px;
+  }
+  .sw-divider { height: 1px; background: var(--border); }
+  .sw-add {
+    height: 48px; padding: 0 16px; display: flex; align-items: center; gap: 10px;
+    cursor: pointer; width: 100%; background: none; border: none;
+    font-family: inherit; font-size: 13px; color: var(--primary); font-weight: 500;
+  }
+
+  /* ─── Login ─── */
+  .login-center {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 0 24px;
+  }
+  .logo-area { text-align: center; margin-bottom: 48px; }
+  .logo-icon { color: var(--primary); margin-bottom: 12px; }
+  .logo-name { font-size: 24px; font-weight: 700; }
+  .form-group { width: 100%; }
+  .form-group .input-field + .input-field { margin-top: 12px; }
+  .form-link { margin-top: 24px; text-align: center; font-size: 14px; color: var(--text-3); }
+  .form-link span { font-weight: 600; color: var(--primary); cursor: pointer; }
+  .register-form { padding: 24px; }
+  .register-form .input-field + .input-field { margin-top: 12px; }
+
+  /* ─── Social Login ─── */
+  .social-btn {
+    height: 52px; width: 100%; border: 1px solid var(--border); border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer;
+    margin-bottom: 10px;
+  }
+  .social-btn.kakao { background: #FEE500; border-color: #FEE500; color: #191919; }
+  .social-btn.google { background: #fff; color: var(--text-1); }
+  .social-btn.apple { background: #000; border-color: #000; color: #fff; }
+  .social-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .social-divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+  .social-divider-line { flex: 1; height: 1px; background: var(--border); }
+  .social-divider-text { font-size: 13px; color: var(--text-3); }
+
+  /* ─── User Setup ─── */
+  .setup-center { padding: 24px; }
+  .setup-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .setup-desc { font-size: 14px; color: var(--text-3); margin-bottom: 24px; }
+  .setup-avatar-area { display: flex; flex-direction: column; align-items: center; margin-bottom: 24px; }
+  .setup-avatar {
+    width: 80px; height: 80px; border-radius: 24px; background: var(--surface);
+    border: 1px dashed var(--border); display: flex; align-items: center;
+    justify-content: center; color: var(--text-3); cursor: pointer;
+  }
+  .setup-avatar-hint { font-size: 13px; color: var(--text-3); margin-top: 8px; }
+  .setup-label { font-size: 14px; font-weight: 600; margin-bottom: 8px; margin-top: 16px; }
+  .setup-social-info {
+    display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+    background: var(--surface); border-radius: 12px; margin-bottom: 16px;
+  }
+  .setup-social-tag {
+    font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 6px;
+  }
+  .setup-social-tag.kakao { background: #FEE500; color: #191919; }
+  .setup-social-tag.google { background: #e8eaed; color: #3c4043; }
+  .setup-social-tag.apple { background: #000; color: #fff; }
+
+  /* ─── WS Select ─── */
+  .ws-select-content { padding: 0 24px; }
+  .ws-title-area { padding-top: 60px; text-align: center; margin-bottom: 32px; }
+  .ws-title { font-size: 20px; font-weight: 700; }
+  .ws-desc { font-size: 14px; color: var(--text-3); margin-top: 8px; }
+  .ws-list { border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  .ws-item {
+    height: 64px; padding: 0 16px; display: flex; align-items: center; gap: 12px;
+    cursor: pointer; background: none; border: none; font-family: inherit; width: 100%;
+  }
+  .ws-item:active { background: var(--surface); }
+  .ws-icon-box {
+    width: 40px; height: 40px; border-radius: 12px; background: var(--primary-light);
+    display: flex; align-items: center; justify-content: center; color: var(--primary); flex-shrink: 0;
+  }
+  .ws-item-info { flex: 1; text-align: left; }
+  .ws-item-name { font-size: 16px; font-weight: 600; color: var(--text-1); }
+  .ws-item-members { font-size: 13px; color: var(--text-3); margin-top: 2px; }
+  .ws-item-chevron { color: var(--text-3); }
+  .ws-divider { height: 1px; background: var(--border); margin-left: 68px; }
+  .ws-create-btn {
+    height: 56px; margin-top: 12px; width: 100%; background: var(--bg);
+    border: 1px dashed var(--border); border-radius: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-family: inherit; font-size: 15px; font-weight: 500; color: var(--primary);
+  }
+
+  /* ─── WS Create ─── */
+  .wsc-logo-area { padding-top: 32px; display: flex; flex-direction: column; align-items: center; }
+  .wsc-logo-box {
+    width: 64px; height: 64px; border-radius: 20px; background: var(--surface);
+    border: 1px dashed var(--border); display: flex; align-items: center;
+    justify-content: center; color: var(--text-3);
+  }
+  .wsc-logo-hint { font-size: 13px; color: var(--text-3); margin-top: 8px; }
+  .wsc-field { padding: 32px 24px 0; }
+  .wsc-label { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+  .wsc-btn-area { padding: 32px 24px 0; }
+
+  /* ─── Plugin Select ─── */
+  .plugin-content { padding: 24px; }
+  .plugin-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .plugin-desc { font-size: 13px; color: var(--text-3); margin-bottom: 20px; }
+  .plugin-item {
+    display: flex; align-items: center; padding: 14px 16px;
+    border: 1px solid var(--border); border-radius: 12px;
+    margin-bottom: 8px; cursor: pointer;
+  }
+  .plugin-item.checked { border-color: var(--primary); background: var(--primary-light); }
+  .plugin-icon {
+    width: 36px; height: 36px; border-radius: 10px; background: var(--surface);
+    display: flex; align-items: center; justify-content: center; color: var(--text-2);
+    margin-right: 12px; flex-shrink: 0;
+  }
+  .plugin-item.checked .plugin-icon { background: #fff; color: var(--primary); }
+  .plugin-info { flex: 1; }
+  .plugin-name { font-size: 15px; font-weight: 500; }
+  .plugin-item.checked .plugin-name { color: var(--primary); }
+  .plugin-item-desc { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+  .plugin-check {
+    width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .plugin-item.checked .plugin-check { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+  /* ─── Personal Home ─── */
+  .personal-tag {
+    display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px;
+    border-radius: 6px; background: var(--success-light); color: var(--success-dark);
+    font-size: 11px; font-weight: 600;
+  }
+  .profile-banner {
+    margin: 8px 16px 0; padding: 16px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 16px;
+    display: flex; align-items: center; gap: 12px; cursor: pointer;
+  }
+  .profile-info { flex: 1; }
+  .profile-name { font-size: 16px; font-weight: 600; }
+  .profile-dept { font-size: 13px; color: var(--text-3); margin-top: 2px; }
+  .ws-list-card {
+    margin: 8px 16px 0; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+  }
+  .ws-list-header {
+    height: 44px; padding: 0 16px; display: flex; align-items: center;
+    justify-content: space-between; border-bottom: 1px solid var(--border);
+  }
+  .ws-list-title { font-size: 15px; font-weight: 600; }
+  .ws-list-item {
+    height: 56px; padding: 0 16px; display: flex; align-items: center;
+    gap: 12px; cursor: pointer;
+  }
+  .ws-list-item:active { background: var(--surface); }
+  .ws-list-item + .ws-list-item { border-top: 1px solid var(--border); }
+  .ws-list-item-icon {
+    width: 36px; height: 36px; border-radius: 10px; background: var(--primary-light);
+    display: flex; align-items: center; justify-content: center; color: var(--primary); flex-shrink: 0;
+  }
+  .ws-list-item-info { flex: 1; }
+  .ws-list-item-name { font-size: 15px; font-weight: 500; }
+  .ws-list-item-noti { display: flex; align-items: center; gap: 6px; }
+  .ws-list-item-summary { font-size: 12px; color: var(--text-3); }
+  .ws-noti-dot {
+    width: 8px; height: 8px; border-radius: 99px; background: var(--error);
+  }
+
+  /* ─── Org Home ─── */
+  .clock-card {
+    margin: 8px 16px 0; padding: 20px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 16px;
+  }
+  .clock-status { display: flex; align-items: center; gap: 8px; }
+  .clock-dot { width: 8px; height: 8px; border-radius: 99px; background: var(--success); }
+  .clock-label { font-size: 14px; font-weight: 500; color: var(--success-dark); }
+  .clock-time { font-size: 36px; font-weight: 700; text-align: center; margin: 16px 0; }
+  .clock-bottom { display: flex; justify-content: space-between; align-items: center; }
+  .clock-checkin { font-size: 14px; color: var(--text-2); }
+  .clock-btn {
+    height: 40px; padding: 0 20px; border-radius: 10px; border: none;
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    cursor: pointer; background: var(--error); color: #fff;
+  }
+  .stats-row { display: flex; gap: 8px; margin: 8px 16px 0; }
+  .stat-item {
+    flex: 1; padding: 14px 0; text-align: center; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 12px;
+  }
+  .stat-label { font-size: 13px; color: var(--text-3); }
+  .stat-value { font-size: 20px; font-weight: 700; margin-top: 4px; }
+  .stat-value.highlight { color: var(--primary); }
+  .section-card {
+    margin: 8px 16px 0; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+  }
+  .section-header {
+    height: 44px; padding: 0 16px; display: flex; align-items: center;
+    justify-content: space-between; border-bottom: 1px solid var(--border);
+  }
+  .section-title { font-size: 15px; font-weight: 600; }
+  .section-more { font-size: 13px; color: var(--text-3); cursor: pointer; display: flex; align-items: center; gap: 2px; }
+  .preview-item {
+    height: 60px; padding: 0 16px; display: flex; align-items: center; gap: 12px; cursor: pointer;
+  }
+  .preview-item + .preview-item { border-top: 1px solid var(--border); }
+  .preview-icon { color: var(--text-3); flex-shrink: 0; }
+  .preview-info { flex: 1; min-width: 0; }
+  .preview-title { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .preview-meta { font-size: 13px; color: var(--text-3); margin-top: 2px; }
+  .preview-badge { font-size: 12px; font-weight: 500; padding: 4px 8px; border-radius: 6px; flex-shrink: 0; }
+  .badge-pending { background: var(--warning-light); color: var(--warning); }
+  .badge-approved { background: var(--success-light); color: var(--success-dark); }
+
+  /* ─── Chat ─── */
+  .chat-item {
+    height: 72px; padding: 0 16px; display: flex; align-items: center; gap: 12px; cursor: pointer;
+  }
+  .chat-item + .chat-item { border-top: 1px solid var(--border); }
+  .chat-info { flex: 1; min-width: 0; }
+  .chat-top { display: flex; justify-content: space-between; align-items: baseline; }
+  .chat-name { font-size: 15px; font-weight: 500; }
+  .chat-time { font-size: 12px; color: var(--text-3); flex-shrink: 0; }
+  .chat-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+  .chat-preview { font-size: 14px; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chat-badge {
+    min-width: 20px; height: 20px; border-radius: 99px; background: var(--error);
+    color: #fff; font-size: 11px; font-weight: 700; display: flex;
+    align-items: center; justify-content: center; padding: 0 6px; flex-shrink: 0;
+  }
+
+  /* ─── Contacts ─── */
+  .ct-section-hd {
+    height: 40px; padding: 0 16px; display: flex; align-items: center;
+    justify-content: space-between; background: var(--bg);
+  }
+  .ct-section-label { font-size: 13px; font-weight: 600; color: var(--text-3); }
+  .ct-section-count { font-size: 13px; color: var(--text-3); margin-left: 4px; }
+  .ct-item {
+    height: 56px; padding: 0 16px; display: flex; align-items: center; gap: 12px; cursor: pointer;
+  }
+
+  /* ─── Workspace Portal ─── */
+  .portal-ws-header { padding: 20px 16px 0; display: flex; align-items: center; gap: 12px; }
+  .portal-ws-icon {
+    width: 48px; height: 48px; border-radius: 16px; background: var(--primary-light);
+    display: flex; align-items: center; justify-content: center; color: var(--primary);
+  }
+  .portal-ws-info { flex: 1; }
+  .portal-ws-name { font-size: 18px; font-weight: 700; }
+  .portal-ws-members { font-size: 13px; color: var(--text-3); margin-top: 2px; }
+  .portal-section-title {
+    font-size: 13px; font-weight: 600; color: var(--text-3);
+    padding: 20px 16px 8px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .portal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 16px; }
+  .portal-card {
+    padding: 20px 16px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 16px; cursor: pointer; text-align: center;
+  }
+  .portal-card:active { background: var(--surface); }
+  .portal-card-icon {
+    width: 48px; height: 48px; border-radius: 14px; background: var(--primary-light);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--primary); margin: 0 auto 10px;
+  }
+  .portal-card-name { font-size: 14px; font-weight: 600; }
+  .portal-card-desc { font-size: 12px; color: var(--text-3); margin-top: 4px; }
+
+  /* ─── More ─── */
+  .more-profile { padding: 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  .more-menu-group { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-top: 8px; }
+  .more-menu-item {
+    height: 48px; padding: 0 16px; display: flex; align-items: center;
+    gap: 12px; cursor: pointer; background: none; border: none;
+    font-family: inherit; font-size: 15px; color: var(--text-1); width: 100%;
+  }
+  .more-menu-icon { color: var(--text-2); display: flex; align-items: center; flex-shrink: 0; }
+  .more-menu-right { margin-left: auto; display: flex; align-items: center; gap: 4px; }
+  .more-menu-version { font-size: 13px; color: var(--text-3); }
+  .more-menu-chevron { color: var(--text-3); display: flex; align-items: center; }
+  .more-menu-divider { height: 1px; background: var(--border); margin-left: 48px; }
+  .more-logout { color: var(--error) !important; }
+  .more-logout .more-menu-icon { color: var(--error); }
+
+  /* ─── No WS Card ─── */
+  .no-ws-card {
+    margin: 16px 16px 0; padding: 32px 20px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 16px; text-align: center;
+  }
+  .no-ws-icon { color: var(--text-3); margin-bottom: 12px; }
+  .no-ws-title { font-size: 16px; font-weight: 600; color: var(--text-2); }
+  .no-ws-desc { font-size: 14px; color: var(--text-3); margin-top: 4px; }
+  .no-ws-actions { display: flex; gap: 8px; margin-top: 20px; justify-content: center; }
+  .no-ws-btn {
+    height: 40px; padding: 0 20px; border-radius: 10px; border: none;
+    font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .no-ws-btn.primary { background: var(--primary); color: #fff; }
+  .no-ws-btn.secondary { background: var(--surface); color: var(--text-1); border: 1px solid var(--border); }
+
+  /* ─── Contacts Add btn ─── */
+  .ct-add-bar {
+    height: 48px; padding: 0 16px; display: flex; align-items: center; gap: 8px;
+    color: var(--primary); font-size: 14px; font-weight: 500; cursor: pointer;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ─── Channel Badge ─── */
+  .ch-badge {
+    display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px;
+    border-radius: 6px; background: #eff6ff; color: #2563eb;
+    font-size: 11px; font-weight: 600; flex-shrink: 0; margin-left: 6px;
+  }
+  .ch-badge-ext {
+    display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px;
+    border-radius: 6px; background: #fef3c7; color: #92400e;
+    font-size: 11px; font-weight: 600; flex-shrink: 0; margin-left: 6px;
+  }
+  .ch-avatar {
+    width: 48px; height: 48px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600; flex-shrink: 0; position: relative;
+  }
+  .ch-avatar-icon {
+    position: absolute; bottom: -2px; right: -2px; width: 18px; height: 18px;
+    border-radius: 6px; background: #2563eb; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--bg);
+  }
+
+  /* ─── Channel Manage ─── */
+  .ch-list-item {
+    padding: 14px 16px; display: flex; align-items: center; gap: 12px;
+    cursor: pointer; border-bottom: 1px solid var(--border);
+  }
+  .ch-list-item:active { background: var(--surface); }
+  .ch-list-icon {
+    width: 44px; height: 44px; border-radius: 14px; background: #eff6ff;
+    display: flex; align-items: center; justify-content: center; color: #2563eb; flex-shrink: 0;
+  }
+  .ch-list-info { flex: 1; min-width: 0; }
+  .ch-list-name { font-size: 15px; font-weight: 600; }
+  .ch-list-desc { font-size: 13px; color: var(--text-3); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ch-list-meta { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .ch-status-dot { width: 8px; height: 8px; border-radius: 99px; }
+  .ch-status-dot.active { background: var(--success); }
+  .ch-status-dot.inactive { background: var(--text-3); }
+
+  /* ─── Channel Setting ─── */
+  .ch-setting-profile { padding: 24px; display: flex; flex-direction: column; align-items: center; }
+  .ch-setting-avatar {
+    width: 72px; height: 72px; border-radius: 22px; background: #eff6ff;
+    display: flex; align-items: center; justify-content: center; color: #2563eb;
+  }
+  .ch-setting-name { font-size: 18px; font-weight: 700; margin-top: 12px; }
+  .ch-setting-desc-text { font-size: 14px; color: var(--text-3); margin-top: 4px; text-align: center; }
+  .ch-setting-section { padding: 0 16px; margin-top: 20px; }
+  .ch-setting-label { font-size: 13px; font-weight: 600; color: var(--text-3); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .ch-setting-card { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .ch-setting-row {
+    height: 48px; padding: 0 16px; display: flex; align-items: center;
+    font-size: 15px; border-bottom: 1px solid var(--border);
+  }
+  .ch-setting-row:last-child { border-bottom: none; }
+  .ch-setting-row-label { flex: 1; }
+  .ch-setting-row-value { color: var(--text-3); font-size: 14px; }
+  .ch-handler-item {
+    height: 52px; padding: 0 16px; display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ch-handler-item:last-child { border-bottom: none; }
+  .ch-handler-role { font-size: 12px; color: var(--primary); background: var(--primary-light); padding: 2px 8px; border-radius: 4px; margin-left: auto; }
+
+  /* ─── Channel Search (personal) ─── */
+  .ch-search-bar {
+    padding: 12px 16px; border-bottom: 1px solid var(--border);
+  }
+  .ch-search-input {
+    height: 40px; width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 0 12px 0 36px; font-family: inherit; font-size: 14px;
+    color: var(--text-1); outline: none; position: relative;
+  }
+  .ch-search-wrap { position: relative; }
+  .ch-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-3); pointer-events: none; }
+  .ch-result-item {
+    padding: 14px 16px; display: flex; align-items: center; gap: 12px;
+    cursor: pointer; border-bottom: 1px solid var(--border);
+  }
+  .ch-result-item:active { background: var(--surface); }
+  .ch-result-icon {
+    width: 48px; height: 48px; border-radius: 16px; background: #eff6ff;
+    display: flex; align-items: center; justify-content: center; color: #2563eb; flex-shrink: 0;
+  }
+  .ch-result-info { flex: 1; min-width: 0; }
+  .ch-result-name { font-size: 15px; font-weight: 600; }
+  .ch-result-org { font-size: 13px; color: var(--text-3); margin-top: 2px; }
+  .ch-result-btn {
+    height: 32px; padding: 0 14px; border-radius: 8px; border: none;
+    background: var(--primary); color: #fff; font-family: inherit;
+    font-size: 13px; font-weight: 600; cursor: pointer; flex-shrink: 0;
+  }
+
+  /* ─── Channel Profile View ─── */
+  .ch-profile-hero { padding: 32px 24px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .ch-profile-avatar {
+    width: 80px; height: 80px; border-radius: 24px; background: #eff6ff;
+    display: flex; align-items: center; justify-content: center; color: #2563eb;
+  }
+  .ch-profile-name { font-size: 20px; font-weight: 700; margin-top: 14px; }
+  .ch-profile-org { font-size: 14px; color: var(--text-3); margin-top: 4px; }
+  .ch-profile-desc { font-size: 14px; color: var(--text-2); margin-top: 12px; line-height: 1.5; }
+  .ch-profile-info-card {
+    margin: 0 16px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+  .ch-profile-info-row {
+    height: 44px; padding: 0 16px; display: flex; align-items: center;
+    font-size: 14px; border-bottom: 1px solid var(--border);
+  }
+  .ch-profile-info-row:last-child { border-bottom: none; }
+  .ch-profile-info-label { color: var(--text-3); width: 80px; flex-shrink: 0; }
+  .ch-profile-info-value { flex: 1; font-weight: 500; }
+  .ch-profile-action { padding: 20px 16px; }
+
+  /* ─── Chat Bubble ─── */
+  .chat-room-header {
+    height: 56px; background: var(--bg); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 8px; flex-shrink: 0;
+  }
+  .chat-room-body { flex: 1; overflow-y: auto; padding: 16px; background: var(--surface); }
+  .chat-bubble-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .chat-bubble-row.mine { justify-content: flex-end; }
+  .chat-bubble {
+    max-width: 240px; padding: 10px 14px; border-radius: 16px;
+    font-size: 14px; line-height: 1.5;
+  }
+  .chat-bubble.other { background: var(--bg); border: 1px solid var(--border); }
+  .chat-bubble.mine { background: var(--primary); color: #fff; }
+  .chat-bubble-time { font-size: 11px; color: var(--text-3); align-self: flex-end; flex-shrink: 0; }
+  .chat-bubble-sender { font-size: 12px; font-weight: 600; color: var(--text-2); margin-bottom: 4px; }
+  .chat-input-bar {
+    height: 56px; background: var(--bg); border-top: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 12px; gap: 8px; flex-shrink: 0;
+  }
+  .chat-input-field {
+    flex: 1; height: 40px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 0 16px; font-family: inherit; font-size: 14px;
+    color: var(--text-1); outline: none;
+  }
+  .chat-send-btn {
+    width: 36px; height: 36px; border-radius: 99px; border: none;
+    background: var(--primary); color: #fff; display: flex;
+    align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+  }
+  .chat-internal-note {
+    margin: 8px 0; padding: 8px 12px; background: #fef9c3; border-radius: 10px;
+    font-size: 13px; color: #92400e; border: 1px dashed #fbbf24;
+  }
+  .chat-internal-label { font-size: 11px; font-weight: 600; margin-bottom: 2px; }
+</style>
+</head>
+<body>
+
+<h1>Atena — Wireframe Flow v3</h1>
+<p class="page-subtitle">멀티 프로필 + 외부 소통 채널 · 화면을 클릭하여 플로우 확인</p>
+
+<div class="flow-section">
+  <div class="flow-section-label">Auth</div>
+  <div class="flow-nav">
+    <button class="flow-btn active" onclick="go('login')">로그인</button>
+    <button class="flow-btn" onclick="go('user-setup')">사용자 등록</button>
+    <button class="flow-btn" onclick="go('ws-select')">WS 선택</button>
+    <button class="flow-btn" onclick="go('ws-create')">WS 생성</button>
+    <button class="flow-btn" onclick="go('ws-plugin')">플러그인 선택</button>
+  </div>
+</div>
+<div class="flow-section">
+  <div class="flow-section-label">개인 프로필</div>
+  <div class="flow-nav">
+    <button class="flow-btn personal" onclick="go('p-home')">홈</button>
+    <button class="flow-btn personal" onclick="go('p-home-empty')">홈(WS없음)</button>
+    <button class="flow-btn personal" onclick="go('p-chat')">채팅</button>
+    <button class="flow-btn personal" onclick="go('p-contacts')">연락처</button>
+    <button class="flow-btn personal" onclick="go('p-more')">더보기</button>
+  </div>
+</div>
+<div class="flow-section">
+  <div class="flow-section-label">조직 프로필</div>
+  <div class="flow-nav">
+    <button class="flow-btn org" onclick="go('o-home')">홈</button>
+    <button class="flow-btn org" onclick="go('o-chat')">채팅</button>
+    <button class="flow-btn org" onclick="go('o-contacts')">연락처</button>
+    <button class="flow-btn org" onclick="go('o-workspace')">워크스페이스</button>
+    <button class="flow-btn org" onclick="go('o-more')">더보기</button>
+  </div>
+</div>
+<div class="flow-section">
+  <div class="flow-section-label">외부 소통 채널</div>
+  <div class="flow-nav">
+    <button class="flow-btn org" onclick="go('ch-manage')">채널 관리</button>
+    <button class="flow-btn org" onclick="go('ch-setting')">채널 설정</button>
+    <button class="flow-btn org" onclick="go('ch-chat-org')">외부 채팅(조직)</button>
+    <button class="flow-btn personal" onclick="go('ch-search')">채널 탐색</button>
+    <button class="flow-btn personal" onclick="go('ch-profile')">채널 프로필</button>
+    <button class="flow-btn personal" onclick="go('ch-chat-personal')">채널 채팅(개인)</button>
+  </div>
+</div>
+
+<div class="phone" id="phone">
+
+  <!-- ══════ LOGIN ══════ -->
+  <div class="screen active" id="screen-login">
+    <div class="login-center">
+      <div class="logo-area">
+        <div class="logo-icon"><i data-lucide="shield" style="width:48px;height:48px;"></i></div>
+        <div class="logo-name">Atena</div>
+      </div>
+      <div class="form-group">
+        <button class="social-btn kakao" onclick="go('p-home')">
+          <span class="social-icon"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 3C6.48 3 2 6.44 2 10.64c0 2.72 1.8 5.1 4.5 6.46-.16.56-.58 2.04-.66 2.36-.1.4.15.39.31.28.13-.08 2.04-1.38 2.86-1.94.64.1 1.3.14 1.99.14 5.52 0 10-3.44 10-7.7S17.52 3 12 3z" fill="#191919"/></svg></span>
+          카카오로 시작하기
+        </button>
+        <button class="social-btn google" onclick="go('user-setup')">
+          <span class="social-icon"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.96 10.96 0 001 12c0 1.77.42 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg></span>
+          Google로 시작하기
+        </button>
+        <button class="social-btn apple" onclick="go('user-setup')">
+          <span class="social-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="#fff"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.32 2.32-2.11 4.45-3.74 4.25z"/></svg></span>
+          Apple로 시작하기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ USER SETUP ══════ -->
+  <div class="screen" id="screen-user-setup">
+    <div class="header">
+      <button class="header-back" onclick="go('login')"><i data-lucide="arrow-left" style="width:24px;height:24px;"></i></button>
+      <span class="header-title">프로필 설정</span>
+    </div>
+    <div class="scroll-area">
+      <div class="setup-center">
+        <div class="setup-title">반갑습니다!</div>
+        <div class="setup-desc">Atena에서 사용할 프로필을 설정해주세요</div>
+
+        <div class="setup-social-info">
+          <span class="setup-social-tag google">Google</span>
+          <span style="font-size:14px;color:var(--text-2);">dohyun.kim@gmail.com</span>
+        </div>
+
+        <div class="setup-avatar-area">
+          <div class="setup-avatar"><i data-lucide="camera" style="width:28px;height:28px;"></i></div>
+          <span class="setup-avatar-hint">프로필 사진 (선택)</span>
+        </div>
+
+        <div class="setup-label">이름 <span style="color:var(--error);">*</span></div>
+        <input class="input-field" placeholder="이름을 입력하세요" value="김도현" />
+
+        <div class="setup-label">연락처 (선택)</div>
+        <input class="input-field" placeholder="010-0000-0000" />
+
+        <button class="btn-primary" style="margin-top:32px;" onclick="go('p-home-empty')">시작하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ WS SELECT ══════ -->
+  <div class="screen" id="screen-ws-select">
+    <div class="scroll-area">
+      <div class="ws-select-content">
+        <div class="ws-title-area">
+          <div class="ws-title">워크스페이스 선택</div>
+          <div class="ws-desc">참여할 워크스페이스를 선택하세요</div>
+        </div>
+        <div class="ws-list">
+          <button class="ws-item" onclick="go('o-home')">
+            <div class="ws-icon-box"><i data-lucide="building-2" style="width:24px;height:24px;"></i></div>
+            <div class="ws-item-info"><div class="ws-item-name">주식회사 아테나</div><div class="ws-item-members">구성원 24명</div></div>
+            <span class="ws-item-chevron"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></span>
+          </button>
+        </div>
+        <button class="ws-create-btn" onclick="go('ws-create')">
+          <i data-lucide="plus" style="width:20px;height:20px;"></i> 새 워크스페이스 만들기
+        </button>
+        <div class="form-link" style="margin-top:20px;"><span onclick="go('p-home')">나중에 설정하기</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ WS CREATE ══════ -->
+  <div class="screen" id="screen-ws-create">
+    <div class="header">
+      <button class="header-back" onclick="go('ws-select')"><i data-lucide="arrow-left" style="width:24px;height:24px;"></i></button>
+      <span class="header-title">워크스페이스 만들기</span>
+    </div>
+    <div class="scroll-area">
+      <div class="wsc-logo-area">
+        <div class="wsc-logo-box"><i data-lucide="building-2" style="width:28px;height:28px;"></i></div>
+        <span class="wsc-logo-hint">로고 추가 (선택)</span>
+      </div>
+      <div class="wsc-field"><div class="wsc-label">회사/팀 이름</div><input class="input-field" placeholder="워크스페이스 이름" /></div>
+      <div class="wsc-btn-area"><button class="btn-primary" onclick="go('ws-plugin')">다음</button></div>
+    </div>
+  </div>
+
+  <!-- ══════ PLUGIN SELECT ══════ -->
+  <div class="screen" id="screen-ws-plugin">
+    <div class="header">
+      <button class="header-back" onclick="go('ws-create')"><i data-lucide="arrow-left" style="width:24px;height:24px;"></i></button>
+      <span class="header-title">기능 설정</span>
+    </div>
+    <div class="scroll-area">
+      <div class="plugin-content">
+        <div class="plugin-title">사용할 기능을 선택하세요</div>
+        <div class="plugin-desc">나중에 언제든 변경할 수 있습니다</div>
+        <div class="plugin-item checked" onclick="this.classList.toggle('checked')"><div class="plugin-icon"><i data-lucide="file-check" style="width:20px;height:20px;"></i></div><div class="plugin-info"><div class="plugin-name">결재</div><div class="plugin-item-desc">전자결재 요청 및 승인</div></div><div class="plugin-check"><i data-lucide="check" style="width:14px;height:14px;"></i></div></div>
+        <div class="plugin-item checked" onclick="this.classList.toggle('checked')"><div class="plugin-icon"><i data-lucide="clock" style="width:20px;height:20px;"></i></div><div class="plugin-info"><div class="plugin-name">근무 관리</div><div class="plugin-item-desc">출퇴근 기록 및 근무시간</div></div><div class="plugin-check"><i data-lucide="check" style="width:14px;height:14px;"></i></div></div>
+        <div class="plugin-item checked" onclick="this.classList.toggle('checked')"><div class="plugin-icon"><i data-lucide="megaphone" style="width:20px;height:20px;"></i></div><div class="plugin-info"><div class="plugin-name">공지톡</div><div class="plugin-item-desc">공지사항 등록 및 알림</div></div><div class="plugin-check"><i data-lucide="check" style="width:14px;height:14px;"></i></div></div>
+        <div class="plugin-item" onclick="this.classList.toggle('checked')"><div class="plugin-icon"><i data-lucide="calendar" style="width:20px;height:20px;"></i></div><div class="plugin-info"><div class="plugin-name">일정 관리</div><div class="plugin-item-desc">팀 캘린더 및 일정 공유</div></div><div class="plugin-check"><i data-lucide="check" style="width:14px;height:14px;"></i></div></div>
+        <div class="plugin-item checked" onclick="this.classList.toggle('checked')"><div class="plugin-icon"><i data-lucide="radio" style="width:20px;height:20px;"></i></div><div class="plugin-info"><div class="plugin-name">외부 소통</div><div class="plugin-item-desc">외부 고객과 채팅 상담</div></div><div class="plugin-check"><i data-lucide="check" style="width:14px;height:14px;"></i></div></div>
+        <button class="btn-primary" style="margin-top:24px;" onclick="go('o-home')">완료</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ PERSONAL HOME ══════ -->
+  <div class="screen" id="screen-p-home">
+    <div class="ctx-bar" onclick="toggleSwitcher('sw-personal')">
+      <div class="ctx-icon personal"><i data-lucide="user" style="width:16px;height:16px;"></i></div>
+      <span class="ctx-name">개인</span>
+      <span class="ctx-badge">4</span>
+      <span class="ctx-chevron"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
+    </div>
+    <div class="header" style="border-bottom:none;">
+      <span class="header-title-lg">홈</span>
+    </div>
+    <div class="scroll-area" style="background:var(--surface);">
+      <div class="profile-banner">
+        <div class="avatar" style="width:48px;height:48px;background:#e0e7ff;color:#3730a3;font-size:16px;">DH</div>
+        <div class="profile-info">
+          <div class="profile-name">김도현 <span class="personal-tag">개인</span></div>
+          <div class="profile-dept">dohyun.kim@email.com</div>
+        </div>
+        <i data-lucide="chevron-right" style="width:16px;height:16px;color:var(--text-3);"></i>
+      </div>
+
+      <div class="ws-list-card">
+        <div class="ws-list-header">
+          <span class="ws-list-title">내 워크스페이스</span>
+          <span class="section-more" onclick="go('ws-select')">관리 <i data-lucide="chevron-right" style="width:14px;height:14px;"></i></span>
+        </div>
+        <div class="ws-list-item" onclick="go('o-home')">
+          <div class="ws-list-item-icon"><i data-lucide="building-2" style="width:20px;height:20px;"></i></div>
+          <div class="ws-list-item-info"><div class="ws-list-item-name">주식회사 아테나</div></div>
+          <div class="ws-list-item-noti">
+            <span class="ws-list-item-summary">결재 3 · 공지 1</span>
+            <div class="ws-noti-dot"></div>
+          </div>
+        </div>
+        <div class="ws-list-item" onclick="go('o-home')">
+          <div class="ws-list-item-icon"><i data-lucide="building-2" style="width:20px;height:20px;"></i></div>
+          <div class="ws-list-item-info"><div class="ws-list-item-name">데모 워크스페이스</div></div>
+          <div class="ws-list-item-noti">
+            <span class="ws-list-item-summary"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <button class="tab-item active"><i data-lucide="home" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('p-chat')"><i data-lucide="message-circle" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('p-contacts')"><i data-lucide="book-user" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('p-more')"><i data-lucide="menu" style="width:24px;height:24px;"></i></button>
+    </div>
+    <!-- Switcher -->
+    <div class="switcher-overlay" id="sw-personal" onclick="toggleSwitcher('sw-personal')">
+      <div class="switcher-dropdown" onclick="event.stopPropagation()">
+        <div class="sw-section-label">개인</div>
+        <button class="sw-item" onclick="toggleSwitcher('sw-personal')">
+          <div class="sw-item-icon personal"><i data-lucide="user" style="width:16px;height:16px;"></i></div>
+          <span class="sw-item-name">개인</span>
+          <span class="sw-item-check"><i data-lucide="check" style="width:16px;height:16px;"></i></span>
+        </button>
+        <div class="sw-divider"></div>
+        <div class="sw-section-label">조직 프로필</div>
+        <button class="sw-item" onclick="toggleSwitcher('sw-personal'); go('o-home');">
+          <div class="sw-item-icon org"><i data-lucide="building-2" style="width:16px;height:16px;"></i></div>
+          <span class="sw-item-name">주식회사 아테나</span>
+          <span class="sw-item-badge">4</span>
+        </button>
+        <button class="sw-item" onclick="toggleSwitcher('sw-personal'); go('o-home');">
+          <div class="sw-item-icon org"><i data-lucide="building-2" style="width:16px;height:16px;"></i></div>
+          <span class="sw-item-name">데모 워크스페이스</span>
+        </button>
+        <div class="sw-divider"></div>
+        <button class="sw-add" onclick="toggleSwitcher('sw-personal'); go('ws-create');">
+          <i data-lucide="plus" style="width:16px;height:16px;"></i> 워크스페이스 추가
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ PERSONAL HOME (no WS) ══════ -->
+  <div class="screen" id="screen-p-home-empty">
+    <div class="ctx-bar">
+      <div class="ctx-icon personal"><i data-lucide="user" style="width:16px;height:16px;"></i></div>
+      <span class="ctx-name">개인</span>
+    </div>
+    <div class="header" style="border-bottom:none;">
+      <span class="header-title-lg">홈</span>
+    </div>
+    <div class="scroll-area" style="background:var(--surface);">
+      <div class="profile-banner">
+        <div class="avatar" style="width:48px;height:48px;background:#e0e7ff;color:#3730a3;font-size:16px;">DH</div>
+        <div class="profile-info">
+          <div class="profile-name">김도현 <span class="personal-tag">개인</span></div>
+          <div class="profile-dept">dohyun.kim@email.com</div>
+        </div>
+        <i data-lucide="chevron-right" style="width:16px;height:16px;color:var(--text-3);"></i>
+      </div>
+      <div class="no-ws-card">
+        <div class="no-ws-icon"><i data-lucide="building-2" style="width:48px;height:48px;"></i></div>
+        <div class="no-ws-title">워크스페이스에 참여하세요</div>
+        <div class="no-ws-desc">팀과 함께 결재, 근무 관리 등<br>그룹웨어 기능을 사용할 수 있습니다</div>
+        <div class="no-ws-actions">
+          <button class="no-ws-btn secondary" onclick="go('ws-select')">초대 코드</button>
+          <button class="no-ws-btn primary" onclick="go('ws-create')">새로 만들기</button>
+        </div>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <button class="tab-item active"><i data-lucide="home" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('p-chat')"><i data-lucide="message-circle" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('p-contacts')"><i data-lucide="book-user" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('p-more')"><i data-lucide="menu" style="width:24px;height:24px;"></i></button>
+    </div>
+  </div>
+
+  <!-- ══════ PERSONAL CHAT ══════ -->
+  <div class="screen" id="screen-p-chat">
+    <div class="ctx-bar" onclick="toggleSwitcher('sw-pchat')">
+      <div class="ctx-icon personal"><i data-lucide="user" style="width:16px;height:16px;"></i></div>
+      <span class="ctx-name">개인</span>
+      <span class="ctx-badge">4</span>
+      <span class="ctx-chevron"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
+    </div>
+    <div class="header">
+      <span class="header-title-lg">채팅</span>
+      <div class="header-right">
+        <button class="header-btn"><i data-lucide="search" style="width:24px;height:24px;"></i></button>
+        <button class="header-btn"><i data-lucide="plus" style="width:24px;height:24px;"></i></button>
+      </div>
+    </div>
+    <div class="scroll-area">
+      <div class="chat-item">
+        <div class="avatar" style="width:48px;height:48px;background:#fce7f3;color:#be185d;font-size:14px;">MJ</div>
+        <div class="chat-info"><div class="chat-top"><span class="chat-name">민지</span><span class="chat-time">오후 3:00</span></div><div class="chat-bottom"><span class="chat-preview">주말에 시간 돼?</span><span class="chat-badge">1</span></div></div>
+      </div>
+      <div class="chat-item">
+        <div class="avatar" style="width:48px;height:48px;background:#dcfce7;color:#15803d;font-size:14px;">JH</div>
+        <div class="chat-info"><div class="chat-top"><span class="chat-name">준호</span><span class="chat-time">오전 10:20</span></div><div class="chat-bottom"><span class="chat-preview">ㅋㅋㅋ 알겠어</span></div></div>
+      </div>
+      <!-- 채널 채팅 -->
+      <div class="chat-item" onclick="go('ch-chat-personal')">
+        <div class="ch-avatar" style="background:#eff6ff;color:#2563eb;font-size:14px;"><i data-lucide="radio" style="width:24px;height:24px;"></i><div class="ch-avatar-icon"><i data-lucide="building-2" style="width:10px;height:10px;"></i></div></div>
+        <div class="chat-info"><div class="chat-top"><span class="chat-name">아테나 고객지원 <span class="ch-badge">채널</span></span><span class="chat-time">오후 1:00</span></div><div class="chat-bottom"><span class="chat-preview">네, 예약 변경 도와드리겠습니다</span></div></div>
+      </div>
+      <div class="chat-item" onclick="go('ch-profile')">
+        <div class="ch-avatar" style="background:#dcfce7;color:#15803d;font-size:14px;"><i data-lucide="radio" style="width:24px;height:24px;"></i><div class="ch-avatar-icon"><i data-lucide="building-2" style="width:10px;height:10px;"></i></div></div>
+        <div class="chat-info"><div class="chat-top"><span class="chat-name">스타일살롱 예약 <span class="ch-badge">채널</span></span><span class="chat-time">어제</span></div><div class="chat-bottom"><span class="chat-preview">감사합니다. 좋은 하루 보내세요!</span></div></div>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <button class="tab-item" onclick="go('p-home')"><i data-lucide="home" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item active"><i data-lucide="message-circle" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('p-contacts')"><i data-lucide="book-user" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('p-more')"><i data-lucide="menu" style="width:24px;height:24px;"></i></button>
+    </div>
+    <div class="switcher-overlay" id="sw-pchat" onclick="toggleSwitcher('sw-pchat')">
+      <div class="switcher-dropdown" onclick="event.stopPropagation()">
+        <div class="sw-section-label">개인</div>
+        <button class="sw-item" onclick="toggleSwitcher('sw-pchat')"><div class="sw-item-icon personal"><i data-lucide="user" style="width:16px;height:16px;"></i></div><span class="sw-item-name">개인</span><span class="sw-item-check"><i data-lucide="check" style="width:16px;height:16px;"></i></span></button>
+        <div class="sw-divider"></div>
+        <div class="sw-section-label">조직 프로필</div>
+        <button class="sw-item" onclick="toggleSwitcher('sw-pchat'); go('o-chat');"><div class="sw-item-icon org"><i data-lucide="building-2" style="width:16px;height:16px;"></i></div><span class="sw-item-name">주식회사 아테나</span><span class="sw-item-badge">4</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ PERSONAL CONTACTS ══════ -->
+  <div class="screen" id="screen-p-contacts">
+    <div class="ctx-bar" onclick="toggleSwitcher('sw-pct')">
+      <div class="ctx-icon personal"><i data-lucide="user" style="width:16px;height:16px;"></i></div>
+      <span class="ctx-name">개인</span>
+      <span class="ctx-badge">4</span>
+      <span class="ctx-chevron"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
+    </div>
+    <div class="header">
+      <span class="header-title-lg">연락처</span>
+      <div class="header-right">
+        <button class="header-btn"><i data-lucide="search" style="width:24px;height:24px;"></i></button>
+      </div>
+    </div>
+    <div class="scroll-area">
+      <div class="ct-add-bar" onclick=""><i data-lucide="user-plus" style="width:18px;height:18px;"></i> 연락처 추가</div>
+      <div class="ct-item">
+        <div class="avatar" style="width:36px;height:36px;border-radius:12px;background:#fce7f3;color:#be185d;font-size:13px;">MJ</div>
+        <div class="profile-info"><div style="font-size:15px;">민지</div></div>
+      </div>
+      <div class="ct-item">
+        <div class="avatar" style="width:36px;height:36px;border-radius:12px;background:#dcfce7;color:#15803d;font-size:13px;">JH</div>
+        <div class="profile-info"><div style="font-size:15px;">준호</div></div>
+      </div>
+      <div class="ct-item">
+        <div class="avatar" style="width:36px;height:36px;border-radius:12px;background:#dbeafe;color:#1d4ed8;font-size:13px;">SY</div>
+        <div class="profile-info"><div style="font-size:15px;">서연</div></div>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <button class="tab-item" onclick="go('p-home')"><i data-lucide="home" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('p-chat')"><i data-lucide="message-circle" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item active"><i data-lucide="book-user" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('p-more')"><i data-lucide="menu" style="width:24px;height:24px;"></i></button>
+    </div>
+    <div class="switcher-overlay" id="sw-pct" onclick="toggleSwitcher('sw-pct')">
+      <div class="switcher-dropdown" onclick="event.stopPropagation()">
+        <div class="sw-section-label">개인</div>
+        <button class="sw-item" onclick="toggleSwitcher('sw-pct')"><div class="sw-item-icon personal"><i data-lucide="user" style="width:16px;height:16px;"></i></div><span class="sw-item-name">개인</span><span class="sw-item-check"><i data-lucide="check" style="width:16px;height:16px;"></i></span></button>
+        <div class="sw-divider"></div>
+        <div class="sw-section-label">조직 프로필</div>
+        <button class="sw-item" onclick="toggleSwitcher('sw-pct'); go('o-contacts');"><div class="sw-item-icon org"><i data-lucide="building-2" style="width:16px;height:16px;"></i></div><span class="sw-item-name">주식회사 아테나</span><span class="sw-item-badge">4</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ PERSONAL MORE ══════ -->
+  <div class="screen" id="screen-p-more">
+    <div class="ctx-bar" onclick="toggleSwitcher('sw-pmore')">
+      <div class="ctx-icon personal"><i data-lucide="user" style="width:16px;height:16px;"></i></div>
+      <span class="ctx-name">개인</span>
+      <span class="ctx-badge">4</span>
+      <span class="ctx-chevron"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
+    </div>
+    <div class="header"><span class="header-title-lg">더보기</span></div>
+    <div class="scroll-area" style="background:var(--surface);">
+      <div class="more-profile">
+        <div class="avatar" style="width:48px;height:48px;background:#e0e7ff;color:#3730a3;font-size:16px;">DH</div>
+        <div class="profile-info"><div class="profile-name">김도현 <span class="personal-tag">개인</span></div><div class="profile-dept">dohyun.kim@email.com</div></div>
+        <i data-lucide="chevron-right" style="width:16px;height:16px;color:var(--text-3);"></i>
+      </div>
+      <div class="more-menu-group">
+        <button class="more-menu-item"><span class="more-menu-icon"><i data-lucide="circle-user-round" style="width:20px;height:20px;"></i></span>계정 정보<span class="more-menu-right"><span class="more-menu-chevron"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></span></span></button>
+        <div class="more-menu-divider"></div>
+        <button class="more-menu-item"><span class="more-menu-icon"><i data-lucide="settings" style="width:20px;height:20px;"></i></span>설정<span class="more-menu-right"><span class="more-menu-chevron"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></span></span></button>
+        <div class="more-menu-divider"></div>
+        <button class="more-menu-item"><span class="more-menu-icon"><i data-lucide="info" style="width:20px;height:20px;"></i></span>앱 정보<span class="more-menu-right"><span class="more-menu-version">v1.0.0</span><span class="more-menu-chevron"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></span></span></button>
+      </div>
+      <div class="more-menu-group">
+        <button class="more-menu-item more-logout" onclick="go('login')"><span class="more-menu-icon"><i data-lucide="log-out" style="width:20px;height:20px;"></i></span>로그아웃</button>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <button class="tab-item" onclick="go('p-home')"><i data-lucide="home" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('p-chat')"><i data-lucide="message-circle" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('p-contacts')"><i data-lucide="book-user" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item active"><i data-lucide="menu" style="width:24px;height:24px;"></i></button>
+    </div>
+    <div class="switcher-overlay" id="sw-pmore" onclick="toggleSwitcher('sw-pmore')">
+      <div class="switcher-dropdown" onclick="event.stopPropagation()">
+        <div class="sw-section-label">개인</div>
+        <button class="sw-item" onclick="toggleSwitcher('sw-pmore')"><div class="sw-item-icon personal"><i data-lucide="user" style="width:16px;height:16px;"></i></div><span class="sw-item-name">개인</span><span class="sw-item-check"><i data-lucide="check" style="width:16px;height:16px;"></i></span></button>
+        <div class="sw-divider"></div>
+        <div class="sw-section-label">조직 프로필</div>
+        <button class="sw-item" onclick="toggleSwitcher('sw-pmore'); go('o-more');"><div class="sw-item-icon org"><i data-lucide="building-2" style="width:16px;height:16px;"></i></div><span class="sw-item-name">주식회사 아테나</span><span class="sw-item-badge">4</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ ORG HOME ══════ -->
+  <div class="screen" id="screen-o-home">
+    <div class="ctx-bar" onclick="toggleSwitcher('sw-org')">
+      <div class="ctx-icon org"><i data-lucide="building-2" style="width:16px;height:16px;"></i></div>
+      <span class="ctx-name">주식회사 아테나</span>
+      <span class="ctx-chevron"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
+    </div>
+    <div class="header" style="border-bottom:none;">
+      <span class="header-title-lg">홈</span>
+      <div class="header-right"><button class="header-btn"><i data-lucide="settings" style="width:24px;height:24px;"></i></button></div>
+    </div>
+    <div class="scroll-area" style="background:var(--surface);">
+      <div class="profile-banner">
+        <div class="avatar" style="width:48px;height:48px;background:#e0e7ff;color:#3730a3;font-size:16px;">DH</div>
+        <div class="profile-info"><div class="profile-name">김도현</div><div class="profile-dept">개발팀 · 백엔드 개발</div></div>
+        <i data-lucide="chevron-right" style="width:16px;height:16px;color:var(--text-3);"></i>
+      </div>
+      <div class="clock-card">
+        <div class="clock-status"><div class="clock-dot"></div><span class="clock-label">근무 중</span></div>
+        <div class="clock-time">04:32:15</div>
+        <div class="clock-bottom"><span class="clock-checkin">09:00 출근</span><button class="clock-btn">퇴근</button></div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-item"><div class="stat-label">결재</div><div class="stat-value highlight">3</div></div>
+        <div class="stat-item"><div class="stat-label">공지톡</div><div class="stat-value">1</div></div>
+        <div class="stat-item"><div class="stat-label">근무시간</div><div class="stat-value">24/40h</div></div>
+      </div>
+      <div class="section-card">
+        <div class="section-header"><span class="section-title">결재</span><span class="section-more" onclick="go('o-workspace')">더보기 <i data-lucide="chevron-right" style="width:14px;height:14px;"></i></span></div>
+        <div class="preview-item"><span class="preview-icon"><i data-lucide="file-text" style="width:20px;height:20px;"></i></span><div class="preview-info"><div class="preview-title">휴가 신청서</div><div class="preview-meta">김도현 · 3월 10일</div></div><span class="preview-badge badge-pending">대기 중</span></div>
+        <div class="preview-item"><span class="preview-icon"><i data-lucide="file-text" style="width:20px;height:20px;"></i></span><div class="preview-info"><div class="preview-title">비품 구매 요청</div><div class="preview-meta">김도현 · 3월 8일</div></div><span class="preview-badge badge-approved">승인됨</span></div>
+      </div>
+      <div class="section-card">
+        <div class="section-header"><span class="section-title">공지톡</span><span class="section-more">더보기 <i data-lucide="chevron-right" style="width:14px;height:14px;"></i></span></div>
+        <div class="preview-item"><span class="preview-icon"><i data-lucide="megaphone" style="width:20px;height:20px;"></i></span><div class="preview-info"><div class="preview-title">3월 전체 회의 안내</div><div class="preview-meta">관리팀 · 1시간 전</div></div></div>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <button class="tab-item active"><i data-lucide="home" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('o-chat')"><i data-lucide="message-circle" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('o-contacts')"><i data-lucide="book-user" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('o-workspace')"><i data-lucide="briefcase" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('o-more')"><i data-lucide="menu" style="width:24px;height:24px;"></i></button>
+    </div>
+    <div class="switcher-overlay" id="sw-org" onclick="toggleSwitcher('sw-org')">
+      <div class="switcher-dropdown" onclick="event.stopPropagation()">
+        <div class="sw-section-label">개인</div>
+        <button class="sw-item" onclick="toggleSwitcher('sw-org'); go('p-home');"><div class="sw-item-icon personal"><i data-lucide="user" style="width:16px;height:16px;"></i></div><span class="sw-item-name">개인</span></button>
+        <div class="sw-divider"></div>
+        <div class="sw-section-label">조직 프로필</div>
+        <button class="sw-item" onclick="toggleSwitcher('sw-org')"><div class="sw-item-icon org"><i data-lucide="building-2" style="width:16px;height:16px;"></i></div><span class="sw-item-name">주식회사 아테나</span><span class="sw-item-check"><i data-lucide="check" style="width:16px;height:16px;"></i></span></button>
+        <button class="sw-item" onclick="toggleSwitcher('sw-org')"><div class="sw-item-icon org"><i data-lucide="building-2" style="width:16px;height:16px;"></i></div><span class="sw-item-name">데모 워크스페이스</span></button>
+        <div class="sw-divider"></div>
+        <button class="sw-add" onclick="toggleSwitcher('sw-org'); go('ws-create');"><i data-lucide="plus" style="width:16px;height:16px;"></i> 워크스페이스 추가</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ ORG CHAT ══════ -->
+  <div class="screen" id="screen-o-chat">
+    <div class="ctx-bar" onclick="toggleSwitcher('sw-ochat')">
+      <div class="ctx-icon org"><i data-lucide="building-2" style="width:16px;height:16px;"></i></div>
+      <span class="ctx-name">주식회사 아테나</span>
+      <span class="ctx-chevron"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
+    </div>
+    <div class="header">
+      <span class="header-title-lg">채팅</span>
+      <div class="header-right">
+        <button class="header-btn"><i data-lucide="search" style="width:24px;height:24px;"></i></button>
+        <button class="header-btn"><i data-lucide="plus" style="width:24px;height:24px;"></i></button>
+      </div>
+    </div>
+    <div class="scroll-area">
+      <div class="chat-item">
+        <div class="avatar" style="width:48px;height:48px;background:#dcfce7;color:#15803d;font-size:14px;">TH</div>
+        <div class="chat-info"><div class="chat-top"><span class="chat-name">Taehyun Kim</span><span class="chat-time">오후 2:30</span></div><div class="chat-bottom"><span class="chat-preview">API 스펙 확인해주세요</span><span class="chat-badge">1</span></div></div>
+      </div>
+      <div class="chat-item">
+        <div class="avatar" style="width:48px;height:48px;background:#dbeafe;color:#1d4ed8;font-size:14px;">JY</div>
+        <div class="chat-info"><div class="chat-top"><span class="chat-name">Jiyoung Park</span><span class="chat-time">오후 1:15</span></div><div class="chat-bottom"><span class="chat-preview">디자인 시안 공유드립니다</span><span class="chat-badge">3</span></div></div>
+      </div>
+      <div class="chat-item">
+        <div class="avatar" style="width:48px;height:48px;background:#f3e8ff;color:#7c3aed;font-size:14px;">개발</div>
+        <div class="chat-info"><div class="chat-top"><span class="chat-name">개발팀</span><span class="chat-time">오전 11:00</span></div><div class="chat-bottom"><span class="chat-preview">Dongwoo: 배포 완료했습니다</span></div></div>
+      </div>
+      <div class="chat-item">
+        <div class="avatar" style="width:48px;height:48px;background:#fef3c7;color:#92400e;font-size:14px;">전체</div>
+        <div class="chat-info"><div class="chat-top"><span class="chat-name">전체 공지방</span><span class="chat-time">어제</span></div><div class="chat-bottom"><span class="chat-preview">관리팀: 3월 회의 일정 안내</span></div></div>
+      </div>
+      <!-- 외부 문의 채팅 -->
+      <div class="chat-item" onclick="go('ch-chat-org')">
+        <div class="ch-avatar" style="background:#fef3c7;color:#92400e;font-size:14px;">이소</div>
+        <div class="chat-info"><div class="chat-top"><span class="chat-name">이소영 <span class="ch-badge-ext">외부</span></span><span class="chat-time">오후 4:10</span></div><div class="chat-bottom"><span class="chat-preview">예약 변경이 가능한가요?</span><span class="chat-badge">1</span></div></div>
+      </div>
+      <div class="chat-item" onclick="go('ch-chat-org')">
+        <div class="ch-avatar" style="background:#dbeafe;color:#1d4ed8;font-size:14px;">박준</div>
+        <div class="chat-info"><div class="chat-top"><span class="chat-name">박준서 <span class="ch-badge-ext">외부</span></span><span class="chat-time">오전 9:30</span></div><div class="chat-bottom"><span class="chat-preview">견적서 받을 수 있나요?</span></div></div>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <button class="tab-item" onclick="go('o-home')"><i data-lucide="home" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item active"><i data-lucide="message-circle" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('o-contacts')"><i data-lucide="book-user" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('o-workspace')"><i data-lucide="briefcase" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('o-more')"><i data-lucide="menu" style="width:24px;height:24px;"></i></button>
+    </div>
+    <div class="switcher-overlay" id="sw-ochat" onclick="toggleSwitcher('sw-ochat')">
+      <div class="switcher-dropdown" onclick="event.stopPropagation()">
+        <div class="sw-section-label">개인</div>
+        <button class="sw-item" onclick="toggleSwitcher('sw-ochat'); go('p-chat');"><div class="sw-item-icon personal"><i data-lucide="user" style="width:16px;height:16px;"></i></div><span class="sw-item-name">개인</span></button>
+        <div class="sw-divider"></div>
+        <div class="sw-section-label">조직 프로필</div>
+        <button class="sw-item" onclick="toggleSwitcher('sw-ochat')"><div class="sw-item-icon org"><i data-lucide="building-2" style="width:16px;height:16px;"></i></div><span class="sw-item-name">주식회사 아테나</span><span class="sw-item-check"><i data-lucide="check" style="width:16px;height:16px;"></i></span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ ORG CONTACTS ══════ -->
+  <div class="screen" id="screen-o-contacts">
+    <div class="ctx-bar" onclick="toggleSwitcher('sw-oct')">
+      <div class="ctx-icon org"><i data-lucide="building-2" style="width:16px;height:16px;"></i></div>
+      <span class="ctx-name">주식회사 아테나</span>
+      <span class="ctx-chevron"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
+    </div>
+    <div class="header">
+      <span class="header-title-lg">연락처</span>
+      <div class="header-right"><button class="header-btn"><i data-lucide="search" style="width:24px;height:24px;"></i></button></div>
+    </div>
+    <div class="scroll-area">
+      <div class="ct-section-hd"><span class="ct-section-label">개발팀<span class="ct-section-count">4</span></span><i data-lucide="chevron-down" style="width:16px;height:16px;color:var(--text-3);"></i></div>
+      <div class="ct-item"><div class="avatar" style="width:36px;height:36px;border-radius:12px;background:#dcfce7;color:#15803d;font-size:13px;">TH</div><div class="profile-info"><div style="font-size:15px;">Taehyun Kim</div><div style="font-size:13px;color:var(--text-3);margin-top:2px;">백엔드 개발</div></div></div>
+      <div class="ct-item"><div class="avatar" style="width:36px;height:36px;border-radius:12px;background:#fef3c7;color:#92400e;font-size:13px;">DW</div><div class="profile-info"><div style="font-size:15px;">Dongwoo Seo</div><div style="font-size:13px;color:var(--text-3);margin-top:2px;">프론트엔드 개발</div></div></div>
+      <div class="ct-item"><div class="avatar" style="width:36px;height:36px;border-radius:12px;background:#e0e7ff;color:#3730a3;font-size:13px;">YJ</div><div class="profile-info"><div style="font-size:15px;">Yujin Han</div><div style="font-size:13px;color:var(--text-3);margin-top:2px;">iOS 개발</div></div></div>
+      <div class="ct-item"><div class="avatar" style="width:36px;height:36px;border-radius:12px;background:#fef3c7;color:#92400e;font-size:13px;">SH</div><div class="profile-info"><div style="font-size:15px;">Sunghoon Lee</div><div style="font-size:13px;color:var(--text-3);margin-top:2px;">백엔드 개발</div></div></div>
+      <div class="ct-section-hd"><span class="ct-section-label">디자인팀<span class="ct-section-count">2</span></span><i data-lucide="chevron-down" style="width:16px;height:16px;color:var(--text-3);"></i></div>
+      <div class="ct-item"><div class="avatar" style="width:36px;height:36px;border-radius:12px;background:#dbeafe;color:#1d4ed8;font-size:13px;">JY</div><div class="profile-info"><div style="font-size:15px;">Jiyoung Park</div><div style="font-size:13px;color:var(--text-3);margin-top:2px;">프로덕트 디자이너</div></div></div>
+      <div class="ct-item"><div class="avatar" style="width:36px;height:36px;border-radius:12px;background:#fce7f3;color:#be185d;font-size:13px;">MK</div><div class="profile-info"><div style="font-size:15px;">Mikyung Choi</div><div style="font-size:13px;color:var(--text-3);margin-top:2px;">UX 디자이너</div></div></div>
+    </div>
+    <div class="tab-bar">
+      <button class="tab-item" onclick="go('o-home')"><i data-lucide="home" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('o-chat')"><i data-lucide="message-circle" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item active"><i data-lucide="book-user" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('o-workspace')"><i data-lucide="briefcase" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('o-more')"><i data-lucide="menu" style="width:24px;height:24px;"></i></button>
+    </div>
+    <div class="switcher-overlay" id="sw-oct" onclick="toggleSwitcher('sw-oct')">
+      <div class="switcher-dropdown" onclick="event.stopPropagation()">
+        <div class="sw-section-label">개인</div>
+        <button class="sw-item" onclick="toggleSwitcher('sw-oct'); go('p-contacts');"><div class="sw-item-icon personal"><i data-lucide="user" style="width:16px;height:16px;"></i></div><span class="sw-item-name">개인</span></button>
+        <div class="sw-divider"></div>
+        <div class="sw-section-label">조직 프로필</div>
+        <button class="sw-item" onclick="toggleSwitcher('sw-oct')"><div class="sw-item-icon org"><i data-lucide="building-2" style="width:16px;height:16px;"></i></div><span class="sw-item-name">주식회사 아테나</span><span class="sw-item-check"><i data-lucide="check" style="width:16px;height:16px;"></i></span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ ORG WORKSPACE (Portal) ══════ -->
+  <div class="screen" id="screen-o-workspace">
+    <div class="ctx-bar" onclick="toggleSwitcher('sw-ows')">
+      <div class="ctx-icon org"><i data-lucide="building-2" style="width:16px;height:16px;"></i></div>
+      <span class="ctx-name">주식회사 아테나</span>
+      <span class="ctx-chevron"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
+    </div>
+    <div class="header">
+      <span class="header-title-lg">워크스페이스</span>
+      <div class="header-right"><button class="header-btn"><i data-lucide="settings" style="width:24px;height:24px;"></i></button></div>
+    </div>
+    <div class="scroll-area" style="background:var(--surface);">
+      <div class="portal-ws-header">
+        <div class="portal-ws-icon"><i data-lucide="building-2" style="width:24px;height:24px;"></i></div>
+        <div class="portal-ws-info"><div class="portal-ws-name">주식회사 아테나</div><div class="portal-ws-members">구성원 24명</div></div>
+      </div>
+      <div class="portal-section-title">활성 기능</div>
+      <div class="portal-grid">
+        <div class="portal-card"><div class="portal-card-icon"><i data-lucide="file-check" style="width:24px;height:24px;"></i></div><div class="portal-card-name">결재</div><div class="portal-card-desc">대기 3건</div></div>
+        <div class="portal-card"><div class="portal-card-icon"><i data-lucide="clock" style="width:24px;height:24px;"></i></div><div class="portal-card-name">근무 관리</div><div class="portal-card-desc">근무 중</div></div>
+        <div class="portal-card"><div class="portal-card-icon"><i data-lucide="megaphone" style="width:24px;height:24px;"></i></div><div class="portal-card-name">공지톡</div><div class="portal-card-desc">새 공지 1건</div></div>
+        <div class="portal-card" onclick="go('ch-manage')"><div class="portal-card-icon"><i data-lucide="radio" style="width:24px;height:24px;"></i></div><div class="portal-card-name">외부 소통</div><div class="portal-card-desc">채널 2개</div></div>
+        <div class="portal-card"><div class="portal-card-icon"><i data-lucide="book-user" style="width:24px;height:24px;"></i></div><div class="portal-card-name">조직 연락처</div><div class="portal-card-desc">24명</div></div>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <button class="tab-item" onclick="go('o-home')"><i data-lucide="home" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('o-chat')"><i data-lucide="message-circle" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('o-contacts')"><i data-lucide="book-user" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item active"><i data-lucide="briefcase" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('o-more')"><i data-lucide="menu" style="width:24px;height:24px;"></i></button>
+    </div>
+    <div class="switcher-overlay" id="sw-ows" onclick="toggleSwitcher('sw-ows')">
+      <div class="switcher-dropdown" onclick="event.stopPropagation()">
+        <div class="sw-section-label">개인</div>
+        <button class="sw-item" onclick="toggleSwitcher('sw-ows'); go('p-home');"><div class="sw-item-icon personal"><i data-lucide="user" style="width:16px;height:16px;"></i></div><span class="sw-item-name">개인</span></button>
+        <div class="sw-divider"></div>
+        <div class="sw-section-label">조직 프로필</div>
+        <button class="sw-item" onclick="toggleSwitcher('sw-ows')"><div class="sw-item-icon org"><i data-lucide="building-2" style="width:16px;height:16px;"></i></div><span class="sw-item-name">주식회사 아테나</span><span class="sw-item-check"><i data-lucide="check" style="width:16px;height:16px;"></i></span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ ORG MORE ══════ -->
+  <div class="screen" id="screen-o-more">
+    <div class="ctx-bar" onclick="toggleSwitcher('sw-omore')">
+      <div class="ctx-icon org"><i data-lucide="building-2" style="width:16px;height:16px;"></i></div>
+      <span class="ctx-name">주식회사 아테나</span>
+      <span class="ctx-chevron"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
+    </div>
+    <div class="header"><span class="header-title-lg">더보기</span></div>
+    <div class="scroll-area" style="background:var(--surface);">
+      <div class="more-profile">
+        <div class="avatar" style="width:48px;height:48px;background:#e0e7ff;color:#3730a3;font-size:16px;">DH</div>
+        <div class="profile-info"><div class="profile-name">김도현</div><div class="profile-dept">개발팀 · 백엔드 개발</div></div>
+        <i data-lucide="chevron-right" style="width:16px;height:16px;color:var(--text-3);"></i>
+      </div>
+      <div class="more-menu-group">
+        <button class="more-menu-item"><span class="more-menu-icon"><i data-lucide="circle-user-round" style="width:20px;height:20px;"></i></span>계정 정보<span class="more-menu-right"><span class="more-menu-chevron"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></span></span></button>
+        <div class="more-menu-divider"></div>
+        <button class="more-menu-item"><span class="more-menu-icon"><i data-lucide="settings" style="width:20px;height:20px;"></i></span>설정<span class="more-menu-right"><span class="more-menu-chevron"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></span></span></button>
+        <div class="more-menu-divider"></div>
+        <button class="more-menu-item"><span class="more-menu-icon"><i data-lucide="info" style="width:20px;height:20px;"></i></span>앱 정보<span class="more-menu-right"><span class="more-menu-version">v1.0.0</span><span class="more-menu-chevron"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></span></span></button>
+      </div>
+      <div class="more-menu-group">
+        <button class="more-menu-item more-logout" onclick="go('login')"><span class="more-menu-icon"><i data-lucide="log-out" style="width:20px;height:20px;"></i></span>로그아웃</button>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <button class="tab-item" onclick="go('o-home')"><i data-lucide="home" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('o-chat')"><i data-lucide="message-circle" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('o-contacts')"><i data-lucide="book-user" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item" onclick="go('o-workspace')"><i data-lucide="briefcase" style="width:24px;height:24px;"></i></button>
+      <button class="tab-item active"><i data-lucide="menu" style="width:24px;height:24px;"></i></button>
+    </div>
+    <div class="switcher-overlay" id="sw-omore" onclick="toggleSwitcher('sw-omore')">
+      <div class="switcher-dropdown" onclick="event.stopPropagation()">
+        <div class="sw-section-label">개인</div>
+        <button class="sw-item" onclick="toggleSwitcher('sw-omore'); go('p-more');"><div class="sw-item-icon personal"><i data-lucide="user" style="width:16px;height:16px;"></i></div><span class="sw-item-name">개인</span></button>
+        <div class="sw-divider"></div>
+        <div class="sw-section-label">조직 프로필</div>
+        <button class="sw-item" onclick="toggleSwitcher('sw-omore')"><div class="sw-item-icon org"><i data-lucide="building-2" style="width:16px;height:16px;"></i></div><span class="sw-item-name">주식회사 아테나</span><span class="sw-item-check"><i data-lucide="check" style="width:16px;height:16px;"></i></span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ CHANNEL MANAGE (Org) ══════ -->
+  <div class="screen" id="screen-ch-manage">
+    <div class="ctx-bar">
+      <div class="ctx-icon org"><i data-lucide="building-2" style="width:16px;height:16px;"></i></div>
+      <span class="ctx-name">주식회사 아테나</span>
+    </div>
+    <div class="header">
+      <button class="header-back" onclick="go('o-workspace')"><i data-lucide="arrow-left" style="width:24px;height:24px;"></i></button>
+      <span class="header-title">외부 소통 채널</span>
+      <div class="header-right"><button class="header-btn" style="color:var(--primary);font-size:14px;font-weight:600;width:auto;padding:0 4px;">+ 채널 만들기</button></div>
+    </div>
+    <div class="scroll-area">
+      <div class="ch-list-item" onclick="go('ch-setting')">
+        <div class="ch-list-icon"><i data-lucide="headphones" style="width:22px;height:22px;"></i></div>
+        <div class="ch-list-info">
+          <div class="ch-list-name">고객지원</div>
+          <div class="ch-list-desc">제품 문의 및 기술 지원</div>
+        </div>
+        <div class="ch-list-meta"><div class="ch-status-dot active"></div><i data-lucide="chevron-right" style="width:16px;height:16px;color:var(--text-3);"></i></div>
+      </div>
+      <div class="ch-list-item" onclick="go('ch-setting')">
+        <div class="ch-list-icon"><i data-lucide="calendar-check" style="width:22px;height:22px;"></i></div>
+        <div class="ch-list-info">
+          <div class="ch-list-name">예약문의</div>
+          <div class="ch-list-desc">미팅 및 상담 예약 접수</div>
+        </div>
+        <div class="ch-list-meta"><div class="ch-status-dot active"></div><i data-lucide="chevron-right" style="width:16px;height:16px;color:var(--text-3);"></i></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ CHANNEL SETTING (Org) ══════ -->
+  <div class="screen" id="screen-ch-setting">
+    <div class="ctx-bar">
+      <div class="ctx-icon org"><i data-lucide="building-2" style="width:16px;height:16px;"></i></div>
+      <span class="ctx-name">주식회사 아테나</span>
+    </div>
+    <div class="header">
+      <button class="header-back" onclick="go('ch-manage')"><i data-lucide="arrow-left" style="width:24px;height:24px;"></i></button>
+      <span class="header-title">채널 설정</span>
+      <div class="header-right"><button class="header-btn" style="color:var(--primary);font-size:14px;font-weight:600;width:auto;padding:0 4px;">저장</button></div>
+    </div>
+    <div class="scroll-area" style="background:var(--surface);">
+      <div class="ch-setting-profile">
+        <div class="ch-setting-avatar"><i data-lucide="headphones" style="width:32px;height:32px;"></i></div>
+        <div class="ch-setting-name">고객지원</div>
+        <div class="ch-setting-desc-text">제품 문의 및 기술 지원</div>
+      </div>
+
+      <div class="ch-setting-section">
+        <div class="ch-setting-label">채널 정보</div>
+        <div class="ch-setting-card">
+          <div class="ch-setting-row"><span class="ch-setting-row-label">채널 이름</span><span class="ch-setting-row-value">고객지원</span></div>
+          <div class="ch-setting-row"><span class="ch-setting-row-label">소개글</span><span class="ch-setting-row-value">제품 문의 및 기술 지원</span></div>
+          <div class="ch-setting-row"><span class="ch-setting-row-label">운영시간</span><span class="ch-setting-row-value">평일 09:00–18:00</span></div>
+          <div class="ch-setting-row"><span class="ch-setting-row-label">공개 범위</span><span class="ch-setting-row-value">검색 공개</span></div>
+          <div class="ch-setting-row"><span class="ch-setting-row-label">자동 응답</span><span class="ch-setting-row-value">사용 중</span></div>
+        </div>
+      </div>
+
+      <div class="ch-setting-section">
+        <div class="ch-setting-label">담당자</div>
+        <div class="ch-setting-card">
+          <div class="ch-handler-item">
+            <div class="avatar" style="width:32px;height:32px;border-radius:10px;background:#dcfce7;color:#15803d;font-size:11px;">TH</div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:500;">Taehyun Kim</div></div>
+            <span class="ch-handler-role">주 담당</span>
+          </div>
+          <div class="ch-handler-item">
+            <div class="avatar" style="width:32px;height:32px;border-radius:10px;background:#dbeafe;color:#1d4ed8;font-size:11px;">JY</div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:500;">Jiyoung Park</div></div>
+            <span class="ch-handler-role">보조</span>
+          </div>
+          <div class="ch-handler-item" style="justify-content:center;border-bottom:none;">
+            <span style="font-size:14px;color:var(--primary);font-weight:500;cursor:pointer;">+ 담당자 추가</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:20px 16px;">
+        <button style="width:100%;height:44px;border:1px solid var(--error);border-radius:12px;background:none;color:var(--error);font-family:inherit;font-size:15px;font-weight:500;cursor:pointer;">채널 삭제</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ CHANNEL CHAT - ORG SIDE ══════ -->
+  <div class="screen" id="screen-ch-chat-org">
+    <div class="chat-room-header">
+      <button class="header-back" onclick="go('o-chat')"><i data-lucide="arrow-left" style="width:24px;height:24px;"></i></button>
+      <div style="flex:1;margin-left:4px;">
+        <div style="font-size:15px;font-weight:600;">이소영 <span class="ch-badge-ext">외부</span></div>
+        <div style="font-size:12px;color:var(--text-3);">고객지원 채널</div>
+      </div>
+      <div class="header-right">
+        <button class="header-btn" title="이관"><i data-lucide="arrow-right-left" style="width:20px;height:20px;"></i></button>
+        <button class="header-btn"><i data-lucide="more-vertical" style="width:20px;height:20px;"></i></button>
+      </div>
+    </div>
+    <div class="chat-room-body">
+      <div class="chat-bubble-row">
+        <div style="display:flex;flex-direction:column;">
+          <div class="chat-bubble-sender">이소영 (외부)</div>
+          <div style="display:flex;gap:6px;align-items:flex-end;">
+            <div class="chat-bubble other">안녕하세요, 지난주에 예약한 건 변경이 가능한가요?</div>
+            <span class="chat-bubble-time">오후 4:08</span>
+          </div>
+        </div>
+      </div>
+      <!-- 내부 메모 -->
+      <div class="chat-internal-note">
+        <div class="chat-internal-label">내부 메모 (외부 비공개)</div>
+        CRM 확인 → 3/15 예약건. 변경 가능 여부 확인 필요
+      </div>
+      <div class="chat-bubble-row">
+        <div style="display:flex;flex-direction:column;">
+          <div class="chat-bubble-sender">이소영 (외부)</div>
+          <div style="display:flex;gap:6px;align-items:flex-end;">
+            <div class="chat-bubble other">3월 15일 → 3월 20일로 변경하고 싶습니다</div>
+            <span class="chat-bubble-time">오후 4:10</span>
+          </div>
+        </div>
+      </div>
+      <div class="chat-bubble-row mine">
+        <span class="chat-bubble-time">오후 4:12</span>
+        <div class="chat-bubble mine">네, 확인해보겠습니다. 잠시만 기다려주세요!</div>
+      </div>
+    </div>
+    <div class="chat-input-bar">
+      <button style="background:none;border:none;color:var(--text-3);cursor:pointer;display:flex;align-items:center;" title="내부 메모"><i data-lucide="sticky-note" style="width:22px;height:22px;"></i></button>
+      <input class="chat-input-field" placeholder="메시지 입력..." />
+      <button class="chat-send-btn"><i data-lucide="send" style="width:18px;height:18px;"></i></button>
+    </div>
+  </div>
+
+  <!-- ══════ CHANNEL SEARCH (Personal) ══════ -->
+  <div class="screen" id="screen-ch-search">
+    <div class="ctx-bar">
+      <div class="ctx-icon personal"><i data-lucide="user" style="width:16px;height:16px;"></i></div>
+      <span class="ctx-name">개인</span>
+    </div>
+    <div class="header">
+      <button class="header-back" onclick="go('p-chat')"><i data-lucide="arrow-left" style="width:24px;height:24px;"></i></button>
+      <span class="header-title">채널 탐색</span>
+    </div>
+    <div class="ch-search-bar">
+      <div class="ch-search-wrap">
+        <span class="ch-search-icon"><i data-lucide="search" style="width:16px;height:16px;"></i></span>
+        <input class="ch-search-input" placeholder="채널 이름으로 검색" value="아테나" />
+      </div>
+    </div>
+    <div class="scroll-area">
+      <div class="ch-result-item" onclick="go('ch-profile')">
+        <div class="ch-result-icon"><i data-lucide="headphones" style="width:24px;height:24px;"></i></div>
+        <div class="ch-result-info">
+          <div class="ch-result-name">아테나 고객지원</div>
+          <div class="ch-result-org">주식회사 아테나</div>
+        </div>
+        <button class="ch-result-btn">채팅</button>
+      </div>
+      <div class="ch-result-item" onclick="go('ch-profile')">
+        <div class="ch-result-icon"><i data-lucide="calendar-check" style="width:24px;height:24px;"></i></div>
+        <div class="ch-result-info">
+          <div class="ch-result-name">아테나 예약문의</div>
+          <div class="ch-result-org">주식회사 아테나</div>
+        </div>
+        <button class="ch-result-btn">채팅</button>
+      </div>
+      <div class="ch-result-item">
+        <div class="ch-result-icon" style="background:#dcfce7;color:#15803d;"><i data-lucide="scissors" style="width:24px;height:24px;"></i></div>
+        <div class="ch-result-info">
+          <div class="ch-result-name">스타일살롱 예약</div>
+          <div class="ch-result-org">스타일살롱</div>
+        </div>
+        <button class="ch-result-btn">채팅</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ CHANNEL PROFILE (Personal) ══════ -->
+  <div class="screen" id="screen-ch-profile">
+    <div class="header">
+      <button class="header-back" onclick="go('ch-search')"><i data-lucide="arrow-left" style="width:24px;height:24px;"></i></button>
+      <span class="header-title">채널 정보</span>
+    </div>
+    <div class="scroll-area">
+      <div class="ch-profile-hero">
+        <div class="ch-profile-avatar"><i data-lucide="headphones" style="width:36px;height:36px;"></i></div>
+        <div class="ch-profile-name">아테나 고객지원</div>
+        <div class="ch-profile-org">주식회사 아테나</div>
+        <div class="ch-profile-desc">제품 관련 문의 및 기술 지원을 도와드립니다. 평일 업무시간에 빠르게 답변드려요.</div>
+      </div>
+      <div class="ch-profile-info-card">
+        <div class="ch-profile-info-row"><span class="ch-profile-info-label">운영시간</span><span class="ch-profile-info-value">평일 09:00–18:00</span></div>
+        <div class="ch-profile-info-row"><span class="ch-profile-info-label">카테고리</span><span class="ch-profile-info-value">IT·소프트웨어</span></div>
+      </div>
+      <div class="ch-profile-action">
+        <button class="btn-primary" onclick="go('ch-chat-personal')">채팅 시작</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ CHANNEL CHAT - PERSONAL SIDE ══════ -->
+  <div class="screen" id="screen-ch-chat-personal">
+    <div class="chat-room-header">
+      <button class="header-back" onclick="go('p-chat')"><i data-lucide="arrow-left" style="width:24px;height:24px;"></i></button>
+      <div style="display:flex;align-items:center;gap:10px;flex:1;margin-left:4px;cursor:pointer;" onclick="go('ch-profile')">
+        <div style="width:32px;height:32px;border-radius:10px;background:#eff6ff;color:#2563eb;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="headphones" style="width:18px;height:18px;"></i></div>
+        <div>
+          <div style="font-size:15px;font-weight:600;">아테나 고객지원 <span class="ch-badge">채널</span></div>
+        </div>
+      </div>
+      <div class="header-right"><button class="header-btn"><i data-lucide="more-vertical" style="width:20px;height:20px;"></i></button></div>
+    </div>
+    <div class="chat-room-body">
+      <div style="text-align:center;padding:8px 0;margin-bottom:8px;">
+        <span style="font-size:12px;color:var(--text-3);background:var(--bg);padding:4px 12px;border-radius:8px;">운영시간: 평일 09:00–18:00</span>
+      </div>
+      <div class="chat-bubble-row">
+        <div style="display:flex;flex-direction:column;">
+          <div class="chat-bubble-sender">아테나 고객지원</div>
+          <div style="display:flex;gap:6px;align-items:flex-end;">
+            <div class="chat-bubble other">안녕하세요! 아테나 고객지원입니다. 무엇을 도와드릴까요?</div>
+            <span class="chat-bubble-time">오후 12:50</span>
+          </div>
+        </div>
+      </div>
+      <div class="chat-bubble-row mine">
+        <span class="chat-bubble-time">오후 12:55</span>
+        <div class="chat-bubble mine">안녕하세요, 예약 변경이 가능한가요?</div>
+      </div>
+      <div class="chat-bubble-row">
+        <div style="display:flex;flex-direction:column;">
+          <div class="chat-bubble-sender">아테나 고객지원</div>
+          <div style="display:flex;gap:6px;align-items:flex-end;">
+            <div class="chat-bubble other">네, 예약 변경 도와드리겠습니다. 기존 예약 날짜와 변경 희망일을 알려주세요.</div>
+            <span class="chat-bubble-time">오후 1:00</span>
+          </div>
+        </div>
+      </div>
+      <div class="chat-bubble-row mine">
+        <span class="chat-bubble-time">오후 1:02</span>
+        <div class="chat-bubble mine">3월 15일 → 3월 20일로 변경하고 싶습니다</div>
+      </div>
+    </div>
+    <div class="chat-input-bar">
+      <input class="chat-input-field" placeholder="메시지 입력..." />
+      <button class="chat-send-btn"><i data-lucide="send" style="width:18px;height:18px;"></i></button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function go(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+    document.querySelectorAll('.flow-btn').forEach(b => b.classList.remove('active'));
+    const label = {
+      'login':'로그인','user-setup':'사용자 등록','ws-select':'WS 선택','ws-create':'WS 생성',
+      'ws-plugin':'플러그인 선택','p-home':'홈','p-home-empty':'홈(WS없음)','p-chat':'채팅',
+      'p-contacts':'연락처','p-more':'더보기','o-home':'홈','o-chat':'채팅',
+      'o-contacts':'연락처','o-workspace':'워크스페이스','o-more':'더보기',
+      'ch-manage':'채널 관리','ch-setting':'채널 설정','ch-chat-org':'외부 채팅(조직)',
+      'ch-search':'채널 탐색','ch-profile':'채널 프로필','ch-chat-personal':'채널 채팅(개인)'
+    }[id];
+    document.querySelectorAll('.flow-btn').forEach(b => {
+      if (b.textContent.trim() === label) {
+        const isPersonal = id.startsWith('p-');
+        const isOrg = id.startsWith('o-');
+        if ((!isPersonal && !isOrg) || (isPersonal && b.classList.contains('personal')) || (isOrg && b.classList.contains('org'))) {
+          b.classList.add('active');
+        }
+      }
+    });
+    lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });
+  }
+  function toggleSwitcher(id) {
+    document.getElementById(id).classList.toggle('show');
+  }
+  lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });
+</script>
+</body>
+</html>

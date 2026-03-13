@@ -1,0 +1,33 @@
+package com.maru.api.entity;
+
+import lombok.*;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
+
+import java.time.Instant;
+
+@Table("channel_managers")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+public class ChannelManagerEntity {
+
+    @Column("channel_id")
+    private String channelId;
+
+    @Column("profile_id")
+    private String profileId;
+
+    private ManagerRole role;
+
+    @Column("created_at")
+    private Instant createdAt;
+
+    @Column("updated_at")
+    private Instant updatedAt;
+
+    public enum ManagerRole {
+        PRIMARY, SECONDARY
+    }
+}

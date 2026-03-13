@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atena — Chat Drawer Components Preview</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* ─── Theme Variables ─── */
+  :root {
+    --bg: #ffffff; --surface: #fafafa; --surface-raised: #ffffff;
+    --border: #e5e5e5; --border-strong: #d4d4d4;
+    --text-1: #171717; --text-2: #525252; --text-3: #737373;
+    --neutral-400: #a3a3a3; --neutral-500: #737373;
+    --primary-50: #f5f3ff; --primary-100: #ede9fe; --primary-200: #ddd6fe;
+    --primary-300: #c4b5fd; --primary-500: #8b5cf6; --primary-600: #7c3aed;
+    --primary-700: #6d28d9; --primary-950: #2e1065;
+    --success: #22c55e; --warning: #eab308; --error: #ef4444; --error-light: #fee2e2; --info: #3b82f6;
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  body.dark {
+    --bg: #0a0a0a; --surface: #171717; --surface-raised: #262626;
+    --border: #262626; --border-strong: #404040;
+    --text-1: #fafafa; --text-2: #a3a3a3; --text-3: #737373;
+    --primary-50: rgba(124,58,237,0.1);
+    --error-light: rgba(239,68,68,0.15);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--surface); color: var(--text-1); padding: 40px;
+    line-height: 1.6; transition: all 0.2s;
+  }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 14px; color: var(--text-3); margin-bottom: 48px; }
+  .dark-toggle {
+    position: fixed; top: 16px; right: 16px; z-index: 200;
+    padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border-strong);
+    background: var(--surface-raised); color: var(--text-1);
+    font-family: 'Pretendard'; font-size: 12px; cursor: pointer;
+  }
+
+  /* ─── Section Shell ─── */
+  .comp {
+    margin-bottom: 56px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+  .comp-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .comp-title { font-size: 16px; font-weight: 600; }
+  .comp-num { font-size: 13px; color: var(--text-3); }
+  .comp-body { padding: 24px; }
+  .comp-body.gray { background: var(--surface); }
+  .comp-label {
+    font-size: 11px; font-weight: 600; color: var(--text-3);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; margin-top: 20px;
+  }
+  .comp-label:first-child { margin-top: 0; }
+
+  /* ─── Drawer Frame (300px) ─── */
+  .drawer-frame {
+    width: 300px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden;
+  }
+
+  /* ─── Card ─── */
+  .dr-card {
+    background: var(--bg); border-radius: 12px;
+    margin: 0 8px; overflow: hidden;
+  }
+  .dr-card + .dr-card { margin-top: 8px; }
+  .dr-card:first-child { margin-top: 8px; }
+  .dr-card:last-child { margin-bottom: 8px; }
+
+  /* ─── 2. Drawer Header ─── */
+  .dr-header {
+    height: 56px; background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 4px;
+  }
+  .dr-header-left { display: flex; align-items: center; }
+  .dr-header-right { display: flex; align-items: center; }
+  .dr-header-btn {
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    background: none; border: none; cursor: pointer;
+    border-radius: 8px; color: var(--text-2);
+  }
+
+  /* ─── 3. Room Profile ─── */
+  .dr-profile {
+    padding: 32px 16px 24px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .dr-profile-avatars {
+    display: flex; align-items: center; position: relative;
+    margin-bottom: 16px;
+  }
+  .dr-profile-avatar {
+    width: 56px; height: 56px; border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 600;
+    border: 2px solid var(--bg);
+  }
+  .dr-profile-avatar + .dr-profile-avatar {
+    margin-left: -16px; position: relative; z-index: 1;
+  }
+  .dr-profile-name {
+    font-size: 17px; font-weight: 600; color: var(--text-1);
+    text-align: center; max-width: 100%;
+    overflow: hidden; display: -webkit-box;
+    -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  }
+
+  /* ─── 4. Media Gallery ─── */
+  .dr-section-header {
+    height: 44px; padding: 0 16px;
+    display: flex; align-items: center; gap: 8px;
+    cursor: pointer;
+  }
+  .dr-section-icon { color: var(--text-3); display: flex; align-items: center; flex-shrink: 0; }
+  .dr-section-label { font-size: 15px; font-weight: 400; color: var(--text-1); }
+
+  .dr-media-scroll {
+    display: flex; gap: 4px; padding: 0 16px 16px;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+  }
+  .dr-media-scroll::-webkit-scrollbar { display: none; }
+  .dr-media-thumb {
+    width: 80px; height: 80px; min-width: 80px;
+    background: var(--surface); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; position: relative;
+  }
+  .dr-media-placeholder { color: var(--text-3); font-size: 11px; }
+  .dr-video-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.3);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .dr-video-duration {
+    position: absolute; bottom: 4px; right: 4px;
+    font-size: 11px; color: #fff;
+  }
+
+  /* ─── Card Divider ─── */
+  .dr-card-divider {
+    height: 1px; background: var(--border); margin: 0 16px;
+  }
+
+  /* ─── 5. Navigation Item ─── */
+  .dr-nav-item {
+    height: 44px; padding: 0 16px;
+    display: flex; align-items: center; gap: 8px;
+    cursor: pointer;
+  }
+  .dr-nav-item:active { background: var(--surface); }
+  .dr-nav-icon { color: var(--text-3); display: flex; align-items: center; flex-shrink: 0; }
+  .dr-nav-label { font-size: 15px; font-weight: 400; color: var(--text-1); }
+
+  /* ─── 6. Participant List ─── */
+  .dr-participant-header {
+    height: 44px; padding: 0 16px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .dr-participant-header-label { font-size: 14px; font-weight: 600; color: var(--text-2); }
+  .dr-participant-header-count { font-size: 14px; font-weight: 400; color: var(--text-3); }
+
+  .dr-participant {
+    height: 52px; padding: 0 16px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+  }
+  .dr-participant:active { background: var(--surface); }
+  .dr-participant-avatar {
+    width: 36px; height: 36px; min-width: 36px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; flex-shrink: 0;
+  }
+  .dr-participant-name {
+    font-size: 15px; font-weight: 400; color: var(--text-1);
+    flex: 1; min-width: 0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .dr-participant-role {
+    font-size: 12px; font-weight: 400; color: var(--text-3); flex-shrink: 0;
+  }
+
+  .dr-invite {
+    height: 52px; padding: 0 16px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+  }
+  .dr-invite:active { background: var(--surface); }
+  .dr-invite-icon {
+    width: 36px; height: 36px; min-width: 36px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--primary-50); color: var(--primary-600);
+  }
+  .dr-invite-text { font-size: 15px; font-weight: 400; color: var(--primary-600); }
+
+  /* ─── 7. Bottom Actions ─── */
+  .dr-actions {
+    padding: 8px 16px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .dr-action-btn {
+    height: 48px; border-radius: 8px; border: none;
+    display: flex; align-items: center; gap: 8px;
+    padding: 0 16px; cursor: pointer;
+    font-size: 15px; font-weight: 500; font-family: inherit;
+    background: transparent;
+  }
+  .dr-action-btn:active { background: var(--surface); }
+  .dr-action-btn.recreate { color: var(--text-2); }
+  .dr-action-btn.leave { color: var(--error); }
+  .dr-action-btn.leave:active { background: var(--error-light); }
+
+  /* ─── 8. Detail Header ─── */
+  .dt-header {
+    height: 56px; background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 16px 0 4px;
+  }
+  .dt-header-btn {
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    background: none; border: none; cursor: pointer;
+    border-radius: 8px; color: var(--text-2);
+  }
+  .dt-header-title {
+    font-size: 17px; font-weight: 600; color: var(--text-1);
+    margin-left: 4px;
+  }
+
+  /* ─── 9. Detail Tabs ─── */
+  .dt-tabs {
+    height: 44px; background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+  }
+  .dt-tab {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 500; color: var(--text-3);
+    cursor: pointer; position: relative;
+    background: none; border: none; font-family: inherit;
+  }
+  .dt-tab:active { background: var(--surface); }
+  .dt-tab.active { color: var(--primary-600); }
+  .dt-tab.active::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px; background: var(--primary-600);
+  }
+
+  /* ─── 10. List Items ─── */
+  /* 10-1. Media Grid */
+  .dt-media-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 2px; padding: 2px;
+  }
+  .dt-media-cell {
+    aspect-ratio: 1; background: var(--surface);
+    overflow: hidden; position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .dt-media-cell-placeholder { color: var(--text-3); font-size: 11px; }
+  .dt-video-grad {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 28px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.3));
+  }
+  .dt-video-time {
+    position: absolute; bottom: 6px; right: 6px;
+    font-size: 11px; color: #fff;
+  }
+
+  /* 10-2. File Item */
+  .dt-file-item {
+    height: 64px; padding: 0 16px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+  }
+  .dt-file-item:active { background: var(--surface); }
+  .dt-file-icon {
+    width: 40px; height: 40px; min-width: 40px;
+    background: var(--surface); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-3);
+  }
+  .dt-file-info { flex: 1; min-width: 0; }
+  .dt-file-name {
+    font-size: 15px; font-weight: 400; color: var(--text-1);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .dt-file-meta { font-size: 13px; font-weight: 400; color: var(--text-3); margin-top: 2px; }
+  .dt-file-divider { height: 1px; background: var(--border); margin-left: 68px; }
+
+  /* 10-3. Link Grid */
+  .dt-link-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 8px; padding: 12px;
+  }
+  .dt-link-card {
+    background: var(--surface); border-radius: 12px;
+    border: 1px solid var(--border); overflow: hidden;
+    cursor: pointer;
+  }
+  .dt-link-card:active { opacity: 0.8; }
+  .dt-link-og {
+    width: 100%; height: 80px; background: #e5e5e5;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  body.dark .dt-link-og { background: #262626; }
+  .dt-link-og-placeholder { color: var(--text-3); font-size: 11px; }
+  .dt-link-body { padding: 8px 10px; }
+  .dt-link-site {
+    font-size: 11px; font-weight: 400; color: var(--text-3);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .dt-link-title {
+    font-size: 13px; font-weight: 600; color: var(--text-1);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-top: 1px;
+  }
+  .dt-link-desc {
+    font-size: 12px; font-weight: 400; color: var(--text-2);
+    white-space: nowrap; text-overflow: ellipsis;
+    overflow: hidden; margin-top: 1px;
+  }
+
+  /* Empty State */
+  .dt-empty {
+    padding: 80px 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 8px;
+    color: var(--text-3);
+  }
+  .dt-empty-text { font-size: 14px; font-weight: 400; }
+
+  /* ─── Scroll Area ─── */
+  .dr-scroll-area {
+    flex: 1; overflow-y: auto; background: var(--surface);
+  }
+  .dr-scroll-area::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body>
+
+<button class="dark-toggle" onclick="document.body.classList.toggle('dark')">Light / Dark</button>
+
+<h1>Chat Drawer — Components Preview</h1>
+<p class="subtitle">채팅방 서랍 컴포넌트 프리뷰. 규격은 chat-drawer.md 참고.</p>
+
+
+<!-- ═══ 1. Drawer Container ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">1. Drawer Container</span>
+    <span class="comp-num">300px · 우측 슬라이드</span>
+  </div>
+  <div class="comp-body gray">
+    <div class="comp-label">BACKDROP + DRAWER</div>
+    <div style="width:375px; height:320px; border-radius:12px; overflow:hidden; border:1px solid var(--border); display:flex;">
+      <!-- Backdrop -->
+      <div style="flex:1; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center;">
+        <span style="font-size:11px; color:rgba(255,255,255,0.6);">← 탭: 닫기</span>
+      </div>
+      <!-- Drawer Panel -->
+      <div style="width:300px; background:var(--surface); display:flex; flex-direction:column;">
+        <div class="dr-header" style="flex-shrink:0;">
+          <div class="dr-header-left">
+            <button class="dr-header-btn"><i data-lucide="x" style="width:24px;height:24px;"></i></button>
+          </div>
+          <div class="dr-header-right">
+            <button class="dr-header-btn"><i data-lucide="bell" style="width:24px;height:24px;"></i></button>
+            <button class="dr-header-btn"><i data-lucide="settings" style="width:24px;height:24px;"></i></button>
+          </div>
+        </div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+          <span style="font-size:13px; color:var(--text-3);">Scrollable Content</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 2. Drawer Header ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">2. Drawer Header</span>
+    <span class="comp-num">56px · 닫기 + 알림 + 설정</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="comp-label" style="padding:20px 24px 0;">NOTIFICATION ON (DEFAULT)</div>
+    <div class="drawer-frame" style="border:none; border-radius:0; background:var(--bg);">
+      <div class="dr-header">
+        <div class="dr-header-left">
+          <button class="dr-header-btn"><i data-lucide="x" style="width:24px;height:24px;"></i></button>
+        </div>
+        <div class="dr-header-right">
+          <button class="dr-header-btn"><i data-lucide="bell" style="width:24px;height:24px;"></i></button>
+          <button class="dr-header-btn"><i data-lucide="settings" style="width:24px;height:24px;"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label" style="padding:20px 24px 0;">NOTIFICATION OFF</div>
+    <div class="drawer-frame" style="border:none; border-radius:0; background:var(--bg);">
+      <div class="dr-header">
+        <div class="dr-header-left">
+          <button class="dr-header-btn"><i data-lucide="x" style="width:24px;height:24px;"></i></button>
+        </div>
+        <div class="dr-header-right">
+          <button class="dr-header-btn"><i data-lucide="bell-off" style="width:24px;height:24px;"></i></button>
+          <button class="dr-header-btn"><i data-lucide="settings" style="width:24px;height:24px;"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 3. Room Profile ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">3. Room Profile</span>
+    <span class="comp-num">대화방 프로필</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="comp-label" style="padding:20px 24px 0;">1:1 CHAT</div>
+    <div class="drawer-frame" style="border:none; border-radius:0; background:var(--bg);">
+      <div class="dr-profile">
+        <div class="dr-profile-avatars">
+          <div class="dr-profile-avatar" style="background:var(--primary-100);color:var(--primary-600);">JY</div>
+        </div>
+        <div class="dr-profile-name">Jiyoung Park</div>
+      </div>
+    </div>
+
+    <div class="comp-label" style="padding:20px 24px 0;">GROUP CHAT (2 AVATARS)</div>
+    <div class="drawer-frame" style="border:none; border-radius:0; background:var(--bg);">
+      <div class="dr-profile">
+        <div class="dr-profile-avatars">
+          <div class="dr-profile-avatar" style="background:var(--primary-100);color:var(--primary-600);">JY</div>
+          <div class="dr-profile-avatar" style="background:#dbeafe;color:#1d4ed8;">SH</div>
+        </div>
+        <div class="dr-profile-name">프로젝트 논의방</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 4. Media Gallery ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">4. Media Gallery</span>
+    <span class="comp-num">가로 스크롤 미디어</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="comp-label" style="padding:20px 24px 0;">WITH MEDIA</div>
+    <div class="drawer-frame" style="border:none; border-radius:0; background:var(--bg);">
+      <div class="dr-section-header">
+        <span class="dr-section-icon"><i data-lucide="image" style="width:20px;height:20px;"></i></span>
+        <span class="dr-section-label">사진/동영상</span>
+      </div>
+      <div class="dr-media-scroll">
+        <div class="dr-media-thumb" style="background:#e0d4f5;"><span class="dr-media-placeholder">IMG</span></div>
+        <div class="dr-media-thumb" style="background:#d4e0f5;"><span class="dr-media-placeholder">IMG</span></div>
+        <div class="dr-media-thumb" style="background:#d4f5e0; position:relative;">
+          <span class="dr-media-placeholder">VID</span>
+          <div class="dr-video-overlay"><i data-lucide="play" style="width:24px;height:24px;color:#fff;"></i></div>
+          <span class="dr-video-duration">1:24</span>
+        </div>
+        <div class="dr-media-thumb" style="background:#f5e0d4;"><span class="dr-media-placeholder">IMG</span></div>
+        <div class="dr-media-thumb" style="background:#f5d4e0;"><span class="dr-media-placeholder">IMG</span></div>
+        <div class="dr-media-thumb" style="background:#f5f0d4;"><span class="dr-media-placeholder">IMG</span></div>
+      </div>
+    </div>
+
+    <div class="comp-label" style="padding:20px 24px 0;">EMPTY (HEADER ONLY)</div>
+    <div class="drawer-frame" style="border:none; border-radius:0; background:var(--bg);">
+      <div class="dr-section-header">
+        <span class="dr-section-icon"><i data-lucide="image" style="width:20px;height:20px;"></i></span>
+        <span class="dr-section-label">사진/동영상</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 5. Navigation Items ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">5. Navigation Items</span>
+    <span class="comp-num">44px · 상세 화면 이동</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="drawer-frame" style="border:none; border-radius:0; background:var(--bg);">
+      <div class="dr-nav-item">
+        <span class="dr-nav-icon"><i data-lucide="file" style="width:20px;height:20px;"></i></span>
+        <span class="dr-nav-label">파일</span>
+      </div>
+      <div class="dr-nav-item">
+        <span class="dr-nav-icon"><i data-lucide="link" style="width:20px;height:20px;"></i></span>
+        <span class="dr-nav-label">링크</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 6. Participant List ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">6. Participant List</span>
+    <span class="comp-num">참여자 목록</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="drawer-frame" style="border:none; border-radius:0; background:var(--bg);">
+      <div class="dr-participant-header">
+        <span class="dr-participant-header-label">대화상대</span>
+        <span class="dr-participant-header-count">3</span>
+      </div>
+
+      <div class="dr-invite">
+        <div class="dr-invite-icon">
+          <i data-lucide="plus" style="width:20px;height:20px;"></i>
+        </div>
+        <span class="dr-invite-text">초대하기</span>
+      </div>
+
+      <div class="dr-participant">
+        <div class="dr-participant-avatar" style="background:var(--primary-100);color:var(--primary-600);">JY</div>
+        <span class="dr-participant-name">Jiyoung Park</span>
+        <span class="dr-participant-role">호스트</span>
+      </div>
+      <div class="dr-participant">
+        <div class="dr-participant-avatar" style="background:#dbeafe;color:#1d4ed8;">SH</div>
+        <span class="dr-participant-name">Sunghoon Lee</span>
+      </div>
+      <div class="dr-participant">
+        <div class="dr-participant-avatar" style="background:#fef3c7;color:#92400e;">MK</div>
+        <span class="dr-participant-name">Mikyung Choi</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 7. Bottom Actions ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">7. Bottom Actions</span>
+    <span class="comp-num">하단 액션 버튼</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="drawer-frame" style="border:none; border-radius:0; background:var(--bg);">
+      <div class="dr-actions">
+        <button class="dr-action-btn recreate">
+          <i data-lucide="refresh-cw" style="width:20px;height:20px;"></i>
+          채팅방 다시 만들기
+        </button>
+        <button class="dr-action-btn leave">
+          <i data-lucide="log-out" style="width:20px;height:20px;"></i>
+          채팅방 나가기
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 8. Detail Header ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">8. Detail Header</span>
+    <span class="comp-num">56px · 뒤로가기 + 제목</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="drawer-frame" style="border:none; border-radius:0; background:var(--bg);">
+      <div class="dt-header">
+        <button class="dt-header-btn"><i data-lucide="chevron-left" style="width:24px;height:24px;"></i></button>
+        <span class="dt-header-title">사진/동영상</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 9. Detail Tabs ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">9. Detail Tabs</span>
+    <span class="comp-num">44px · 3탭</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="drawer-frame" style="border:none; border-radius:0; background:var(--bg);">
+      <div class="dt-tabs">
+        <button class="dt-tab active">사진/동영상</button>
+        <button class="dt-tab">파일</button>
+        <button class="dt-tab">링크</button>
+      </div>
+    </div>
+
+    <div class="comp-label" style="padding:20px 24px 0;">FILE TAB ACTIVE</div>
+    <div class="drawer-frame" style="border:none; border-radius:0; background:var(--bg);">
+      <div class="dt-tabs">
+        <button class="dt-tab">사진/동영상</button>
+        <button class="dt-tab active">파일</button>
+        <button class="dt-tab">링크</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 10. List Items ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">10. List Items</span>
+    <span class="comp-num">탭별 콘텐츠</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+
+    <div class="comp-label" style="padding:20px 24px 0;">10-1. MEDIA GRID</div>
+    <div class="drawer-frame" style="border:none; border-radius:0; background:var(--bg);">
+      <div class="dt-media-grid">
+        <div class="dt-media-cell" style="background:#e0d4f5;"><span class="dt-media-cell-placeholder">IMG</span></div>
+        <div class="dt-media-cell" style="background:#d4e0f5;"><span class="dt-media-cell-placeholder">IMG</span></div>
+        <div class="dt-media-cell" style="background:#d4f5e0;">
+          <span class="dt-media-cell-placeholder">VID</span>
+          <div class="dt-video-grad"></div>
+          <span class="dt-video-time">1:24</span>
+        </div>
+        <div class="dt-media-cell" style="background:#f5e0d4;"><span class="dt-media-cell-placeholder">IMG</span></div>
+        <div class="dt-media-cell" style="background:#f5d4e0;"><span class="dt-media-cell-placeholder">IMG</span></div>
+        <div class="dt-media-cell" style="background:#f5f0d4;"><span class="dt-media-cell-placeholder">IMG</span></div>
+        <div class="dt-media-cell" style="background:#d4f5f0;"><span class="dt-media-cell-placeholder">IMG</span></div>
+        <div class="dt-media-cell" style="background:#e0d4f5;"><span class="dt-media-cell-placeholder">IMG</span></div>
+        <div class="dt-media-cell" style="background:#d4e0f5;">
+          <span class="dt-media-cell-placeholder">VID</span>
+          <div class="dt-video-grad"></div>
+          <span class="dt-video-time">3:07</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label" style="padding:20px 24px 0;">10-2. FILE LIST</div>
+    <div class="drawer-frame" style="border:none; border-radius:0; background:var(--bg);">
+      <div class="dt-file-item">
+        <div class="dt-file-icon"><i data-lucide="file-text" style="width:20px;height:20px;"></i></div>
+        <div class="dt-file-info">
+          <div class="dt-file-name">프로젝트 기획서.pdf</div>
+          <div class="dt-file-meta">2.4 MB · 2024.03.15</div>
+        </div>
+      </div>
+      <div class="dt-file-divider"></div>
+      <div class="dt-file-item">
+        <div class="dt-file-icon"><i data-lucide="file-text" style="width:20px;height:20px;"></i></div>
+        <div class="dt-file-info">
+          <div class="dt-file-name">회의록_20240312.docx</div>
+          <div class="dt-file-meta">156 KB · 2024.03.12</div>
+        </div>
+      </div>
+      <div class="dt-file-divider"></div>
+      <div class="dt-file-item">
+        <div class="dt-file-icon"><i data-lucide="file-text" style="width:20px;height:20px;"></i></div>
+        <div class="dt-file-info">
+          <div class="dt-file-name">디자인_가이드라인_v2_최종_수정본.sketch</div>
+          <div class="dt-file-meta">48.7 MB · 2024.03.10</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label" style="padding:20px 24px 0;">10-3. LINK GRID</div>
+    <div class="drawer-frame" style="border:none; border-radius:0; background:var(--bg);">
+      <div class="dt-link-grid">
+        <div class="dt-link-card">
+          <div class="dt-link-og"><span class="dt-link-og-placeholder">OG</span></div>
+          <div class="dt-link-body">
+            <div class="dt-link-site">material.io</div>
+            <div class="dt-link-title">Material Design</div>
+            <div class="dt-link-desc">구글 디자인 시스템 가이드라인 및 컴포넌트 문서</div>
+          </div>
+        </div>
+        <div class="dt-link-card">
+          <div class="dt-link-og"><span class="dt-link-og-placeholder">OG</span></div>
+          <div class="dt-link-body">
+            <div class="dt-link-site">figma.com</div>
+            <div class="dt-link-title">Atena Design System</div>
+            <div class="dt-link-desc">디자인 시스템 파일입니다</div>
+          </div>
+        </div>
+        <div class="dt-link-card">
+          <div class="dt-link-og"><span class="dt-link-og-placeholder">OG</span></div>
+          <div class="dt-link-body">
+            <div class="dt-link-site">github.com</div>
+            <div class="dt-link-title">atena/design-system</div>
+            <div class="dt-link-desc">디자인 시스템 토큰 및 규격 저장소</div>
+          </div>
+        </div>
+        <div class="dt-link-card">
+          <div class="dt-link-og"><span class="dt-link-og-placeholder">OG</span></div>
+          <div class="dt-link-body">
+            <div class="dt-link-site">docs.example.com</div>
+            <div class="dt-link-title">API Reference v2</div>
+            <div class="dt-link-desc">REST API 문서 및 엔드포인트 레퍼런스</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label" style="padding:20px 24px 0;">EMPTY STATE</div>
+    <div class="drawer-frame" style="border:none; border-radius:0; background:var(--bg);">
+      <div class="dt-empty">
+        <i data-lucide="image" style="width:40px;height:40px;"></i>
+        <span class="dt-empty-text">사진/동영상이 없습니다</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ BONUS: Detail Full Assembly ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">Detail Full Assembly</span>
+    <span class="comp-num">상세 화면 전체 조합</span>
+  </div>
+  <div class="comp-body gray" style="padding:24px;">
+    <div class="drawer-frame" style="max-height:600px; display:flex; flex-direction:column;">
+      <div class="dt-header" style="flex-shrink:0;">
+        <button class="dt-header-btn"><i data-lucide="chevron-left" style="width:24px;height:24px;"></i></button>
+        <span class="dt-header-title">사진/동영상</span>
+      </div>
+      <div class="dt-tabs" style="flex-shrink:0;">
+        <button class="dt-tab active">사진/동영상</button>
+        <button class="dt-tab">파일</button>
+        <button class="dt-tab">링크</button>
+      </div>
+      <div style="flex:1; overflow-y:auto;">
+        <div class="dt-media-grid">
+          <div class="dt-media-cell" style="background:#e0d4f5;"><span class="dt-media-cell-placeholder">IMG</span></div>
+          <div class="dt-media-cell" style="background:#d4e0f5;"><span class="dt-media-cell-placeholder">IMG</span></div>
+          <div class="dt-media-cell" style="background:#d4f5e0;">
+            <span class="dt-media-cell-placeholder">VID</span>
+            <div class="dt-video-grad"></div>
+            <span class="dt-video-time">1:24</span>
+          </div>
+          <div class="dt-media-cell" style="background:#f5e0d4;"><span class="dt-media-cell-placeholder">IMG</span></div>
+          <div class="dt-media-cell" style="background:#f5d4e0;"><span class="dt-media-cell-placeholder">IMG</span></div>
+          <div class="dt-media-cell" style="background:#f5f0d4;"><span class="dt-media-cell-placeholder">IMG</span></div>
+          <div class="dt-media-cell" style="background:#d4f5f0;"><span class="dt-media-cell-placeholder">IMG</span></div>
+          <div class="dt-media-cell" style="background:#e0d4f5;"><span class="dt-media-cell-placeholder">IMG</span></div>
+          <div class="dt-media-cell" style="background:#d4e0f5;">
+            <span class="dt-media-cell-placeholder">VID</span>
+            <div class="dt-video-grad"></div>
+            <span class="dt-video-time">3:07</span>
+          </div>
+          <div class="dt-media-cell" style="background:#f5e0d4;"><span class="dt-media-cell-placeholder">IMG</span></div>
+          <div class="dt-media-cell" style="background:#d4e0f5;"><span class="dt-media-cell-placeholder">IMG</span></div>
+          <div class="dt-media-cell" style="background:#e0d4f5;"><span class="dt-media-cell-placeholder">IMG</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ BONUS: Full Assembly ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">Full Assembly</span>
+    <span class="comp-num">전체 조합 프리뷰</span>
+  </div>
+  <div class="comp-body gray" style="padding:24px;">
+    <div class="drawer-frame" style="max-height:750px; display:flex; flex-direction:column;">
+
+      <!-- Header (고정) -->
+      <div class="dr-header" style="flex-shrink:0;">
+        <div class="dr-header-left">
+          <button class="dr-header-btn"><i data-lucide="x" style="width:24px;height:24px;"></i></button>
+        </div>
+        <div class="dr-header-right">
+          <button class="dr-header-btn"><i data-lucide="bell" style="width:24px;height:24px;"></i></button>
+          <button class="dr-header-btn"><i data-lucide="settings" style="width:24px;height:24px;"></i></button>
+        </div>
+      </div>
+
+      <!-- Scrollable Content -->
+      <div class="dr-scroll-area">
+
+        <!-- Card: Room Profile -->
+        <div class="dr-card">
+          <div class="dr-profile">
+            <div class="dr-profile-avatars">
+              <div class="dr-profile-avatar" style="background:var(--primary-100);color:var(--primary-600);">JY</div>
+              <div class="dr-profile-avatar" style="background:#dbeafe;color:#1d4ed8;">SH</div>
+            </div>
+            <div class="dr-profile-name">프로젝트 논의방</div>
+          </div>
+        </div>
+
+        <!-- Card: Media + Nav -->
+        <div class="dr-card">
+          <div class="dr-section-header">
+            <span class="dr-section-icon"><i data-lucide="image" style="width:20px;height:20px;"></i></span>
+            <span class="dr-section-label">사진/동영상</span>
+          </div>
+          <div class="dr-media-scroll">
+            <div class="dr-media-thumb" style="background:#e0d4f5;"><span class="dr-media-placeholder">IMG</span></div>
+            <div class="dr-media-thumb" style="background:#d4e0f5;"><span class="dr-media-placeholder">IMG</span></div>
+            <div class="dr-media-thumb" style="background:#d4f5e0; position:relative;">
+              <span class="dr-media-placeholder">VID</span>
+              <div class="dr-video-overlay"><i data-lucide="play" style="width:24px;height:24px;color:#fff;"></i></div>
+              <span class="dr-video-duration">1:24</span>
+            </div>
+            <div class="dr-media-thumb" style="background:#f5e0d4;"><span class="dr-media-placeholder">IMG</span></div>
+            <div class="dr-media-thumb" style="background:#f5d4e0;"><span class="dr-media-placeholder">IMG</span></div>
+          </div>
+          <div class="dr-card-divider"></div>
+          <div class="dr-nav-item">
+            <span class="dr-nav-icon"><i data-lucide="file" style="width:20px;height:20px;"></i></span>
+            <span class="dr-nav-label">파일</span>
+          </div>
+          <div class="dr-nav-item">
+            <span class="dr-nav-icon"><i data-lucide="link" style="width:20px;height:20px;"></i></span>
+            <span class="dr-nav-label">링크</span>
+          </div>
+        </div>
+
+        <!-- Card: Participants -->
+        <div class="dr-card">
+          <div class="dr-participant-header">
+            <span class="dr-participant-header-label">대화상대</span>
+            <span class="dr-participant-header-count">3</span>
+          </div>
+          <div class="dr-invite">
+            <div class="dr-invite-icon">
+              <i data-lucide="plus" style="width:20px;height:20px;"></i>
+            </div>
+            <span class="dr-invite-text">초대하기</span>
+          </div>
+          <div class="dr-participant">
+            <div class="dr-participant-avatar" style="background:var(--primary-100);color:var(--primary-600);">JY</div>
+            <span class="dr-participant-name">Jiyoung Park</span>
+            <span class="dr-participant-role">호스트</span>
+          </div>
+          <div class="dr-participant">
+            <div class="dr-participant-avatar" style="background:#dbeafe;color:#1d4ed8;">SH</div>
+            <span class="dr-participant-name">Sunghoon Lee</span>
+          </div>
+          <div class="dr-participant">
+            <div class="dr-participant-avatar" style="background:#fef3c7;color:#92400e;">MK</div>
+            <span class="dr-participant-name">Mikyung Choi</span>
+          </div>
+        </div>
+
+        <!-- Card: Bottom Actions -->
+        <div class="dr-card">
+          <div class="dr-actions">
+            <button class="dr-action-btn recreate">
+              <i data-lucide="refresh-cw" style="width:20px;height:20px;"></i>
+              채팅방 다시 만들기
+            </button>
+            <button class="dr-action-btn leave">
+              <i data-lucide="log-out" style="width:20px;height:20px;"></i>
+              채팅방 나가기
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });
+</script>
+</body>
+</html>

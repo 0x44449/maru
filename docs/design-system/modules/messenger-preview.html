@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atena — Messenger Components Preview</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #ffffff; --surface: #fafafa; --surface-raised: #ffffff;
+    --border: #e5e5e5; --border-strong: #d4d4d4;
+    --text-1: #171717; --text-2: #525252; --text-3: #737373;
+    --primary-50: #f5f3ff; --primary-100: #ede9fe; --primary-200: #ddd6fe; --primary-300: #c4b5fd;
+    --primary-500: #8b5cf6; --primary-600: #7c3aed; --primary-700: #6d28d9; --primary-950: #2e1065;
+    --success: #22c55e; --warning: #eab308; --error: #ef4444; --info: #3b82f6;
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  body.dark {
+    --bg: #0a0a0a; --surface: #171717; --surface-raised: #262626;
+    --border: #262626; --border-strong: #404040;
+    --text-1: #fafafa; --text-2: #a3a3a3; --text-3: #737373;
+    --primary-50: rgba(124,58,237,0.1);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--surface); color: var(--text-1); padding: 40px;
+    line-height: 1.6; transition: all 0.2s;
+  }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 14px; color: var(--text-3); margin-bottom: 48px; }
+  .dark-toggle {
+    position: fixed; top: 16px; right: 16px; z-index: 200;
+    padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border-strong);
+    background: var(--surface-raised); color: var(--text-1);
+    font-family: 'Pretendard'; font-size: 12px; cursor: pointer;
+  }
+
+  /* Component section */
+  .comp {
+    margin-bottom: 56px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+  .comp-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .comp-title { font-size: 16px; font-weight: 600; }
+  .comp-num { font-size: 13px; color: var(--text-3); }
+  .comp-body { padding: 24px; }
+  .comp-body.gray { background: var(--surface); }
+  .comp-label {
+    font-size: 11px; font-weight: 600; color: var(--text-3);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; margin-top: 20px;
+  }
+  .comp-label:first-child { margin-top: 0; }
+  .comp-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+  .comp-row:last-child { margin-bottom: 0; }
+  .comp-tag { font-size: 11px; color: var(--text-3); min-width: 60px; }
+
+  /* ─── 1. Presence Indicator ─── */
+  .presence-wrap { position: relative; display: inline-block; }
+  .avatar-circle {
+    width: 48px; height: 48px; border-radius: 16px; display: flex;
+    align-items: center; justify-content: center; font-weight: 600; font-size: 16px;
+  }
+  .presence-dot {
+    position: absolute; bottom: 0; right: 0; width: 10px; height: 10px;
+    border-radius: 99px; border: 2px solid var(--bg);
+  }
+
+  /* ─── 2. Notification Badge ─── */
+  .notif-badge {
+    height: 20px; min-width: 20px; padding: 0 6px; border-radius: 99px;
+    background: var(--error); color: #fff; font-size: 11px; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .notif-dot { width: 10px; height: 10px; border-radius: 99px; background: var(--error); display: inline-block; }
+
+  /* ─── 3. Date Divider ─── */
+  .date-divider {
+    display: flex; align-items: center; gap: 16px; font-size: 12px;
+    font-weight: 500; color: var(--text-3);
+  }
+  .date-divider::before, .date-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* ─── 4. System Message ─── */
+  .sys-msg { text-align: center; font-size: 12px; color: var(--text-3); }
+
+  /* ─── 5. Message Bubble ─── */
+  .bubble-wrap { max-width: 100%; }
+  .bubble {
+    max-width: 320px; padding: 10px 14px; font-size: 15px; line-height: 1.5;
+    word-break: break-word; display: inline-block;
+  }
+  .bubble.sent {
+    background: var(--primary-600); color: #fff;
+    border-radius: 16px;
+  }
+  .bubble.received {
+    background: var(--surface-raised); border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+
+  .msg-r { display: flex; justify-content: flex-end; align-items: flex-end; gap: 4px; }
+  .msg-l { display: flex; justify-content: flex-start; align-items: flex-end; gap: 4px; }
+
+  /* 메타: 버블 옆에 배치 (sent=왼쪽, received=오른쪽) */
+  .msg-meta {
+    font-size: 11px; display: flex; flex-direction: column;
+    align-items: flex-end; gap: 0; color: var(--text-3);
+    flex-shrink: 0; padding-bottom: 2px; line-height: 1.3;
+  }
+  .unread-count {
+    font-size: 11px; font-weight: 700; color: var(--primary-600);
+  }
+  body.dark .unread-count { color: var(--primary-300); }
+
+  /* ─── 6. Composed Message ─── */
+  .msg-composed {
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+  .msg-composed-body { min-width: 0; }
+  .msg-composed-name {
+    font-size: 13px; font-weight: 600; margin-bottom: 4px;
+  }
+
+  /* Image bubble */
+  .img-bubble {
+    max-width: 280px; border-radius: 16px; overflow: hidden;
+    display: inline-block;
+  }
+  .img-placeholder {
+    width: 280px; height: 180px; background: var(--primary-50);
+    display: flex; align-items: center; justify-content: center; color: var(--primary-600);
+  }
+  body.dark .img-placeholder { background: rgba(124,58,237,0.15); color: var(--primary-300); }
+
+  /* File bubble */
+  .file-bubble {
+    display: inline-flex; align-items: center; gap: 12px; padding: 12px 14px;
+    max-width: 280px;
+  }
+  .file-info .file-name { font-size: 14px; font-weight: 500; }
+  .file-info .file-size { font-size: 12px; margin-top: 2px; }
+  .bubble.sent .file-size { color: rgba(255,255,255,0.6); }
+  .bubble.received .file-size { color: var(--text-3); }
+
+  /* Link preview — 별도 카드 형태 */
+  .link-preview-card {
+    width: 280px; border-radius: 16px; overflow: hidden;
+    border: 1px solid var(--border); background: var(--surface-raised);
+  }
+  .lp-img {
+    width: 100%; height: 120px; background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-3); font-size: 12px;
+  }
+  .lp-body { padding: 10px 14px; }
+  .lp-site { font-size: 12px; color: var(--text-3); margin-bottom: 2px; }
+  .lp-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; color: var(--text-1); }
+  .lp-desc { font-size: 13px; color: var(--text-2); }
+
+  /* Multi image */
+  .multi-img { display: grid; gap: 2px; width: 280px; border-radius: 16px; overflow: hidden; }
+  .multi-img.g2 { grid-template-columns: 1fr 1fr; }
+  .multi-img.g3 { grid-template-columns: 1fr 1fr; }
+  .multi-img.g3 .mi:first-child { grid-column: 1 / -1; height: 160px; }
+  .multi-img.g3 .mi:not(:first-child) { height: 100px; }
+  .multi-img.g4 { grid-template-columns: 1fr 1fr; }
+  .multi-img.g5 { grid-template-columns: 1fr 1fr 1fr; }
+  .multi-img.g5 .mi:nth-child(-n+2) { grid-column: span 1; height: 140px; }
+  .multi-img.g5 .mi:nth-child(1) { grid-column: 1 / 3; }
+  .multi-img.g5 .mi:nth-child(2) { grid-column: 3 / 4; }
+  .multi-img.g5 .mi:nth-child(n+3) { height: 90px; }
+  .multi-img.g6 { grid-template-columns: 1fr 1fr 1fr; }
+  .multi-img.g7 { grid-template-columns: 1fr 1fr 1fr; }
+  .multi-img.g7 .mi:first-child { grid-column: 1 / -1; height: 140px; }
+  .multi-img.g7 .mi:not(:first-child) { height: 90px; }
+  .multi-img.g8 { grid-template-columns: 1fr 1fr 1fr; }
+  .multi-img.g8 .mi:nth-child(-n+2) { height: 140px; }
+  .multi-img.g8 .mi:nth-child(1) { grid-column: 1 / 3; }
+  .multi-img.g8 .mi:nth-child(2) { grid-column: 3 / 4; }
+  .multi-img.g8 .mi:nth-child(n+3) { height: 90px; }
+  .multi-img.g9 { grid-template-columns: 1fr 1fr 1fr; }
+  .multi-img .mi {
+    background: var(--primary-50); display: flex; align-items: center;
+    justify-content: center; color: var(--primary-600); font-size: 12px; height: 90px;
+  }
+  .multi-img.g2 .mi { height: 140px; }
+  .multi-img.g4 .mi { height: 140px; }
+  body.dark .multi-img .mi { background: rgba(124,58,237,0.15); color: var(--primary-300); }
+  .multi-img .mi.overlay { position: relative; }
+  .multi-img .mi.overlay::after {
+    content: attr(data-extra); position: absolute; inset: 0;
+    background: rgba(0,0,0,0.5); color: #fff; font-size: 20px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ─── 7. Message Reply ─── */
+  .reply-bubble {
+    max-width: 320px; border-radius: 16px; overflow: hidden; display: inline-block;
+  }
+  .reply-bubble.sent { background: var(--primary-600); color: #fff; }
+  .reply-bubble.received { background: var(--surface-raised); border: 1px solid var(--border); color: var(--text-1); }
+  .reply-origin {
+    padding: 10px 14px; font-size: 13px; line-height: 1.4;
+  }
+  .reply-bubble.sent .reply-origin {
+    background: rgba(0,0,0,0.12); color: rgba(255,255,255,0.75);
+  }
+  .reply-bubble.received .reply-origin {
+    background: rgba(0,0,0,0.03); color: var(--text-2);
+  }
+  body.dark .reply-bubble.received .reply-origin {
+    background: rgba(255,255,255,0.05);
+  }
+  .reply-origin .rp-name { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+  .reply-bubble.sent .rp-name { color: var(--primary-200); }
+  .reply-bubble.received .rp-name { color: var(--primary-600); }
+  body.dark .reply-bubble.received .rp-name { color: var(--primary-300); }
+  .reply-origin .rp-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .reply-body {
+    padding: 10px 14px; font-size: 15px; line-height: 1.5; word-break: break-word;
+  }
+
+  /* ─── 8. Mention ─── */
+  .mention { font-weight: 600; cursor: pointer; }
+  .bubble.sent .mention, .reply-bubble.sent .reply-body .mention { color: var(--primary-950); }
+  .bubble.received .mention, .reply-bubble.received .reply-body .mention { color: #2563eb; }
+  body.dark .bubble.received .mention, body.dark .reply-bubble.received .reply-body .mention { color: var(--primary-300); }
+
+  /* ─── 9. Message Reaction ─── */
+  .reactions { display: flex; gap: 4px; }
+  .rx-chip {
+    height: 28px; padding: 4px 8px; border-radius: 99px; font-size: 13px;
+    background: var(--surface); border: 1px solid var(--border);
+    display: flex; align-items: center; gap: 4px; cursor: pointer;
+  }
+  .rx-chip.mine { background: var(--primary-100); border-color: var(--primary-500); }
+  body.dark .rx-chip.mine { background: rgba(124,58,237,0.2); border-color: var(--primary-500); }
+
+  /* ─── 10. Typing Indicator ─── */
+  .typing { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-3); }
+  .typing-ava {
+    width: 24px; height: 24px; border-radius: 99px; display: flex;
+    align-items: center; justify-content: center; font-size: 9px; font-weight: 600;
+  }
+  .typing-dots { display: flex; gap: 3px; }
+  .typing-dots span {
+    width: 5px; height: 5px; border-radius: 99px; background: var(--text-3);
+    animation: bounce 0.6s infinite alternate;
+  }
+  .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes bounce { to { transform: translateY(-4px); opacity: 0.4; } }
+
+  /* ─── 11. Message Input ─── */
+  .msg-input-wrap {
+    max-width: 560px;
+  }
+  .msg-input-area {
+    min-height: 48px; padding: 6px 8px;
+    display: flex; align-items: flex-end; gap: 4px;
+  }
+  .msg-input-area button {
+    width: 36px; height: 36px; border: none; background: none;
+    border-radius: 8px; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0;
+  }
+  .msg-input-field {
+    flex: 1; min-width: 0; display: flex; align-items: center;
+    background: var(--surface-raised); border: 1px solid var(--border);
+    border-radius: 20px; padding: 8px 14px; gap: 8px;
+  }
+  .msg-input-field textarea {
+    flex: 1; border: none; outline: none; font-family: 'Pretendard';
+    font-size: 15px; line-height: 1.5; resize: none; background: transparent;
+    color: var(--text-1); min-height: 22px; max-height: 120px;
+    field-sizing: content; overflow-y: auto;
+  }
+  .msg-input-field textarea::placeholder { color: var(--text-3); }
+  .msg-input-area .send-btn {
+    width: 36px; height: 36px; border: none; background: var(--border);
+    border-radius: 50%; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0; color: var(--text-3); opacity: 0.5;
+  }
+  .msg-input-area .send-btn.active {
+    background: var(--primary-600); color: #fff; opacity: 1;
+  }
+  .reply-chip {
+    display: flex; align-items: center; gap: 6px; padding: 8px 12px;
+    background: var(--surface); border-radius: 12px; font-size: 13px; color: var(--text-2);
+    margin: 0 8px; border: 1px solid var(--border);
+  }
+  body.dark .reply-chip { background: rgba(255,255,255,0.08); }
+  .reply-chip .rb-ind { width: 2px; height: 28px; background: var(--primary-500); border-radius: 1px; flex-shrink: 0; }
+  .reply-chip .rb-content { flex: 1; min-width: 0; }
+  .reply-chip .rb-name { font-size: 12px; font-weight: 600; color: var(--primary-600); }
+  body.dark .reply-chip .rb-name { color: var(--primary-300); }
+  .reply-chip .rb-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; }
+
+  /* ─── 13. Chat Header ─── */
+  .chat-header {
+    height: 56px; background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 4px;
+  }
+  .header-btn {
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    background: none; border: none; cursor: pointer;
+    border-radius: 8px; color: var(--text-2);
+  }
+  .header-title-area { flex: 1; overflow: hidden; padding: 0 4px; }
+  .header-title-row { display: flex; align-items: baseline; gap: 4px; }
+  .header-title {
+    font-size: 17px; font-weight: 600; color: var(--text-1);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .header-count { font-size: 13px; font-weight: 400; color: var(--text-3); flex-shrink: 0; }
+  .search-header {
+    height: 56px; background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 12px 0 16px; gap: 4px;
+  }
+  .search-field {
+    flex: 1; height: 36px;
+    background: var(--surface-raised); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .search-field .search-icon { color: var(--text-3); flex-shrink: 0; }
+  .search-field input {
+    flex: 1; border: none; outline: none; background: transparent;
+    font-family: inherit; font-size: 14px; color: var(--text-1);
+  }
+  .search-field input::placeholder { color: var(--text-3); }
+  .search-clear {
+    background: none; border: none; cursor: pointer; padding: 0;
+    color: var(--text-3); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .search-cancel {
+    font-size: 14px; color: var(--primary-600); font-weight: 500;
+    background: none; border: none; cursor: pointer;
+    padding: 0 12px; font-family: inherit; white-space: nowrap;
+  }
+  body.dark .search-cancel { color: var(--primary-300); }
+  .search-nav {
+    height: 44px; background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 16px; font-size: 13px; color: var(--text-3);
+  }
+  .search-nav-arrows { display: flex; gap: 4px; }
+  .search-nav-btn {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: none; border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text-2);
+  }
+
+  /* ─── 14. Scroll to Bottom ─── */
+  .scroll-bottom-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--surface-raised); border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text-2); position: relative;
+  }
+  .scroll-badge {
+    position: absolute; top: -8px; right: -4px;
+    background: var(--error); color: #fff;
+    font-size: 11px; font-weight: 700;
+    min-width: 20px; height: 20px; border-radius: 9999px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 5px;
+  }
+
+  /* ─── 15. New Message Float ─── */
+  .new-msg-float {
+    height: 44px; border-radius: 12px;
+    background: var(--surface-raised); border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+    display: flex; align-items: center; padding: 0 12px; gap: 8px;
+    font-size: 13px; color: var(--text-1); cursor: pointer;
+  }
+  .new-msg-float .nmf-avatar {
+    width: 28px; height: 28px; min-width: 28px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 600;
+  }
+  .new-msg-float .nmf-body {
+    flex: 1; min-width: 0;
+    display: flex; align-items: baseline; gap: 4px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .new-msg-float .nmf-name { font-size: 13px; font-weight: 600; color: var(--text-1); flex-shrink: 0; }
+  .new-msg-float .nmf-text {
+    font-size: 13px; color: var(--text-2);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .new-msg-float .nmf-arrow { color: var(--text-3); flex-shrink: 0; }
+
+  /* ─── Mobile Frame (375px) ─── */
+  .mobile-frame {
+    width: 375px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden;
+  }
+
+  /* ─── 12. Empty State ─── */
+  .empty {
+    text-align: center; padding: 48px 24px;
+    border: 1px dashed var(--border); border-radius: 12px; max-width: 360px;
+  }
+  .empty-icon { margin-bottom: 16px; color: var(--text-3); }
+  .empty-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .empty-desc { font-size: 14px; color: var(--text-3); margin-bottom: 24px; }
+  .empty-btn {
+    padding: 10px 24px; border-radius: 8px; border: none;
+    background: var(--primary-600); color: #fff; font-family: 'Pretendard';
+    font-size: 14px; font-weight: 500; cursor: pointer;
+  }
+
+</style>
+</head>
+<body>
+
+<button class="dark-toggle" onclick="document.body.classList.toggle('dark')">Light / Dark</button>
+
+<h1>Messenger — Component Preview</h1>
+<p class="subtitle">개별 컴포넌트 단위로 확인. 화면 조립은 messenger.md Part 2 참고.</p>
+
+
+<!-- ═══ 1. Presence Indicator ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">1. Presence Indicator</span>
+    <span class="comp-num">온라인 상태 표시</span>
+  </div>
+  <div class="comp-body">
+    <div class="comp-row">
+      <div class="presence-wrap">
+        <div class="avatar-circle" style="background:var(--primary-100);color:var(--primary-700);">KD</div>
+        <div class="presence-dot" style="background:var(--success);"></div>
+      </div>
+      <span class="comp-tag">Online</span>
+
+      <div class="presence-wrap">
+        <div class="avatar-circle" style="background:#dbeafe;color:#1d4ed8;">LD</div>
+        <div class="presence-dot" style="background:var(--warning);"></div>
+      </div>
+      <span class="comp-tag">Away</span>
+
+      <div class="presence-wrap">
+        <div class="avatar-circle" style="background:#dcfce7;color:#15803d;">PB</div>
+        <div class="presence-dot" style="background:#a3a3a3;"></div>
+      </div>
+      <span class="comp-tag">Offline</span>
+
+      <div class="presence-wrap">
+        <div class="avatar-circle" style="background:#fee2e2;color:#b91c1c;">JK</div>
+        <div class="presence-dot" style="background:var(--error);"></div>
+      </div>
+      <span class="comp-tag">DND</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 2. Notification Badge ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">2. Notification Badge</span>
+    <span class="comp-num">읽지 않은 메시지 수</span>
+  </div>
+  <div class="comp-body">
+    <div class="comp-row">
+      <div class="notif-dot"></div>
+      <span class="comp-tag">Dot only</span>
+
+      <span class="notif-badge">3</span>
+      <span class="comp-tag">Count</span>
+
+      <span class="notif-badge">12</span>
+      <span class="comp-tag">2-digit</span>
+
+      <span class="notif-badge">99+</span>
+      <span class="comp-tag">Overflow</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 3. Date Divider ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">3. Date Divider</span>
+    <span class="comp-num">날짜 구분선</span>
+  </div>
+  <div class="comp-body">
+    <div class="date-divider">2024년 3월 15일 금요일</div>
+    <div style="height:16px;"></div>
+    <div class="date-divider">오늘</div>
+  </div>
+</div>
+
+
+<!-- ═══ 4. System Message ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">4. System Message</span>
+    <span class="comp-num">시스템 알림</span>
+  </div>
+  <div class="comp-body">
+    <div class="sys-msg">Kim Developer님이 그룹에 참여했습니다</div>
+    <div style="height:16px;"></div>
+    <div class="sys-msg">Park Backend님이 그룹 이름을 "프로젝트 Atena"로 변경했습니다</div>
+  </div>
+</div>
+
+
+<!-- ═══ 5. Message Bubble ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">5. Message Bubble</span>
+    <span class="comp-num">텍스트 / 이미지 / 파일 / 링크</span>
+  </div>
+  <div class="comp-body gray">
+
+    <div class="comp-label">5-1. 텍스트 — Sent vs Received</div>
+    <div class="bubble-wrap">
+      <div class="msg-l" style="margin-bottom:16px;">
+        <div class="bubble received">안녕하세요! 디자인 시스템 작업 어떻게 되나요?</div>
+        <div class="msg-meta"><span>10:23</span></div>
+      </div>
+      <div class="msg-r">
+        <div class="msg-meta"><span class="unread-count">1</span><span>10:25</span></div>
+        <div class="bubble sent">컴포넌트 규격까지 다 정했어요!</div>
+      </div>
+    </div>
+
+    <div class="comp-label">5-1b. 멘션 (Mention)</div>
+    <div class="bubble-wrap">
+      <div class="msg-l" style="margin-bottom:16px;">
+        <div class="bubble received"><span class="mention">@Park Designer</span> 토큰 파일 검토 부탁드려요!</div>
+        <div class="msg-meta"><span>10:30</span></div>
+      </div>
+      <div class="msg-r">
+        <div class="msg-meta"><span>10:31</span></div>
+        <div class="bubble sent"><span class="mention">@Kim Developer</span> 넵 확인했습니다!</div>
+      </div>
+    </div>
+
+    <div class="comp-label">5-2. 연속 메시지 (Consecutive)</div>
+    <div class="bubble-wrap">
+      <div class="msg-r" style="margin-bottom:2px;">
+        <div class="bubble sent">지금 거의 다 됐어요</div>
+      </div>
+      <div class="msg-r" style="margin-bottom:2px;">
+        <div class="bubble sent">토큰 파일이랑 문서 정리 중이에요</div>
+      </div>
+      <div class="msg-r">
+        <div class="msg-meta"><span>10:25</span></div>
+        <div class="bubble sent">내일까지 공유드릴게요</div>
+      </div>
+    </div>
+
+    <div style="height:16px;"></div>
+    <div class="bubble-wrap">
+      <div class="msg-l" style="margin-bottom:2px;">
+        <div class="bubble received">좋아요!</div>
+      </div>
+      <div class="msg-l" style="margin-bottom:2px;">
+        <div class="bubble received">빨리 보고 싶네요</div>
+      </div>
+      <div class="msg-l">
+        <div class="bubble received">기대할게요 👀</div>
+        <div class="msg-meta"><span>10:26</span></div>
+      </div>
+    </div>
+
+    <div class="comp-label">5-3. 이미지 메시지 (이미지만)</div>
+    <div class="bubble-wrap">
+      <div class="msg-r">
+        <div class="msg-meta"><span>10:27</span></div>
+        <div class="img-bubble">
+          <div class="img-placeholder"><i data-lucide="image" style="width:32px;height:32px;"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">이미지 + 텍스트 (sent)</div>
+    <div class="bubble-wrap">
+      <div class="msg-r" style="margin-bottom:2px;">
+        <div class="bubble sent">현재 진행 상황이에요</div>
+      </div>
+      <div class="msg-r">
+        <div class="msg-meta"><span>10:27</span></div>
+        <div class="img-bubble">
+          <div class="img-placeholder"><i data-lucide="image" style="width:32px;height:32px;"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">이미지 + 텍스트 (received)</div>
+    <div class="bubble-wrap">
+      <div class="msg-l" style="margin-bottom:2px;">
+        <div class="bubble received">이거 보세요!</div>
+      </div>
+      <div class="msg-l">
+        <div class="img-bubble">
+          <div class="img-placeholder"><i data-lucide="image" style="width:32px;height:32px;"></i></div>
+        </div>
+        <div class="msg-meta"><span>10:28</span></div>
+      </div>
+    </div>
+
+    <div style="height:16px;"></div>
+    <div class="comp-label">다중 이미지 — 2장</div>
+    <div class="bubble-wrap">
+      <div class="msg-r">
+        <div class="multi-img g2">
+          <div class="mi">1</div>
+          <div class="mi">2</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">3장</div>
+    <div class="bubble-wrap">
+      <div class="msg-r">
+        <div class="multi-img g3">
+          <div class="mi">1</div>
+          <div class="mi">2</div>
+          <div class="mi">3</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">4장</div>
+    <div class="bubble-wrap">
+      <div class="msg-r">
+        <div class="multi-img g4">
+          <div class="mi">1</div>
+          <div class="mi">2</div>
+          <div class="mi">3</div>
+          <div class="mi">4</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">5장</div>
+    <div class="bubble-wrap">
+      <div class="msg-r">
+        <div class="multi-img g5">
+          <div class="mi">1</div>
+          <div class="mi">2</div>
+          <div class="mi">3</div>
+          <div class="mi">4</div>
+          <div class="mi">5</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">6장</div>
+    <div class="bubble-wrap">
+      <div class="msg-r">
+        <div class="multi-img g6">
+          <div class="mi">1</div>
+          <div class="mi">2</div>
+          <div class="mi">3</div>
+          <div class="mi">4</div>
+          <div class="mi">5</div>
+          <div class="mi">6</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">7장</div>
+    <div class="bubble-wrap">
+      <div class="msg-r">
+        <div class="multi-img g7">
+          <div class="mi">1</div>
+          <div class="mi">2</div>
+          <div class="mi">3</div>
+          <div class="mi">4</div>
+          <div class="mi">5</div>
+          <div class="mi">6</div>
+          <div class="mi">7</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">8장</div>
+    <div class="bubble-wrap">
+      <div class="msg-r">
+        <div class="multi-img g8">
+          <div class="mi">1</div>
+          <div class="mi">2</div>
+          <div class="mi">3</div>
+          <div class="mi">4</div>
+          <div class="mi">5</div>
+          <div class="mi">6</div>
+          <div class="mi">7</div>
+          <div class="mi">8</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">9장 (최대, +N 오버레이)</div>
+    <div class="bubble-wrap">
+      <div class="msg-r">
+        <div class="multi-img g9">
+          <div class="mi">1</div>
+          <div class="mi">2</div>
+          <div class="mi">3</div>
+          <div class="mi">4</div>
+          <div class="mi">5</div>
+          <div class="mi">6</div>
+          <div class="mi">7</div>
+          <div class="mi">8</div>
+          <div class="mi overlay" data-extra="+3">9</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">5-4. 파일 메시지 (파일만)</div>
+    <div class="bubble-wrap">
+      <div class="msg-r" style="margin-bottom:16px;">
+        <div class="msg-meta"><span>10:29</span></div>
+        <div class="bubble sent file-bubble">
+          <i data-lucide="file-text" style="width:36px;height:36px;flex-shrink:0;opacity:0.7;"></i>
+          <div class="file-info">
+            <div class="file-name">tokens.json</div>
+            <div class="file-size">4.2 KB</div>
+          </div>
+        </div>
+      </div>
+      <div class="msg-l">
+        <div class="bubble received file-bubble">
+          <i data-lucide="file-text" style="width:36px;height:36px;flex-shrink:0;color:var(--text-3);"></i>
+          <div class="file-info">
+            <div class="file-name">design-system.pdf</div>
+            <div class="file-size">2.8 MB</div>
+          </div>
+        </div>
+        <div class="msg-meta"><span>10:30</span></div>
+      </div>
+    </div>
+
+    <div class="comp-label">파일 + 텍스트 (sent)</div>
+    <div class="bubble-wrap">
+      <div class="msg-r" style="margin-bottom:2px;">
+        <div class="bubble sent">토큰 파일 공유드려요</div>
+      </div>
+      <div class="msg-r">
+        <div class="msg-meta"><span>10:31</span></div>
+        <div class="bubble sent file-bubble">
+          <i data-lucide="file-text" style="width:36px;height:36px;flex-shrink:0;opacity:0.7;"></i>
+          <div class="file-info">
+            <div class="file-name">tokens.json</div>
+            <div class="file-size">4.2 KB</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">파일 + 텍스트 (received)</div>
+    <div class="bubble-wrap">
+      <div class="msg-l" style="margin-bottom:2px;">
+        <div class="bubble received">문서 보내드립니다</div>
+      </div>
+      <div class="msg-l">
+        <div class="bubble received file-bubble">
+          <i data-lucide="file-text" style="width:36px;height:36px;flex-shrink:0;color:var(--text-3);"></i>
+          <div class="file-info">
+            <div class="file-name">design-system.pdf</div>
+            <div class="file-size">2.8 MB</div>
+          </div>
+        </div>
+        <div class="msg-meta"><span>10:32</span></div>
+      </div>
+    </div>
+
+    <div class="comp-label">5-5. 링크 프리뷰 (received)</div>
+    <div class="bubble-wrap">
+      <div class="msg-l" style="margin-bottom:2px;">
+        <div class="bubble received">Figma에 올려뒀어요!</div>
+      </div>
+      <div class="msg-l">
+        <div class="link-preview-card">
+          <div class="lp-img"><i data-lucide="figma" style="width:24px;height:24px;"></i></div>
+          <div class="lp-body">
+            <div class="lp-site">figma.com</div>
+            <div class="lp-title">Atena Design System</div>
+            <div class="lp-desc">Foundation, Components, Tokens 포함된 디자인 시스템 파일입니다.</div>
+          </div>
+        </div>
+        <div class="msg-meta"><span>10:28</span></div>
+      </div>
+    </div>
+
+    <div class="comp-label">링크 프리뷰 (sent)</div>
+    <div class="bubble-wrap">
+      <div class="msg-r" style="margin-bottom:2px;">
+        <div class="bubble sent">이거 한번 봐봐</div>
+      </div>
+      <div class="msg-r">
+        <div class="msg-meta"><span>10:29</span></div>
+        <div class="link-preview-card">
+          <div class="lp-img"><i data-lucide="globe" style="width:24px;height:24px;"></i></div>
+          <div class="lp-body">
+            <div class="lp-site">github.com</div>
+            <div class="lp-title">atena/design-system</div>
+            <div class="lp-desc">디자인 시스템 토큰 및 규격 저장소</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══ 6. Composed Message ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">6. Composed Message</span>
+    <span class="comp-num">아바타 + 이름 + 버블 + 시간 — 모든 케이스</span>
+  </div>
+  <div class="comp-body gray">
+
+    <!-- ── 텍스트 ── -->
+    <div class="comp-label">텍스트 — 받은 메시지 (단독)</div>
+    <div class="bubble-wrap">
+      <div class="msg-composed">
+        <div class="avatar-circle" style="width:36px;height:36px;border-radius:12px;font-size:12px;background:#dbeafe;color:#1d4ed8;flex-shrink:0;align-self:flex-start;">LD</div>
+        <div class="msg-composed-body">
+          <div class="msg-composed-name" style="color:#2563eb;">Lee Designer</div>
+          <div style="display:flex;align-items:flex-end;gap:4px;">
+            <div class="bubble received">디자인 시안 올렸어요!</div>
+            <div class="msg-meta"><span>10:30</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">텍스트 — 보낸 메시지 (단독)</div>
+    <div class="bubble-wrap">
+      <div class="msg-r">
+        <div class="msg-meta"><span>10:31</span></div>
+        <div class="bubble sent">넵 확인할게요!</div>
+      </div>
+    </div>
+
+    <!-- ── 연속 메시지 ── -->
+    <div class="comp-label">텍스트 — 받은 연속 메시지</div>
+    <div class="bubble-wrap">
+      <div class="msg-composed" style="margin-bottom:2px;">
+        <div class="avatar-circle" style="width:36px;height:36px;border-radius:12px;font-size:12px;background:var(--primary-100);color:var(--primary-700);flex-shrink:0;align-self:flex-start;">KD</div>
+        <div class="msg-composed-body">
+          <div class="msg-composed-name" style="color:var(--primary-600);">Kim Developer</div>
+          <div style="display:flex;align-items:flex-end;gap:4px;">
+            <div class="bubble received">API 연동 거의 끝났어요</div>
+          </div>
+        </div>
+      </div>
+      <div class="msg-composed" style="margin-bottom:2px;">
+        <div style="width:36px;flex-shrink:0;"></div>
+        <div class="msg-composed-body">
+          <div style="display:flex;align-items:flex-end;gap:4px;">
+            <div class="bubble received">테스트 서버에 배포해뒀습니다</div>
+          </div>
+        </div>
+      </div>
+      <div class="msg-composed">
+        <div style="width:36px;flex-shrink:0;"></div>
+        <div class="msg-composed-body">
+          <div style="display:flex;align-items:flex-end;gap:4px;">
+            <div class="bubble received">확인해보시고 피드백 주세요</div>
+            <div class="msg-meta"><span>10:32</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">텍스트 — 보낸 연속 메시지</div>
+    <div class="bubble-wrap">
+      <div class="msg-r" style="margin-bottom:2px;">
+        <div class="bubble sent">좋아요!</div>
+      </div>
+      <div class="msg-r" style="margin-bottom:2px;">
+        <div class="bubble sent">바로 확인해볼게요</div>
+      </div>
+      <div class="msg-r">
+        <div class="msg-meta"><span>10:33</span></div>
+        <div class="bubble sent">이슈 있으면 바로 말씀드릴게요</div>
+      </div>
+    </div>
+
+    <!-- ── 이미지 ── -->
+    <div class="comp-label">이미지만 — 받은 메시지</div>
+    <div class="bubble-wrap">
+      <div class="msg-composed">
+        <div class="avatar-circle" style="width:36px;height:36px;border-radius:12px;font-size:12px;background:#dbeafe;color:#1d4ed8;flex-shrink:0;align-self:flex-start;">LD</div>
+        <div class="msg-composed-body">
+          <div class="msg-composed-name" style="color:#2563eb;">Lee Designer</div>
+          <div style="display:flex;align-items:flex-end;gap:4px;">
+            <div class="img-bubble"><div class="img-placeholder"><i data-lucide="image" style="width:32px;height:32px;"></i></div></div>
+            <div class="msg-meta"><span>10:34</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">이미지만 — 보낸 메시지</div>
+    <div class="bubble-wrap">
+      <div class="msg-r">
+        <div class="msg-meta"><span>10:35</span></div>
+        <div class="img-bubble"><div class="img-placeholder"><i data-lucide="image" style="width:32px;height:32px;"></i></div></div>
+      </div>
+    </div>
+
+    <div class="comp-label">이미지 + 텍스트 — 받은 메시지</div>
+    <div class="bubble-wrap">
+      <div class="msg-composed" style="margin-bottom:2px;">
+        <div class="avatar-circle" style="width:36px;height:36px;border-radius:12px;font-size:12px;background:#dcfce7;color:#15803d;flex-shrink:0;align-self:flex-start;">PB</div>
+        <div class="msg-composed-body">
+          <div class="msg-composed-name" style="color:#059669;">Park Backend</div>
+          <div style="display:flex;align-items:flex-end;gap:4px;">
+            <div class="bubble received">스크린샷이에요</div>
+          </div>
+        </div>
+      </div>
+      <div class="msg-composed">
+        <div style="width:36px;flex-shrink:0;"></div>
+        <div class="msg-composed-body">
+          <div style="display:flex;align-items:flex-end;gap:4px;">
+            <div class="img-bubble"><div class="img-placeholder"><i data-lucide="image" style="width:32px;height:32px;"></i></div></div>
+            <div class="msg-meta"><span>10:36</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">이미지 + 텍스트 — 보낸 메시지</div>
+    <div class="bubble-wrap">
+      <div class="msg-r" style="margin-bottom:2px;">
+        <div class="bubble sent">현재 진행 상황이에요</div>
+      </div>
+      <div class="msg-r">
+        <div class="msg-meta"><span>10:37</span></div>
+        <div class="img-bubble"><div class="img-placeholder"><i data-lucide="image" style="width:32px;height:32px;"></i></div></div>
+      </div>
+    </div>
+
+    <div class="comp-label">다중 이미지 + 텍스트 — 받은 메시지</div>
+    <div class="bubble-wrap">
+      <div class="msg-composed" style="margin-bottom:2px;">
+        <div class="avatar-circle" style="width:36px;height:36px;border-radius:12px;font-size:12px;background:#dbeafe;color:#1d4ed8;flex-shrink:0;align-self:flex-start;">LD</div>
+        <div class="msg-composed-body">
+          <div class="msg-composed-name" style="color:#2563eb;">Lee Designer</div>
+          <div style="display:flex;align-items:flex-end;gap:4px;">
+            <div class="bubble received">시안 3개 보내드려요</div>
+          </div>
+        </div>
+      </div>
+      <div class="msg-composed">
+        <div style="width:36px;flex-shrink:0;"></div>
+        <div class="msg-composed-body">
+          <div style="display:flex;align-items:flex-end;gap:4px;">
+            <div class="multi-img g3"><div class="mi">1</div><div class="mi">2</div><div class="mi">3</div></div>
+            <div class="msg-meta"><span>10:38</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">다중 이미지 + 텍스트 — 보낸 메시지</div>
+    <div class="bubble-wrap">
+      <div class="msg-r" style="margin-bottom:2px;">
+        <div class="bubble sent">참고 이미지들이에요</div>
+      </div>
+      <div class="msg-r">
+        <div class="msg-meta"><span>10:39</span></div>
+        <div class="multi-img g2"><div class="mi">1</div><div class="mi">2</div></div>
+      </div>
+    </div>
+
+    <!-- ── 파일 ── -->
+    <div class="comp-label">파일만 — 받은 메시지</div>
+    <div class="bubble-wrap">
+      <div class="msg-composed">
+        <div class="avatar-circle" style="width:36px;height:36px;border-radius:12px;font-size:12px;background:var(--primary-100);color:var(--primary-700);flex-shrink:0;align-self:flex-start;">KD</div>
+        <div class="msg-composed-body">
+          <div class="msg-composed-name" style="color:var(--primary-600);">Kim Developer</div>
+          <div style="display:flex;align-items:flex-end;gap:4px;">
+            <div class="bubble received file-bubble">
+              <i data-lucide="file-text" style="width:36px;height:36px;flex-shrink:0;color:var(--text-3);"></i>
+              <div class="file-info"><div class="file-name">tokens.json</div><div class="file-size">4.2 KB</div></div>
+            </div>
+            <div class="msg-meta"><span>10:40</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">파일만 — 보낸 메시지</div>
+    <div class="bubble-wrap">
+      <div class="msg-r">
+        <div class="msg-meta"><span>10:41</span></div>
+        <div class="bubble sent file-bubble">
+          <i data-lucide="file-text" style="width:36px;height:36px;flex-shrink:0;opacity:0.7;"></i>
+          <div class="file-info"><div class="file-name">design-system.pdf</div><div class="file-size">2.8 MB</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">파일 + 텍스트 — 받은 메시지</div>
+    <div class="bubble-wrap">
+      <div class="msg-composed" style="margin-bottom:2px;">
+        <div class="avatar-circle" style="width:36px;height:36px;border-radius:12px;font-size:12px;background:#dcfce7;color:#15803d;flex-shrink:0;align-self:flex-start;">PB</div>
+        <div class="msg-composed-body">
+          <div class="msg-composed-name" style="color:#059669;">Park Backend</div>
+          <div style="display:flex;align-items:flex-end;gap:4px;">
+            <div class="bubble received">API 문서 보내드립니다</div>
+          </div>
+        </div>
+      </div>
+      <div class="msg-composed">
+        <div style="width:36px;flex-shrink:0;"></div>
+        <div class="msg-composed-body">
+          <div style="display:flex;align-items:flex-end;gap:4px;">
+            <div class="bubble received file-bubble">
+              <i data-lucide="file-text" style="width:36px;height:36px;flex-shrink:0;color:var(--text-3);"></i>
+              <div class="file-info"><div class="file-name">api-docs.pdf</div><div class="file-size">1.5 MB</div></div>
+            </div>
+            <div class="msg-meta"><span>10:42</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">파일 + 텍스트 — 보낸 메시지</div>
+    <div class="bubble-wrap">
+      <div class="msg-r" style="margin-bottom:2px;">
+        <div class="bubble sent">토큰 파일 공유드려요</div>
+      </div>
+      <div class="msg-r">
+        <div class="msg-meta"><span>10:43</span></div>
+        <div class="bubble sent file-bubble">
+          <i data-lucide="file-text" style="width:36px;height:36px;flex-shrink:0;opacity:0.7;"></i>
+          <div class="file-info"><div class="file-name">tokens.json</div><div class="file-size">4.2 KB</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 링크 ── -->
+    <div class="comp-label">링크 — 받은 메시지</div>
+    <div class="bubble-wrap">
+      <div class="msg-composed" style="margin-bottom:2px;">
+        <div class="avatar-circle" style="width:36px;height:36px;border-radius:12px;font-size:12px;background:#dbeafe;color:#1d4ed8;flex-shrink:0;align-self:flex-start;">LD</div>
+        <div class="msg-composed-body">
+          <div class="msg-composed-name" style="color:#2563eb;">Lee Designer</div>
+          <div style="display:flex;align-items:flex-end;gap:4px;">
+            <div class="bubble received">Figma에 올려뒀어요!</div>
+          </div>
+        </div>
+      </div>
+      <div class="msg-composed">
+        <div style="width:36px;flex-shrink:0;"></div>
+        <div class="msg-composed-body">
+          <div style="display:flex;align-items:flex-end;gap:4px;">
+            <div class="link-preview-card">
+              <div class="lp-img"><i data-lucide="figma" style="width:24px;height:24px;"></i></div>
+              <div class="lp-body"><div class="lp-site">figma.com</div><div class="lp-title">Atena Design System</div><div class="lp-desc">디자인 시스템 파일입니다.</div></div>
+            </div>
+            <div class="msg-meta"><span>10:44</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">링크 — 보낸 메시지</div>
+    <div class="bubble-wrap">
+      <div class="msg-r" style="margin-bottom:2px;">
+        <div class="bubble sent">이거 한번 봐봐</div>
+      </div>
+      <div class="msg-r">
+        <div class="msg-meta"><span>10:45</span></div>
+        <div class="link-preview-card">
+          <div class="lp-img"><i data-lucide="globe" style="width:24px;height:24px;"></i></div>
+          <div class="lp-body"><div class="lp-site">github.com</div><div class="lp-title">atena/design-system</div><div class="lp-desc">디자인 시스템 저장소</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 답장 ── -->
+    <div class="comp-label">답장 — 받은 메시지</div>
+    <div class="bubble-wrap">
+      <div class="msg-composed">
+        <div class="avatar-circle" style="width:36px;height:36px;border-radius:12px;font-size:12px;background:var(--primary-100);color:var(--primary-700);flex-shrink:0;align-self:flex-start;">KD</div>
+        <div class="msg-composed-body">
+          <div class="msg-composed-name" style="color:var(--primary-600);">Kim Developer</div>
+          <div style="display:flex;align-items:flex-end;gap:4px;">
+            <div class="reply-bubble received">
+              <div class="reply-origin"><div class="rp-name">나</div><div class="rp-text">토큰 파일 공유드려요</div></div>
+              <div class="reply-body">네 확인했어요! 잘 되네요</div>
+            </div>
+            <div class="msg-meta"><span>10:46</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">답장 — 보낸 메시지</div>
+    <div class="bubble-wrap">
+      <div class="msg-r">
+        <div class="msg-meta"><span>10:47</span></div>
+        <div class="reply-bubble sent">
+          <div class="reply-origin"><div class="rp-name">Kim Developer</div><div class="rp-text">API 연동 거의 끝났어요</div></div>
+          <div class="reply-body">넵 알겠습니다!</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 리액션 ── -->
+    <div class="comp-label">리액션 — 받은 메시지</div>
+    <div class="bubble-wrap">
+      <div class="msg-composed">
+        <div class="avatar-circle" style="width:36px;height:36px;border-radius:12px;font-size:12px;background:#dbeafe;color:#1d4ed8;flex-shrink:0;align-self:flex-start;">LD</div>
+        <div class="msg-composed-body">
+          <div class="msg-composed-name" style="color:#2563eb;">Lee Designer</div>
+          <div style="display:flex;align-items:flex-end;gap:4px;">
+            <div class="bubble received">디자인 완성했어요!</div>
+            <div class="msg-meta"><span>10:48</span></div>
+          </div>
+          <div style="display:flex;margin-top:4px;">
+            <div class="reactions"><div class="rx-chip mine">👍 2</div><div class="rx-chip">🔥 1</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">리액션 — 보낸 메시지</div>
+    <div class="bubble-wrap">
+      <div class="msg-r">
+        <div class="msg-meta"><span>10:49</span></div>
+        <div class="bubble sent">완벽하네요! 🔥</div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:4px;">
+        <div class="reactions"><div class="rx-chip">👍 3</div><div class="rx-chip mine">❤️ 1</div></div>
+      </div>
+    </div>
+
+    <!-- ── 메시지 상태 ── -->
+    <div class="comp-label">전송 중</div>
+    <div class="bubble-wrap">
+      <div class="msg-r">
+        <div class="msg-meta"><i data-lucide="loader" style="width:12px;height:12px;color:var(--text-3);"></i></div>
+        <div class="bubble sent">전송 중인 메시지</div>
+      </div>
+    </div>
+
+    <div class="comp-label">안 읽음 (1:1)</div>
+    <div class="bubble-wrap">
+      <div class="msg-r">
+        <div class="msg-meta"><span class="unread-count">1</span><span>10:50</span></div>
+        <div class="bubble sent">확인해주세요!</div>
+      </div>
+    </div>
+
+    <div class="comp-label">안 읽음 (그룹)</div>
+    <div class="bubble-wrap">
+      <div class="msg-r">
+        <div class="msg-meta"><span class="unread-count">3</span><span>10:51</span></div>
+        <div class="bubble sent">내일 회의 가능하세요?</div>
+      </div>
+    </div>
+
+    <div class="comp-label">모두 읽음</div>
+    <div class="bubble-wrap">
+      <div class="msg-r">
+        <div class="msg-meta"><span>10:52</span></div>
+        <div class="bubble sent">모두 읽은 메시지</div>
+      </div>
+    </div>
+
+    <div class="comp-label">전송 실패</div>
+    <div class="bubble-wrap">
+      <div class="msg-r">
+        <div class="msg-meta"><i data-lucide="alert-circle" style="width:14px;height:14px;color:var(--error);cursor:pointer;"></i></div>
+        <div class="bubble sent" style="opacity:0.6;">전송 실패한 메시지</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══ 7. Message Reply ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">7. Message Reply</span>
+    <span class="comp-num">답장 인용 블록</span>
+  </div>
+  <div class="comp-body gray">
+    <div class="comp-label">Sent</div>
+    <div class="bubble-wrap">
+      <div class="msg-r">
+        <div class="msg-meta"><span>10:28</span></div>
+        <div class="reply-bubble sent">
+          <div class="reply-origin">
+            <div class="rp-name">Kim Developer</div>
+            <div class="rp-text">stroke-width는 1.75로 통일이요</div>
+          </div>
+          <div class="reply-body">넵 알겠습니다!</div>
+        </div>
+      </div>
+    </div>
+    <div style="height:16px;"></div>
+    <div class="comp-label">Received</div>
+    <div class="bubble-wrap">
+      <div class="msg-l">
+        <div class="reply-bubble received">
+          <div class="reply-origin">
+            <div class="rp-name">나</div>
+            <div class="rp-text">토큰 파일이랑 문서 공유드릴게요</div>
+          </div>
+          <div class="reply-body">네 좋아요! 빨리 보고 싶네요 👀</div>
+        </div>
+        <div class="msg-meta"><span>10:28</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 9. Message Reaction ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">9. Message Reaction</span>
+    <span class="comp-num">이모지 리액션 칩</span>
+  </div>
+  <div class="comp-body gray">
+    <div class="bubble-wrap">
+      <div class="msg-r">
+        <div class="bubble sent">완벽하네요! 🔥</div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:4px;">
+        <div class="reactions">
+          <div class="rx-chip mine">👍 2</div>
+          <div class="rx-chip">🔥 1</div>
+          <div class="rx-chip">❤️ 3</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-label">개별 칩 상태</div>
+    <div class="comp-row">
+      <div class="rx-chip">👍 3</div>
+      <span class="comp-tag">기본</span>
+      <div class="rx-chip mine">❤️ 1</div>
+      <span class="comp-tag">내가 누름</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 10. Typing Indicator ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">10. Typing Indicator</span>
+    <span class="comp-num">입력 중 표시</span>
+  </div>
+  <div class="comp-body">
+    <div class="typing">
+      <div class="typing-ava" style="background:var(--primary-100);color:var(--primary-700);">KD</div>
+      <span>입력 중</span>
+      <div class="typing-dots"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 11. Message Input ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">11. Message Input</span>
+    <span class="comp-num">메시지 입력 영역</span>
+  </div>
+  <div class="comp-body gray">
+    <div class="comp-label">기본</div>
+    <div class="msg-input-wrap">
+      <div class="msg-input-area">
+        <button style="color:var(--text-3);"><i data-lucide="plus" style="width:24px;height:24px;"></i></button>
+        <div class="msg-input-field">
+          <textarea rows="1" placeholder="메시지를 입력하세요..."></textarea>
+        </div>
+        <button class="send-btn"><i data-lucide="arrow-up" style="width:20px;height:20px;"></i></button>
+        <button style="color:var(--text-3);"><i data-lucide="smile" style="width:24px;height:24px;"></i></button>
+        <button style="color:var(--text-3);"><i data-lucide="hash" style="width:24px;height:24px;"></i></button>
+      </div>
+    </div>
+
+    <div class="comp-label">입력 중 (전송 버튼 활성)</div>
+    <div class="msg-input-wrap">
+      <div class="msg-input-area">
+        <button style="color:var(--text-3);"><i data-lucide="plus" style="width:24px;height:24px;"></i></button>
+        <div class="msg-input-field">
+          <textarea rows="1">넵 알겠습니다!</textarea>
+        </div>
+        <button class="send-btn active"><i data-lucide="arrow-up" style="width:20px;height:20px;"></i></button>
+        <button style="color:var(--text-3);"><i data-lucide="smile" style="width:24px;height:24px;"></i></button>
+        <button style="color:var(--text-3);"><i data-lucide="hash" style="width:24px;height:24px;"></i></button>
+      </div>
+    </div>
+
+    <div class="comp-label">여러 줄 입력</div>
+    <div class="msg-input-wrap">
+      <div class="msg-input-area">
+        <button style="color:var(--text-3);"><i data-lucide="plus" style="width:24px;height:24px;"></i></button>
+        <div class="msg-input-field">
+          <textarea rows="1">안녕하세요, 내일 오후 2시에 회의가 있습니다.
+참석 가능 여부를 확인해 주세요.
+감사합니다!</textarea>
+        </div>
+        <button class="send-btn active"><i data-lucide="arrow-up" style="width:20px;height:20px;"></i></button>
+        <button style="color:var(--text-3);"><i data-lucide="smile" style="width:24px;height:24px;"></i></button>
+        <button style="color:var(--text-3);"><i data-lucide="hash" style="width:24px;height:24px;"></i></button>
+      </div>
+    </div>
+
+    <div class="comp-label">답장 모드</div>
+    <div class="msg-input-wrap">
+      <div class="reply-chip">
+        <div class="rb-ind"></div>
+        <div class="rb-content">
+          <div class="rb-name">Kim Developer</div>
+          <div class="rb-text">stroke-width는 1.75로 통일이요</div>
+        </div>
+        <button style="color:var(--text-3);background:none;border:none;cursor:pointer;padding:0;"><i data-lucide="x" style="width:16px;height:16px;"></i></button>
+      </div>
+      <div class="msg-input-area">
+        <button style="color:var(--text-3);"><i data-lucide="plus" style="width:24px;height:24px;"></i></button>
+        <div class="msg-input-field">
+          <textarea rows="1" placeholder="답장 메시지를 입력하세요..."></textarea>
+        </div>
+        <button class="send-btn"><i data-lucide="arrow-up" style="width:20px;height:20px;"></i></button>
+        <button style="color:var(--text-3);"><i data-lucide="smile" style="width:24px;height:24px;"></i></button>
+        <button style="color:var(--text-3);"><i data-lucide="hash" style="width:24px;height:24px;"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 12. Empty State ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">12. Empty State</span>
+    <span class="comp-num">빈 상태</span>
+  </div>
+  <div class="comp-body" style="display:flex;gap:24px;flex-wrap:wrap;">
+    <div class="empty">
+      <div class="empty-icon"><i data-lucide="message-circle" style="width:48px;height:48px;"></i></div>
+      <div class="empty-title">대화가 없습니다</div>
+      <div class="empty-desc">새로운 대화를 시작해보세요</div>
+      <button class="empty-btn">새 대화 시작</button>
+    </div>
+    <div class="empty">
+      <div class="empty-icon">
+        <div class="avatar-circle" style="width:64px;height:64px;font-size:22px;background:var(--primary-100);color:var(--primary-700);margin:0 auto;">KD</div>
+      </div>
+      <div class="empty-title">Kim Developer</div>
+      <div class="empty-desc">대화를 시작해보세요</div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- ═══ 13. Chat Header ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">13. Chat Header</span>
+    <span class="comp-num">56px · sticky</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="comp-label" style="padding:20px 24px 0;">GROUP CHAT</div>
+    <div class="mobile-frame" style="border:none; border-radius:0;">
+      <div class="chat-header">
+        <button class="header-btn"><i data-lucide="chevron-left" style="width:24px;height:24px;"></i></button>
+        <div class="header-title-area">
+          <div class="header-title-row">
+            <span class="header-title">프로젝트 논의방</span>
+            <span class="header-count">3</span>
+          </div>
+        </div>
+        <button class="header-btn"><i data-lucide="search" style="width:24px;height:24px;"></i></button>
+        <button class="header-btn"><i data-lucide="menu" style="width:24px;height:24px;"></i></button>
+      </div>
+    </div>
+    <div class="comp-label" style="padding:20px 24px 0;">1:1 CHAT</div>
+    <div class="mobile-frame" style="border:none; border-radius:0;">
+      <div class="chat-header">
+        <button class="header-btn"><i data-lucide="chevron-left" style="width:24px;height:24px;"></i></button>
+        <div class="header-title-area">
+          <div class="header-title-row">
+            <span class="header-title">Jiyoung Park</span>
+          </div>
+        </div>
+        <button class="header-btn"><i data-lucide="search" style="width:24px;height:24px;"></i></button>
+        <button class="header-btn"><i data-lucide="menu" style="width:24px;height:24px;"></i></button>
+      </div>
+    </div>
+    <div class="comp-label" style="padding:20px 24px 0;">SEARCH MODE</div>
+    <div class="mobile-frame" style="border:none; border-radius:0;">
+      <div class="search-header">
+        <div class="search-field">
+          <i data-lucide="search" class="search-icon" style="width:16px;height:16px;"></i>
+          <input type="text" placeholder="메시지 검색">
+        </div>
+        <button class="search-cancel">취소</button>
+      </div>
+    </div>
+    <div class="comp-label" style="padding:20px 24px 0;">SEARCH MODE — WITH RESULTS</div>
+    <div class="mobile-frame" style="border:none; border-radius:0;">
+      <div class="search-header">
+        <div class="search-field">
+          <i data-lucide="search" class="search-icon" style="width:16px;height:16px;"></i>
+          <input type="text" value="디자인 토큰">
+          <button class="search-clear"><i data-lucide="x-circle" style="width:16px;height:16px;"></i></button>
+        </div>
+        <button class="search-cancel">취소</button>
+      </div>
+      <div class="search-nav">
+        <span>3개의 결과 중 1번째</span>
+        <div class="search-nav-arrows">
+          <button class="search-nav-btn"><i data-lucide="chevron-up" style="width:16px;height:16px;"></i></button>
+          <button class="search-nav-btn"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="comp-label" style="padding:20px 24px 0;">LONG TITLE (ELLIPSIS)</div>
+    <div class="mobile-frame" style="border:none; border-radius:0; border-bottom:none;">
+      <div class="chat-header">
+        <button class="header-btn"><i data-lucide="chevron-left" style="width:24px;height:24px;"></i></button>
+        <div class="header-title-area">
+          <div class="header-title-row">
+            <span class="header-title">디자인 시스템 토큰 논의 및 컴포넌트 검토 회의방</span>
+            <span class="header-count">12</span>
+          </div>
+        </div>
+        <button class="header-btn"><i data-lucide="search" style="width:24px;height:24px;"></i></button>
+        <button class="header-btn"><i data-lucide="menu" style="width:24px;height:24px;"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 14. Scroll to Bottom ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">14. Scroll to Bottom</span>
+    <span class="comp-num">Message Area 우하단</span>
+  </div>
+  <div class="comp-body">
+    <div class="comp-label">WITHOUT BADGE</div>
+    <div class="comp-row">
+      <div class="scroll-bottom-btn">
+        <i data-lucide="chevron-down" style="width:20px;height:20px;"></i>
+      </div>
+      <span class="comp-tag">Default</span>
+    </div>
+    <div class="comp-label">WITH BADGE</div>
+    <div class="comp-row">
+      <div class="scroll-bottom-btn">
+        <i data-lucide="chevron-down" style="width:20px;height:20px;"></i>
+        <span class="scroll-badge">3</span>
+      </div>
+      <span class="comp-tag">Unread 3</span>
+      <div class="scroll-bottom-btn">
+        <i data-lucide="chevron-down" style="width:20px;height:20px;"></i>
+        <span class="scroll-badge">99+</span>
+      </div>
+      <span class="comp-tag">Overflow</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 15. New Message Float ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">15. New Message Float</span>
+    <span class="comp-num">Message Area 하단</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="mobile-frame" style="border:none; border-radius:0; padding:16px;">
+      <div class="new-msg-float">
+        <div class="nmf-avatar" style="background:var(--primary-100);color:var(--primary-600);">JY</div>
+        <div class="nmf-body">
+          <span class="nmf-name">Jiyoung Park</span>
+          <span class="nmf-text">좋은 자료네요! 감사합니다</span>
+        </div>
+        <div class="nmf-arrow"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></div>
+      </div>
+      <div style="height:12px;"></div>
+      <div class="new-msg-float">
+        <div class="nmf-avatar" style="background:#dbeafe;color:#1d4ed8;">SH</div>
+        <div class="nmf-body">
+          <span class="nmf-name">Sunghoon Lee</span>
+          <span class="nmf-text">다크모드에서 surface랑 border 구분이 잘 안 되는 부분이 있더라고요.</span>
+        </div>
+        <div class="nmf-arrow"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div style="height:80px;"></div>
+
+<script>
+  lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });
+</script>
+</body>
+</html>

@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atena — Home Components Preview</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* ─── Theme Variables ─── */
+  :root {
+    --bg: #ffffff; --surface: #fafafa; --surface-raised: #ffffff;
+    --border: #e5e5e5; --border-strong: #d4d4d4;
+    --text-1: #171717; --text-2: #525252; --text-3: #737373;
+    --neutral-400: #a3a3a3;
+    --primary-50: #f5f3ff; --primary-100: #ede9fe; --primary-600: #7c3aed;
+    --success: #22c55e; --success-light: #dcfce7;
+    --warning: #eab308; --warning-light: #fef9c3;
+    --error: #ef4444; --error-light: #fee2e2;
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  body.dark {
+    --bg: #0a0a0a; --surface: #171717; --surface-raised: #262626;
+    --border: #262626; --border-strong: #404040;
+    --text-1: #fafafa; --text-2: #a3a3a3; --text-3: #737373;
+    --primary-50: rgba(124,58,237,0.1);
+    --success-light: rgba(34,197,94,0.15);
+    --warning-light: rgba(234,179,8,0.15);
+    --error-light: rgba(239,68,68,0.15);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--surface); color: var(--text-1); padding: 40px;
+    line-height: 1.5; transition: all 0.2s;
+  }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 14px; color: var(--text-3); margin-bottom: 48px; }
+  .dark-toggle {
+    position: fixed; top: 16px; right: 16px; z-index: 200;
+    padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border-strong);
+    background: var(--surface-raised); color: var(--text-1);
+    font-family: 'Pretendard'; font-size: 12px; cursor: pointer;
+  }
+
+  /* ─── Section Shell ─── */
+  .comp {
+    margin-bottom: 56px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+  .comp-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .comp-title { font-size: 16px; font-weight: 600; }
+  .comp-num { font-size: 13px; color: var(--text-3); }
+  .comp-body { padding: 24px; }
+  .comp-body.gray { background: var(--surface); }
+  .comp-label {
+    font-size: 11px; font-weight: 600; color: var(--text-3);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; margin-top: 20px;
+  }
+  .comp-label:first-child { margin-top: 0; }
+
+  /* ─── Phone Frame (375px) ─── */
+  .phone-frame {
+    width: 375px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden;
+  }
+
+  /* ─── 1. Home Header ─── */
+  .hm-header {
+    height: 56px; background: var(--bg);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 4px 0 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hm-header-title { font-size: 20px; font-weight: 700; color: var(--text-1); }
+  .hm-header-btn {
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    background: none; border: none; cursor: pointer;
+    border-radius: 8px; color: var(--text-2);
+  }
+
+  /* ─── 2. Profile Banner ─── */
+  .hm-banner {
+    margin: 8px 16px 0; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 16px;
+    padding: 16px; cursor: pointer;
+  }
+  .hm-banner:active { background: var(--surface); }
+  .hm-banner-top {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hm-banner-avatar {
+    width: 48px; height: 48px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 600; flex-shrink: 0;
+  }
+  .hm-banner-text { flex: 1; min-width: 0; }
+  .hm-banner-name { font-size: 16px; font-weight: 600; color: var(--text-1); }
+  .hm-banner-dept { font-size: 13px; font-weight: 400; color: var(--text-3); margin-top: 2px; }
+  .hm-banner-chevron { color: var(--text-3); flex-shrink: 0; }
+  .hm-banner-org {
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .hm-banner-org-icon { color: var(--text-3); display: flex; align-items: center; }
+  .hm-banner-org-text { font-size: 13px; font-weight: 400; color: var(--text-3); }
+
+  /* ─── 2. Work Clock ─── */
+  .hm-clock-card {
+    margin: 8px 16px 0; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 16px;
+    padding: 20px;
+  }
+  .hm-clock-status {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .hm-clock-dot {
+    width: 8px; height: 8px; border-radius: 99px;
+  }
+  .hm-clock-dot.working { background: var(--success); }
+  .hm-clock-dot.off { background: var(--neutral-400); }
+  .hm-clock-status-text { font-size: 14px; font-weight: 500; }
+  .hm-clock-status-text.working { color: var(--success); }
+  .hm-clock-status-text.off { color: var(--text-3); }
+  .hm-clock-timer {
+    font-size: 36px; font-weight: 700; text-align: center;
+    margin: 16px 0; color: var(--text-1);
+  }
+  .hm-clock-timer.off { color: var(--text-3); }
+  .hm-clock-bottom {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .hm-clock-info { display: flex; align-items: center; gap: 4px; }
+  .hm-clock-time { font-size: 14px; font-weight: 500; color: var(--text-1); }
+  .hm-clock-label { font-size: 14px; font-weight: 400; color: var(--text-3); }
+  .hm-clock-btn {
+    height: 40px; padding: 0 20px; border-radius: 10px;
+    border: none; font-family: inherit;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .hm-clock-btn.start { background: var(--primary-600); color: #fff; }
+  .hm-clock-btn.end { background: var(--error); color: #fff; }
+
+  /* ─── 3. Quick Stats ─── */
+  .hm-stats {
+    margin: 8px 16px 0;
+    display: flex; gap: 8px;
+  }
+  .hm-stat {
+    flex: 1; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 0; text-align: center;
+    cursor: pointer;
+  }
+  .hm-stat:active { background: var(--surface); }
+  .hm-stat-label { font-size: 13px; font-weight: 400; color: var(--text-3); }
+  .hm-stat-num {
+    font-size: 20px; font-weight: 700; color: var(--text-1);
+    margin-top: 4px;
+  }
+  .hm-stat-num.zero { color: var(--text-3); }
+  .hm-stat-num.accent { color: var(--primary-600); }
+
+  /* ─── 4 & 5. Section Card ─── */
+  .hm-section {
+    margin: 8px 16px 0; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 16px;
+    overflow: hidden;
+  }
+  .hm-section-header {
+    height: 44px; padding: 0 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .hm-section-title { font-size: 15px; font-weight: 600; color: var(--text-1); }
+  .hm-section-more {
+    display: flex; align-items: center; gap: 2px;
+    font-size: 13px; font-weight: 400; color: var(--text-3);
+    cursor: pointer; background: none; border: none; font-family: inherit;
+  }
+
+  /* ─── Preview Item (결재 & 공지) ─── */
+  .hm-preview-item {
+    height: 60px; padding: 0 16px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+  }
+  .hm-preview-item:active { background: var(--surface); }
+  .hm-preview-icon {
+    color: var(--text-3); display: flex; align-items: center; flex-shrink: 0;
+  }
+  .hm-preview-text { flex: 1; min-width: 0; }
+  .hm-preview-title {
+    font-size: 15px; font-weight: 400; color: var(--text-1);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .hm-preview-meta { font-size: 13px; font-weight: 400; color: var(--text-3); margin-top: 2px; }
+  .hm-preview-divider { height: 1px; background: var(--border); margin-left: 48px; }
+
+  /* Status Badge */
+  .hm-badge {
+    font-size: 12px; font-weight: 500; padding: 4px 8px;
+    border-radius: 6px; flex-shrink: 0; white-space: nowrap;
+  }
+  .hm-badge.pending { background: var(--warning-light); color: var(--warning); }
+  .hm-badge.approved { background: var(--success-light); color: var(--success); }
+  .hm-badge.rejected { background: var(--error-light); color: var(--error); }
+
+  /* Section Empty State */
+  .hm-section-empty {
+    height: 80px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 400; color: var(--text-3);
+  }
+
+  /* Unread dot for notice */
+  .hm-unread-dot {
+    width: 4px; height: 4px; border-radius: 99px;
+    background: var(--primary-600); flex-shrink: 0;
+    margin-right: -4px;
+  }
+
+  /* ─── 6. My Profile Screen ─── */
+  .hm-profile-header {
+    height: 56px; background: var(--bg);
+    display: flex; align-items: center;
+    padding: 0 16px 0 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hm-profile-back {
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    background: none; border: none; cursor: pointer;
+    color: var(--text-1);
+  }
+  .hm-profile-header-title {
+    font-size: 17px; font-weight: 600; color: var(--text-1);
+    margin-left: 4px;
+  }
+  .hm-profile-card {
+    background: var(--bg);
+    padding: 32px 16px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .hm-profile-avatar {
+    width: 72px; height: 72px; border-radius: 24px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 600;
+  }
+  .hm-profile-name {
+    font-size: 20px; font-weight: 700; color: var(--text-1);
+    margin-top: 12px;
+  }
+  .hm-profile-dept {
+    font-size: 14px; font-weight: 400; color: var(--text-3);
+    margin-top: 4px;
+  }
+  .hm-profile-info {
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+  }
+  .hm-profile-info-item {
+    height: 48px; padding: 0 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hm-profile-info-icon {
+    color: var(--text-3); display: flex; align-items: center; flex-shrink: 0;
+  }
+  .hm-profile-info-text {
+    font-size: 15px; font-weight: 400; color: var(--text-1);
+  }
+  .hm-profile-info-divider {
+    height: 1px; background: var(--border); margin-left: 48px;
+  }
+  .hm-profile-menu {
+    background: var(--bg);
+    margin-top: 8px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .hm-profile-menu-item {
+    height: 48px; padding: 0 16px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+  }
+  .hm-profile-menu-item:active { background: var(--surface); }
+  .hm-profile-menu-icon {
+    color: var(--text-2); display: flex; align-items: center; flex-shrink: 0;
+  }
+  .hm-profile-menu-text {
+    font-size: 15px; font-weight: 400; color: var(--text-1);
+  }
+  .hm-profile-menu-text.danger { color: var(--error); }
+  .hm-profile-menu-divider {
+    height: 1px; background: var(--border); margin-left: 48px;
+  }
+</style>
+</head>
+<body>
+
+<button class="dark-toggle" onclick="document.body.classList.toggle('dark')">Light / Dark</button>
+
+<h1>Home — Components Preview</h1>
+<p class="subtitle">홈 화면 컴포넌트 프리뷰. 규격은 home.md 참고.</p>
+
+
+<!-- ═══ 1. Home Header ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">1. Home Header</span>
+    <span class="comp-num">56px · 제목 + 설정</span>
+  </div>
+  <div class="comp-body" style="padding:0;">
+    <div class="phone-frame" style="border:none; border-radius:0;">
+      <div class="hm-header">
+        <span class="hm-header-title">홈</span>
+        <button class="hm-header-btn">
+          <i data-lucide="settings" style="width:24px;height:24px;"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 2. Profile Banner ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">2. Profile Banner</span>
+    <span class="comp-num">프로필 + 소속 조직</span>
+  </div>
+  <div class="comp-body gray" style="padding:24px;">
+    <div class="hm-banner" style="margin:0;">
+      <div class="hm-banner-top">
+        <div class="hm-banner-avatar" style="background:var(--primary-100);color:var(--primary-600);">DH</div>
+        <div class="hm-banner-text">
+          <div class="hm-banner-name">김도현</div>
+          <div class="hm-banner-dept">개발팀 · 백엔드 개발</div>
+        </div>
+        <span class="hm-banner-chevron"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></span>
+      </div>
+      <div class="hm-banner-org">
+        <span class="hm-banner-org-icon"><i data-lucide="building-2" style="width:16px;height:16px;"></i></span>
+        <span class="hm-banner-org-text">주식회사 아테나</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 2. Work Clock ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">2. Work Clock</span>
+    <span class="comp-num">근무 시계 카드</span>
+  </div>
+  <div class="comp-body gray" style="padding:24px;">
+
+    <div class="comp-label" style="margin-top:0;">WORKING</div>
+    <div class="hm-clock-card" style="margin:0 0 20px;">
+      <div class="hm-clock-status">
+        <div class="hm-clock-dot working"></div>
+        <span class="hm-clock-status-text working">근무 중</span>
+      </div>
+      <div class="hm-clock-timer">04:32:15</div>
+      <div class="hm-clock-bottom">
+        <div class="hm-clock-info">
+          <span class="hm-clock-time">09:00</span>
+          <span class="hm-clock-label">출근</span>
+        </div>
+        <button class="hm-clock-btn end">퇴근</button>
+      </div>
+    </div>
+
+    <div class="comp-label">BEFORE WORK</div>
+    <div class="hm-clock-card" style="margin:0 0 20px;">
+      <div class="hm-clock-status">
+        <div class="hm-clock-dot off"></div>
+        <span class="hm-clock-status-text off">근무 전</span>
+      </div>
+      <div class="hm-clock-timer off">00:00:00</div>
+      <div class="hm-clock-bottom">
+        <div></div>
+        <button class="hm-clock-btn start">출근</button>
+      </div>
+    </div>
+
+    <div class="comp-label">AFTER WORK</div>
+    <div class="hm-clock-card" style="margin:0;">
+      <div class="hm-clock-status">
+        <div class="hm-clock-dot off"></div>
+        <span class="hm-clock-status-text off">퇴근</span>
+      </div>
+      <div class="hm-clock-timer">08:47:22</div>
+      <div class="hm-clock-bottom">
+        <div class="hm-clock-info">
+          <span class="hm-clock-time">09:00</span>
+          <span class="hm-clock-label">출근</span>
+        </div>
+        <div class="hm-clock-info">
+          <span class="hm-clock-time">17:47</span>
+          <span class="hm-clock-label">퇴근</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 3. Quick Stats ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">3. Quick Stats</span>
+    <span class="comp-num">숫자 요약</span>
+  </div>
+  <div class="comp-body gray" style="padding:24px;">
+    <div class="comp-label" style="margin-top:0;">WITH PENDING ITEMS</div>
+    <div class="hm-stats" style="margin:0 0 20px;">
+      <div class="hm-stat">
+        <div class="hm-stat-label">결재</div>
+        <div class="hm-stat-num accent">3</div>
+      </div>
+      <div class="hm-stat">
+        <div class="hm-stat-label">공지톡</div>
+        <div class="hm-stat-num">2</div>
+      </div>
+      <div class="hm-stat">
+        <div class="hm-stat-label">근무시간</div>
+        <div class="hm-stat-num">24/40h</div>
+      </div>
+    </div>
+
+    <div class="comp-label">ALL CLEAR</div>
+    <div class="hm-stats" style="margin:0;">
+      <div class="hm-stat">
+        <div class="hm-stat-label">결재</div>
+        <div class="hm-stat-num zero">0</div>
+      </div>
+      <div class="hm-stat">
+        <div class="hm-stat-label">공지톡</div>
+        <div class="hm-stat-num zero">0</div>
+      </div>
+      <div class="hm-stat">
+        <div class="hm-stat-label">근무시간</div>
+        <div class="hm-stat-num">0/40h</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 4. Approval Preview ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">4. Approval Preview</span>
+    <span class="comp-num">결재 미리보기</span>
+  </div>
+  <div class="comp-body gray" style="padding:24px;">
+    <div class="hm-section" style="margin:0;">
+      <div class="hm-section-header">
+        <span class="hm-section-title">결재</span>
+        <button class="hm-section-more">
+          더보기 <i data-lucide="chevron-right" style="width:14px;height:14px;"></i>
+        </button>
+      </div>
+      <div class="hm-preview-item">
+        <span class="hm-preview-icon"><i data-lucide="file-text" style="width:20px;height:20px;"></i></span>
+        <div class="hm-preview-text">
+          <div class="hm-preview-title">휴가 신청서</div>
+          <div class="hm-preview-meta">김도현 · 3월 10일</div>
+        </div>
+        <span class="hm-badge pending">대기 중</span>
+      </div>
+      <div class="hm-preview-divider"></div>
+      <div class="hm-preview-item">
+        <span class="hm-preview-icon"><i data-lucide="file-text" style="width:20px;height:20px;"></i></span>
+        <div class="hm-preview-text">
+          <div class="hm-preview-title">비품 구매 요청</div>
+          <div class="hm-preview-meta">김도현 · 3월 8일</div>
+        </div>
+        <span class="hm-badge approved">승인됨</span>
+      </div>
+      <div class="hm-preview-divider"></div>
+      <div class="hm-preview-item">
+        <span class="hm-preview-icon"><i data-lucide="file-text" style="width:20px;height:20px;"></i></span>
+        <div class="hm-preview-text">
+          <div class="hm-preview-title">출장 보고서</div>
+          <div class="hm-preview-meta">김도현 · 3월 5일</div>
+        </div>
+        <span class="hm-badge rejected">반려됨</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="comp-label">EMPTY</div>
+    <div class="hm-section" style="margin:0;">
+      <div class="hm-section-header">
+        <span class="hm-section-title">결재</span>
+        <button class="hm-section-more">
+          더보기 <i data-lucide="chevron-right" style="width:14px;height:14px;"></i>
+        </button>
+      </div>
+      <div class="hm-section-empty">결재 내역이 없습니다</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 5. Notice Preview ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">5. Notice Preview</span>
+    <span class="comp-num">공지톡 미리보기</span>
+  </div>
+  <div class="comp-body gray" style="padding:24px;">
+    <div class="hm-section" style="margin:0;">
+      <div class="hm-section-header">
+        <span class="hm-section-title">공지톡</span>
+        <button class="hm-section-more">
+          더보기 <i data-lucide="chevron-right" style="width:14px;height:14px;"></i>
+        </button>
+      </div>
+      <div class="hm-preview-item">
+        <span class="hm-unread-dot"></span>
+        <span class="hm-preview-icon"><i data-lucide="megaphone" style="width:20px;height:20px;"></i></span>
+        <div class="hm-preview-text">
+          <div class="hm-preview-title">3월 전체 회의 안내</div>
+          <div class="hm-preview-meta">관리팀 · 1시간 전</div>
+        </div>
+      </div>
+      <div class="hm-preview-divider"></div>
+      <div class="hm-preview-item">
+        <span class="hm-preview-icon"><i data-lucide="megaphone" style="width:20px;height:20px;"></i></span>
+        <div class="hm-preview-text">
+          <div class="hm-preview-title">사무실 이전 공지</div>
+          <div class="hm-preview-meta">관리팀 · 어제</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="comp-label">EMPTY</div>
+    <div class="hm-section" style="margin:0;">
+      <div class="hm-section-header">
+        <span class="hm-section-title">공지톡</span>
+        <button class="hm-section-more">
+          더보기 <i data-lucide="chevron-right" style="width:14px;height:14px;"></i>
+        </button>
+      </div>
+      <div class="hm-section-empty">공지사항이 없습니다</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ 6. My Profile Screen ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">6. My Profile Screen</span>
+    <span class="comp-num">내 프로필 화면</span>
+  </div>
+  <div class="comp-body gray" style="padding:24px;">
+    <div class="phone-frame" style="background:var(--surface);">
+
+      <!-- Profile Header -->
+      <div class="hm-profile-header">
+        <button class="hm-profile-back">
+          <i data-lucide="arrow-left" style="width:24px;height:24px;"></i>
+        </button>
+        <span class="hm-profile-header-title">내 프로필</span>
+      </div>
+
+      <!-- Profile Card -->
+      <div class="hm-profile-card">
+        <div class="hm-profile-avatar" style="background:var(--primary-100);color:var(--primary-600);">DH</div>
+        <div class="hm-profile-name">김도현</div>
+        <div class="hm-profile-dept">개발팀 · 백엔드 개발</div>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="hm-profile-info">
+        <div class="hm-profile-info-item">
+          <span class="hm-profile-info-icon"><i data-lucide="phone" style="width:20px;height:20px;"></i></span>
+          <span class="hm-profile-info-text">010-1234-5678</span>
+        </div>
+        <div class="hm-profile-info-divider"></div>
+        <div class="hm-profile-info-item">
+          <span class="hm-profile-info-icon"><i data-lucide="mail" style="width:20px;height:20px;"></i></span>
+          <span class="hm-profile-info-text">dohyun.kim@company.com</span>
+        </div>
+      </div>
+
+      <!-- Menu -->
+      <div class="hm-profile-menu">
+        <div class="hm-profile-menu-item">
+          <span class="hm-profile-menu-icon"><i data-lucide="pencil" style="width:20px;height:20px;"></i></span>
+          <span class="hm-profile-menu-text">프로필 편집</span>
+        </div>
+        <div class="hm-profile-menu-divider"></div>
+        <div class="hm-profile-menu-item">
+          <span class="hm-profile-menu-icon"><i data-lucide="bell" style="width:20px;height:20px;"></i></span>
+          <span class="hm-profile-menu-text">알림 설정</span>
+        </div>
+        <div class="hm-profile-menu-divider"></div>
+        <div class="hm-profile-menu-item">
+          <span class="hm-profile-menu-icon"><i data-lucide="log-out" style="width:20px;height:20px;"></i></span>
+          <span class="hm-profile-menu-text danger">로그아웃</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ BONUS: Full Assembly ═══ -->
+<div class="comp">
+  <div class="comp-header">
+    <span class="comp-title">Full Assembly</span>
+    <span class="comp-num">전체 조합 프리뷰</span>
+  </div>
+  <div class="comp-body gray" style="padding:24px;">
+    <div class="phone-frame" style="max-height:780px; display:flex; flex-direction:column; background:var(--surface);">
+
+      <!-- Header -->
+      <div class="hm-header" style="flex-shrink:0;">
+        <span class="hm-header-title">홈</span>
+        <button class="hm-header-btn">
+          <i data-lucide="settings" style="width:24px;height:24px;"></i>
+        </button>
+      </div>
+
+      <!-- Scrollable -->
+      <div style="flex:1; overflow-y:auto; padding-bottom:24px;">
+
+        <!-- Profile Banner -->
+        <div class="hm-banner">
+          <div class="hm-banner-top">
+            <div class="hm-banner-avatar" style="background:var(--primary-100);color:var(--primary-600);">DH</div>
+            <div class="hm-banner-text">
+              <div class="hm-banner-name">김도현</div>
+              <div class="hm-banner-dept">개발팀 · 백엔드 개발</div>
+            </div>
+            <span class="hm-banner-chevron"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></span>
+          </div>
+          <div class="hm-banner-org">
+            <span class="hm-banner-org-icon"><i data-lucide="building-2" style="width:16px;height:16px;"></i></span>
+            <span class="hm-banner-org-text">주식회사 아테나</span>
+          </div>
+        </div>
+
+        <!-- Work Clock -->
+        <div class="hm-clock-card">
+          <div class="hm-clock-status">
+            <div class="hm-clock-dot working"></div>
+            <span class="hm-clock-status-text working">근무 중</span>
+          </div>
+          <div class="hm-clock-timer">04:32:15</div>
+          <div class="hm-clock-bottom">
+            <div class="hm-clock-info">
+              <span class="hm-clock-time">09:00</span>
+              <span class="hm-clock-label">출근</span>
+            </div>
+            <button class="hm-clock-btn end">퇴근</button>
+          </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="hm-stats">
+          <div class="hm-stat">
+            <div class="hm-stat-label">결재</div>
+            <div class="hm-stat-num accent">3</div>
+          </div>
+          <div class="hm-stat">
+            <div class="hm-stat-label">공지톡</div>
+            <div class="hm-stat-num">2</div>
+          </div>
+          <div class="hm-stat">
+            <div class="hm-stat-label">근무시간</div>
+            <div class="hm-stat-num">24/40h</div>
+          </div>
+        </div>
+
+        <!-- Approval Preview -->
+        <div class="hm-section">
+          <div class="hm-section-header">
+            <span class="hm-section-title">결재</span>
+            <button class="hm-section-more">
+              더보기 <i data-lucide="chevron-right" style="width:14px;height:14px;"></i>
+            </button>
+          </div>
+          <div class="hm-preview-item">
+            <span class="hm-preview-icon"><i data-lucide="file-text" style="width:20px;height:20px;"></i></span>
+            <div class="hm-preview-text">
+              <div class="hm-preview-title">휴가 신청서</div>
+              <div class="hm-preview-meta">김도현 · 3월 10일</div>
+            </div>
+            <span class="hm-badge pending">대기 중</span>
+          </div>
+          <div class="hm-preview-divider"></div>
+          <div class="hm-preview-item">
+            <span class="hm-preview-icon"><i data-lucide="file-text" style="width:20px;height:20px;"></i></span>
+            <div class="hm-preview-text">
+              <div class="hm-preview-title">비품 구매 요청</div>
+              <div class="hm-preview-meta">김도현 · 3월 8일</div>
+            </div>
+            <span class="hm-badge approved">승인됨</span>
+          </div>
+        </div>
+
+        <!-- Notice Preview -->
+        <div class="hm-section">
+          <div class="hm-section-header">
+            <span class="hm-section-title">공지톡</span>
+            <button class="hm-section-more">
+              더보기 <i data-lucide="chevron-right" style="width:14px;height:14px;"></i>
+            </button>
+          </div>
+          <div class="hm-preview-item">
+            <span class="hm-unread-dot"></span>
+            <span class="hm-preview-icon"><i data-lucide="megaphone" style="width:20px;height:20px;"></i></span>
+            <div class="hm-preview-text">
+              <div class="hm-preview-title">3월 전체 회의 안내</div>
+              <div class="hm-preview-meta">관리팀 · 1시간 전</div>
+            </div>
+          </div>
+          <div class="hm-preview-divider"></div>
+          <div class="hm-preview-item">
+            <span class="hm-preview-icon"><i data-lucide="megaphone" style="width:20px;height:20px;"></i></span>
+            <div class="hm-preview-text">
+              <div class="hm-preview-title">사무실 이전 공지</div>
+              <div class="hm-preview-meta">관리팀 · 어제</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });
+</script>
+</body>
+</html>

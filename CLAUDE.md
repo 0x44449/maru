@@ -88,7 +88,8 @@ maru/
 - **엔티티**: 전체 구현 완료 (User, Profile, WorkspaceProfile, Workspace, WorkspacePlugin, Department, DepartmentMember, Contact, ChatRoom, ChatMember, ChatMessage, Channel, ChannelManager, File)
 - **공유 DTO**: User, Profile, Workspace, Department 구현 완료, 나머지는 빈 스텁 (기능 구현 시 채울 예정)
 - **Backend 미구현**: Flyway 마이그레이션, Service/Repository/Controller 로직
-- **Mobile**: Expo 프로젝트 초기 구성 완료, 화면 구현 전 (boilerplate 상태)
+- **Mobile**: 로그인/사용자 등록 화면 UI 구현, 워크스페이스 탭(개인 프로필 뷰) 작업 중
+- **탭 구조 변경**: 홈 → 워크스페이스 (개인 프로필: 워크스페이스 목록, 워크스페이스 프로필: 근무/결재/공지)
 
 ## Build & Run
 

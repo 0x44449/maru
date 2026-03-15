@@ -4,6 +4,10 @@ import { useTheme } from "@/constants/useTheme";
 import { colors, spacing, radius, fontSize, fontWeight } from "@/constants/theme";
 import PersonalProfileIcon from "@/assets/icons/profile/profile_personal.svg";
 import WorkspaceProfileIcon from "@/assets/icons/profile/profile_workspace.svg";
+import WorkClockIcon from "@/assets/icons/workspace/work_clock.svg";
+import NoticeIcon from "@/assets/icons/workspace/notice.svg";
+import ApprovalIcon from "@/assets/icons/workspace/approval.svg";
+import SettingsIcon from "@/assets/icons/workspace/settings.svg";
 
 // mock 데이터
 const mockProfile = {
@@ -12,135 +16,6 @@ const mockProfile = {
   initials: "DH",
 };
 
-type ApprovalPlugin = {
-  type: "APPROVAL";
-  label: string;
-  newCount: number;
-  latest: { title: string } | null;
-};
-
-type AnnouncementPlugin = {
-  type: "ANNOUNCEMENT";
-  label: string;
-  newCount: number;
-  latest: { title: string } | null;
-};
-
-type AttendancePlugin = {
-  type: "ATTENDANCE";
-  label: string;
-  status: "working" | "off";
-  checkInTime: string | null;
-  elapsedMinutes: number;
-};
-
-type Plugin = ApprovalPlugin | AnnouncementPlugin | AttendancePlugin;
-
-type Workspace = {
-  id: string;
-  name: string;
-  memberCount: number;
-  myDepartment: string | null;
-  plugins: Plugin[];
-};
-
-const mockWorkspaces: Workspace[] = [
-  {
-    id: "1",
-    name: "주식회사 아테나",
-    memberCount: 12,
-    myDepartment: "경영팀",
-    plugins: [
-      {
-        type: "APPROVAL",
-        label: "결재",
-        newCount: 3,
-        latest: { title: "휴가 신청서 - 김민수" },
-      },
-      {
-        type: "ANNOUNCEMENT",
-        label: "공지",
-        newCount: 1,
-        latest: { title: "3월 전체 회의 안내" },
-      },
-      {
-        type: "ATTENDANCE",
-        label: "근무",
-        status: "working",
-        checkInTime: "09:02",
-        elapsedMinutes: 204,
-      },
-    ],
-  },
-  {
-    id: "2",
-    name: "데모 워크스페이스",
-    memberCount: 3,
-    myDepartment: null,
-    plugins: [
-      {
-        type: "APPROVAL",
-        label: "결재",
-        newCount: 0,
-        latest: null,
-      },
-      {
-        type: "ATTENDANCE",
-        label: "근무",
-        status: "off",
-        checkInTime: null,
-        elapsedMinutes: 0,
-      },
-    ],
-  },
-];
-
-function formatElapsed(minutes: number) {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return h > 0 ? `${h}시간 ${m}분 경과` : `${m}분 경과`;
-}
-
-function PluginWidget({ plugin, theme }: { plugin: Plugin; theme: ReturnType<typeof useTheme> }) {
-  if (plugin.type === "ATTENDANCE") {
-    const isWorking = plugin.status === "working";
-    return (
-      <View style={[styles.widget, { backgroundColor: theme.surface }]}>
-        <View style={styles.widgetLabelBox}>
-          <Text style={styles.widgetLabelText}>{plugin.label}</Text>
-        </View>
-        {isWorking && plugin.checkInTime ? (
-          <Text style={[styles.widgetContent, { color: theme.textPrimary }]} numberOfLines={1}>
-            {plugin.checkInTime} 출근 · {formatElapsed(plugin.elapsedMinutes)}
-          </Text>
-        ) : (
-          <Text style={[styles.widgetContent, { color: theme.textTertiary }]}>미출근</Text>
-        )}
-        {isWorking && <View style={styles.statusDotGreen} />}
-      </View>
-    );
-  }
-
-  // APPROVAL, ANNOUNCEMENT
-  return (
-    <View style={[styles.widget, { backgroundColor: theme.surface }]}>
-      <View style={styles.widgetLabelBox}>
-        <Text style={styles.widgetLabelText}>{plugin.label}</Text>
-      </View>
-      <Text
-        style={[styles.widgetContent, { color: plugin.latest ? theme.textPrimary : theme.textTertiary }]}
-        numberOfLines={1}
-      >
-        {plugin.latest ? plugin.latest.title : "새 항목 없음"}
-      </Text>
-      {plugin.newCount > 0 && (
-        <View style={[styles.badge, { backgroundColor: colors.primary[600] }]}>
-          <Text style={styles.badgeText}>{plugin.newCount}</Text>
-        </View>
-      )}
-    </View>
-  );
-}
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -180,72 +55,157 @@ export default function HomeScreen() {
         </Pressable>
 
         {/* 워크스페이스 목록 */}
-        <View
-          style={[
-            styles.wsCard,
-            { backgroundColor: theme.background, borderColor: theme.border },
-          ]}
-        >
-          <View style={[styles.wsHeader, { borderBottomColor: theme.border }]}>
+        <View style={styles.wsSection}>
+          <View style={styles.wsHeader}>
             <Text style={[styles.wsTitle, { color: theme.textPrimary }]}>
               내 워크스페이스
             </Text>
             <Pressable style={styles.wsMore}>
+              <SettingsIcon width={14} height={14} color={theme.textTertiary} />
               <Text style={{ fontSize: 13, color: theme.textTertiary }}>
-                관리 ›
+                관리
               </Text>
             </Pressable>
           </View>
 
-          {mockWorkspaces.map((ws, index) => {
-            const hasNoti = ws.plugins.some(
-              (p) => (p.type === "APPROVAL" || p.type === "ANNOUNCEMENT") && p.newCount > 0,
-            );
-            return (
-              <Pressable
-                key={ws.id}
-                style={({ pressed }) => [
-                  styles.wsItem,
-                  index < mockWorkspaces.length - 1 && {
-                    borderBottomWidth: 1,
-                    borderBottomColor: theme.border,
-                  },
-                  { opacity: pressed ? 0.85 : 1 },
-                ]}
-              >
-                {/* 상단: 로고 + 이름/메타 + 알림 dot */}
-                <View style={styles.wsItemHeader}>
-                  <View
-                    style={[
-                      styles.wsItemIcon,
-                      { backgroundColor: colors.primary[50] },
-                    ]}
-                  >
-                    <Text style={{ fontSize: 16, color: colors.primary[600] }}>🏢</Text>
-                  </View>
-                  <View style={styles.wsItemInfo}>
-                    <Text
-                      style={[styles.wsItemName, { color: theme.textPrimary }]}
-                      numberOfLines={1}
-                    >
-                      {ws.name}
-                    </Text>
-                    <Text style={[styles.wsItemMeta, { color: theme.textTertiary }]}>
-                      {[`구성원 ${ws.memberCount}명`, ws.myDepartment].filter(Boolean).join(" · ")}
-                    </Text>
-                  </View>
-                  {hasNoti && <View style={styles.notiDot} />}
-                </View>
+          {/* 주식회사 아테나 */}
+          <Pressable
+            style={({ pressed }) => [
+              styles.wsItem,
+              { backgroundColor: theme.surface, borderColor: theme.border },
+              { opacity: pressed ? 0.85 : 1 },
+            ]}
+          >
+            <View style={styles.wsItemHeader}>
+              <View style={[styles.wsItemIcon, { backgroundColor: colors.primary[50] }]}>
+                <Text style={{ fontSize: 16, color: colors.primary[600] }}>🏢</Text>
+              </View>
+              <View style={styles.wsItemInfo}>
+                <Text style={[styles.wsItemName, { color: theme.textPrimary }]} numberOfLines={1}>
+                  주식회사 아테나
+                </Text>
+                <Text style={[styles.wsItemMeta, { color: theme.textTertiary }]}>
+                  구성원 12명 · 경영팀
+                </Text>
+              </View>
+              <Text style={[styles.wsItemChevron, { color: theme.textTertiary }]}>›</Text>
+            </View>
 
-                {/* 하단: 플러그인 위젯 */}
-                <View style={styles.pluginWidgets}>
-                  {ws.plugins.map((plugin) => (
-                    <PluginWidget key={plugin.type} plugin={plugin} theme={theme} />
-                  ))}
+            <View style={styles.pluginWidgets}>
+              {/* 근무 */}
+              <View style={styles.attendanceWidget}>
+                <View style={styles.attendanceLeft}>
+                  <View style={[styles.widgetLabelBox, { backgroundColor: "#E1F5EE" }]}>
+                    <WorkClockIcon width={12} height={12} color="#0F6E56" style={{ marginRight: 2 }} />
+                    <Text style={[styles.widgetLabelText, { color: "#0F6E56" }]}>근무</Text>
+                  </View>
                 </View>
-              </Pressable>
-            );
-          })}
+                <View style={styles.attendanceRight}>
+                  <View style={styles.attendanceRightTop}>
+                    <Text style={[styles.widgetContent, { color: theme.textPrimary }]}>3시간 24분</Text>
+                    <View style={styles.attendanceStatusBadge}>
+                      <Text style={styles.attendanceStatusText}>근무 중</Text>
+                    </View>
+                  </View>
+                  <View style={styles.attendanceRightBottom}>
+                    <Text style={styles.attendanceCheckIn}>09:02</Text>
+                    <View style={styles.progressTrack}>
+                      <View style={[styles.progressFill, { width: "42.5%" }]} />
+                    </View>
+                  </View>
+                </View>
+              </View>
+
+              {/* 결재 */}
+              <View style={styles.widget}>
+                <View style={[styles.widgetLabelBox, { backgroundColor: "#EEEDFE" }]}>
+                  <ApprovalIcon width={12} height={12} color="#534AB7" style={{ marginRight: 2 }} />
+                  <Text style={[styles.widgetLabelText, { color: "#534AB7" }]}>결재</Text>
+                </View>
+                <Text style={[styles.widgetContent, { color: theme.textPrimary }]} numberOfLines={1}>
+                  휴가 신청서 - 김민수
+                </Text>
+                <View style={[styles.badge, { backgroundColor: colors.semantic.error.default }]}>
+                  <Text style={styles.badgeText}>3</Text>
+                </View>
+              </View>
+
+              {/* 공지 */}
+              <View style={styles.widget}>
+                <View style={[styles.widgetLabelBox, { backgroundColor: "#E6F1FB" }]}>
+                  <NoticeIcon width={12} height={12} color="#185FA5" style={{ marginRight: 2 }} />
+                  <Text style={[styles.widgetLabelText, { color: "#185FA5" }]}>공지</Text>
+                </View>
+                <Text style={[styles.widgetContent, { color: theme.textPrimary }]} numberOfLines={1}>
+                  3월 전체 회의 안내
+                </Text>
+                <View style={[styles.badge, { backgroundColor: colors.semantic.error.default }]}>
+                  <Text style={styles.badgeText}>1</Text>
+                </View>
+              </View>
+            </View>
+          </Pressable>
+
+          {/* 데모 워크스페이스 */}
+          <Pressable
+            style={({ pressed }) => [
+              styles.wsItem,
+              { backgroundColor: theme.surface, borderColor: theme.border },
+              { opacity: pressed ? 0.85 : 1 },
+            ]}
+          >
+            <View style={styles.wsItemHeader}>
+              <View style={[styles.wsItemIcon, { backgroundColor: colors.primary[50] }]}>
+                <Text style={{ fontSize: 16, color: colors.primary[600] }}>🏢</Text>
+              </View>
+              <View style={styles.wsItemInfo}>
+                <Text style={[styles.wsItemName, { color: theme.textPrimary }]} numberOfLines={1}>
+                  데모 워크스페이스
+                </Text>
+                <Text style={[styles.wsItemMeta, { color: theme.textTertiary }]}>
+                  구성원 3명
+                </Text>
+              </View>
+              <Text style={[styles.wsItemChevron, { color: theme.textTertiary }]}>›</Text>
+            </View>
+
+            <View style={styles.pluginWidgets}>
+              {/* 근무 — 미출근 */}
+              <View style={styles.attendanceWidget}>
+                <View style={styles.attendanceLeft}>
+                  <View style={[styles.widgetLabelBox, { backgroundColor: "#F1EFE8" }]}>
+                    <WorkClockIcon width={12} height={12} color="#5F5E5A" style={{ marginRight: 2 }} />
+                    <Text style={[styles.widgetLabelText, { color: "#5F5E5A" }]}>근무</Text>
+                  </View>
+                </View>
+                <View style={styles.attendanceRight}>
+                  <View style={styles.attendanceRightTop}>
+                    <Text style={[styles.widgetContent, { color: "#5F5E5A" }]}>--:--</Text>
+                    <View style={[styles.attendanceStatusBadge, { borderColor: "#5F5E5A" }]}>
+                      <Text style={[styles.attendanceStatusText, { color: "#5F5E5A" }]}>미출근</Text>
+                    </View>
+                  </View>
+                  <View style={styles.attendanceRightBottom}>
+                    <Text style={[styles.attendanceCheckIn, { color: "#5F5E5A" }]}>09:00</Text>
+                    <View style={[styles.progressTrack, { backgroundColor: "#F1EFE8" }]}>
+                      <View style={[styles.progressFill, { width: "0%", backgroundColor: "#F1EFE8" }]} />
+                    </View>
+                  </View>
+                </View>
+              </View>
+
+              {/* 결재 */}
+              <View style={styles.widget}>
+                <View style={[styles.widgetLabelBox, { backgroundColor: "#EEEDFE" }]}>
+                  <ApprovalIcon width={12} height={12} color="#534AB7" style={{ marginRight: 2 }} />
+                  <Text style={[styles.widgetLabelText, { color: "#534AB7" }]}>결재</Text>
+                </View>
+                <Text style={[styles.widgetContent, { color: theme.textTertiary }]} numberOfLines={1}>
+                  새 항목 없음
+                </Text>
+              </View>
+            </View>
+          </Pressable>
         </View>
       </ScrollView>
     </View>
@@ -327,20 +287,16 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginTop: 2,
   },
-  wsCard: {
+  wsSection: {
     marginHorizontal: spacing[4],
     marginTop: spacing[2],
-    borderRadius: radius.xl,
-    borderWidth: 1,
-    overflow: "hidden",
+    gap: spacing[2],
   },
   wsHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: spacing[4],
-    height: 44,
-    borderBottomWidth: 1,
+    paddingHorizontal: spacing[1],
   },
   wsTitle: {
     fontSize: 15,
@@ -349,11 +305,14 @@ const styles = StyleSheet.create({
   wsMore: {
     flexDirection: "row",
     alignItems: "center",
+    gap: 4,
   },
   wsItem: {
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[3],
     gap: spacing[2],
+    borderRadius: radius.lg,
+    borderWidth: 1,
   },
   wsItemHeader: {
     flexDirection: "row",
@@ -372,11 +331,14 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   wsItemName: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: fontWeight.semibold,
   },
   wsItemMeta: {
     fontSize: 13,
+  },
+  wsItemChevron: {
+    fontSize: 18,
   },
   pluginWidgets: {
     gap: spacing[2],
@@ -384,21 +346,19 @@ const styles = StyleSheet.create({
   widget: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: spacing[3],
-    paddingVertical: spacing[2],
-    borderRadius: radius.md,
+    paddingVertical: spacing[1],
     gap: spacing[2],
   },
   widgetLabelBox: {
-    backgroundColor: colors.primary[50],
     paddingHorizontal: spacing[2],
-    paddingVertical: 2,
-    borderRadius: radius.sm,
+    paddingVertical: spacing[1],
+    borderRadius: radius.full,
+    flexDirection: "row",
+    alignItems: "center",
   },
   widgetLabelText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: fontWeight.semibold,
-    color: colors.primary[600],
   },
   widgetContent: {
     flex: 1,
@@ -417,25 +377,61 @@ const styles = StyleSheet.create({
     fontWeight: fontWeight.bold,
     color: "#ffffff",
   },
-  statusRow: {
+  attendanceWidget: {
+    flexDirection: "row",
+    paddingVertical: spacing[2],
+    gap: spacing[2],
+  },
+  attendanceLeft: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  attendanceRight: {
+    flex: 1,
+    justifyContent: "center",
+    gap: 2,
+  },
+  attendanceRightTop: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    justifyContent: "space-between",
   },
-  statusDotGreen: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.semantic.success.default,
+  attendanceRightBottom: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing[2],
   },
-  statusText: {
+  attendanceElapsed: {
+    fontSize: 17,
+    fontWeight: fontWeight.bold,
+    color: "#0F6E56",
+  },
+  attendanceStatusBadge: {
+    borderWidth: 1,
+    borderColor: "#1D9E75",
+    borderRadius: radius.full,
+    paddingHorizontal: spacing[2],
+    paddingVertical: 1,
+  },
+  attendanceStatusText: {
+    fontSize: 11,
+    fontWeight: fontWeight.medium,
+    color: "#0F6E56",
+  },
+  attendanceCheckIn: {
     fontSize: 12,
+    color: "#0F6E56",
     fontWeight: fontWeight.medium,
   },
-  notiDot: {
-    width: 8,
+  progressTrack: {
+    flex: 1,
     height: 8,
     borderRadius: 4,
-    backgroundColor: colors.semantic.error.default,
+    backgroundColor: "#E1F5EE",
+  },
+  progressFill: {
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#1D9E75",
   },
 });

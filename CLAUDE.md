@@ -88,8 +88,9 @@ maru/
 - **엔티티**: 전체 구현 완료 (User, Profile, WorkspaceProfile, Workspace, WorkspacePlugin, Department, DepartmentMember, Contact, ChatRoom, ChatMember, ChatMessage, Channel, ChannelManager, File)
 - **공유 DTO**: User, Profile, Workspace, Department 구현 완료, 나머지는 빈 스텁 (기능 구현 시 채울 예정)
 - **Backend 미구현**: Flyway 마이그레이션, Service/Repository/Controller 로직
-- **Mobile**: 로그인/사용자 등록 화면 UI 구현, 워크스페이스 탭(개인 프로필 뷰) 작업 중
+- **Mobile**: 로그인/사용자 등록 화면 UI 구현, 워크스페이스 탭(개인 프로필 뷰) UI 완료
 - **탭 구조 변경**: 홈 → 워크스페이스 (개인 프로필: 워크스페이스 목록, 워크스페이스 프로필: 근무/결재/공지)
+- **워크스페이스 카드**: 독립 카드형 + 플러그인 미리보기 위젯(근무 프로그레스바, 결재/공지 인라인 뱃지)
 
 ## Build & Run
 

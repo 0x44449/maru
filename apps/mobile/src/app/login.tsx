@@ -1,6 +1,7 @@
-import { View, Text, Pressable, StyleSheet, Alert } from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import { Image } from "expo-image";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 import { useTheme } from "@/constants/useTheme";
 import {
   spacing,
@@ -13,13 +14,10 @@ import {
 export default function LoginScreen() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
-  const handleKakaoLogin = () => {
-    Alert.alert("카카오 로그인", "카카오 OAuth 연동 예정");
-  };
-
-  const handleGoogleLogin = () => {
-    Alert.alert("Google 로그인", "Google OAuth 연동 예정");
+  const handleLogin = () => {
+    router.replace("/user-register");
   };
 
   return (
@@ -56,7 +54,7 @@ export default function LoginScreen() {
               opacity: pressed ? 0.85 : 1,
             },
           ]}
-          onPress={handleKakaoLogin}
+          onPress={handleLogin}
         >
           <Text style={{ fontSize: 18 }}>💬</Text>
           <Text
@@ -79,7 +77,7 @@ export default function LoginScreen() {
               opacity: pressed ? 0.85 : 1,
             },
           ]}
-          onPress={handleGoogleLogin}
+          onPress={handleLogin}
         >
           <Text style={{ fontSize: 18, fontWeight: "500" }}>G</Text>
           <Text

@@ -123,11 +123,8 @@ export default function HomeScreen() {
                   <Text style={[styles.widgetLabelText, { color: "#534AB7" }]}>결재</Text>
                 </View>
                 <Text style={[styles.widgetContent, { color: theme.textPrimary }]} numberOfLines={1}>
-                  휴가 신청서 - 김민수
+                  휴가 신청서 - 김민수 <Text style={styles.widgetBadgeInline}>3</Text>
                 </Text>
-                <View style={[styles.badge, { backgroundColor: colors.semantic.error.default }]}>
-                  <Text style={styles.badgeText}>3</Text>
-                </View>
               </View>
 
               {/* 공지 */}
@@ -137,11 +134,8 @@ export default function HomeScreen() {
                   <Text style={[styles.widgetLabelText, { color: "#185FA5" }]}>공지</Text>
                 </View>
                 <Text style={[styles.widgetContent, { color: theme.textPrimary }]} numberOfLines={1}>
-                  3월 전체 회의 안내
+                  3월 전체 회의 안내 <Text style={styles.widgetBadgeInline}>1</Text>
                 </Text>
-                <View style={[styles.badge, { backgroundColor: colors.semantic.error.default }]}>
-                  <Text style={styles.badgeText}>1</Text>
-                </View>
               </View>
             </View>
           </Pressable>
@@ -363,6 +357,11 @@ const styles = StyleSheet.create({
   widgetContent: {
     flex: 1,
     fontSize: 13,
+  },
+  widgetBadgeInline: {
+    fontSize: 13,
+    fontWeight: fontWeight.bold,
+    color: colors.semantic.error.default,
   },
   badge: {
     minWidth: 20,

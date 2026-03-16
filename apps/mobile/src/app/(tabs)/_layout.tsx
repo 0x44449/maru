@@ -1,7 +1,6 @@
 import { Text } from "react-native";
 import { Tabs } from "expo-router";
 import { useTheme } from "@/constants/useTheme";
-import { colors } from "@/constants/theme";
 import WorkspaceIcon from "@/assets/icons/bottom/workspace_filled.svg";
 import ChatIcon from "@/assets/icons/bottom/chat_filled.svg";
 import ContactsIcon from "@/assets/icons/bottom/contacts_filled.svg";
@@ -14,8 +13,8 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary[600],
-        tabBarInactiveTintColor: theme.textPrimary,
+        tabBarActiveTintColor: theme.textPrimary,
+        tabBarInactiveTintColor: theme.textTertiary,
         tabBarStyle: {
           backgroundColor: theme.background,
           borderTopColor: theme.border,

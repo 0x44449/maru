@@ -10,14 +10,33 @@ import {
   fontWeight,
   socialColors,
 } from "@/constants/theme";
+import { signInWithGoogle, signInWithKakao } from "@/libs/auth";
 
 export default function LoginScreen() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
-  const handleLogin = () => {
-    router.replace("/user-register");
+  const handleKakaoLogin = async () => {
+    try {
+      const data = await signInWithKakao();
+      console.log("카카오 로그인 성공:", data);
+
+      router.replace("/user-register");
+    } catch (error) {
+      console.error("카카오 로그인 실패:", error);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const data = await signInWithGoogle();
+      console.log("구글 로그인 성공:", data);
+
+      router.replace("/user-register");
+    } catch (error) {
+      console.error("구글 로그인 실패:", error);
+    }
   };
 
   return (
@@ -54,7 +73,7 @@ export default function LoginScreen() {
               opacity: pressed ? 0.85 : 1,
             },
           ]}
-          onPress={handleLogin}
+          onPress={handleKakaoLogin}
         >
           <Text style={{ fontSize: 18 }}>💬</Text>
           <Text
@@ -77,7 +96,7 @@ export default function LoginScreen() {
               opacity: pressed ? 0.85 : 1,
             },
           ]}
-          onPress={handleLogin}
+          onPress={handleGoogleLogin}
         >
           <Text style={{ fontSize: 18, fontWeight: "500" }}>G</Text>
           <Text

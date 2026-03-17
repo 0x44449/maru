@@ -11,3 +11,10 @@ build/
 .DS_Store
 
 .claude/
+
+# Spring Boot local profile
+application-local.yml
+
+# Environment variables
+.env
+.env.local

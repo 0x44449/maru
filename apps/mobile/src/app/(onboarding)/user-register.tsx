@@ -1,6 +1,5 @@
-import { View, Text, TextInput, Pressable, ScrollView, StyleSheet, FlatList } from "react-native";
+import { View, Text, TextInput, Pressable, ScrollView, StyleSheet, FlatList, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useTheme } from "@/constants/useTheme";
 import {
@@ -10,11 +9,14 @@ import {
   fontSize,
   fontWeight,
 } from "@/constants/theme";
+import { useAuthStore, selectStatus } from "@/stores/auth";
 
 export default function UserRegisterScreen() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const router = useRouter();
+  const status = useAuthStore(selectStatus);
+  const checkUser = useAuthStore((s) => s.checkUser);
+  const [retrying, setRetrying] = useState(false);
 
   // mock 소셜 로그인 정보
   const socialProvider = "Google";
@@ -39,8 +41,62 @@ export default function UserRegisterScreen() {
   const isValid = name.trim().length > 0 && maruId.trim().length > 0 && agreeTerms && agreePrivacy;
 
   const handleStart = () => {
-    router.replace("/(tabs)/workspace");
+    // TODO: 등록 API 호출 후 useAuthStore.getState().setUser(response)로 상태 갱신
+    // 현재는 등록 API가 미구현이므로 동작하지 않음
   };
+
+  const handleRetry = async () => {
+    setRetrying(true);
+    await checkUser();
+    setRetrying(false);
+  };
+
+  // error 상태: 서버 조회 실패 → 재시도 UI
+  if (status === "error") {
+    return (
+      <View
+        style={[
+          styles.container,
+          {
+            backgroundColor: theme.background,
+            paddingTop: insets.top,
+            justifyContent: "center",
+            alignItems: "center",
+            paddingHorizontal: spacing[6],
+          },
+        ]}
+      >
+        <View
+          style={[
+            styles.errorIconContainer,
+            { backgroundColor: colors.semantic.error.light },
+          ]}
+        >
+          <Text style={styles.errorIconText}>!</Text>
+        </View>
+        <Text style={[styles.errorTitle, { color: theme.textPrimary }]}>
+          연결 오류
+        </Text>
+        <Text style={[styles.errorMessage, { color: theme.textSecondary }]}>
+          서버에 연결할 수 없습니다.{"\n"}잠시 후 다시 시도해주세요.
+        </Text>
+        <Pressable
+          style={({ pressed }) => [
+            styles.retryButton,
+            { opacity: pressed || retrying ? 0.85 : 1 },
+          ]}
+          onPress={handleRetry}
+          disabled={retrying}
+        >
+          {retrying ? (
+            <ActivityIndicator size="small" color="#ffffff" />
+          ) : (
+            <Text style={styles.retryButtonText}>다시 시도</Text>
+          )}
+        </Pressable>
+      </View>
+    );
+  }
 
   return (
     <View
@@ -355,6 +411,45 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   startButtonText: {
+    color: "#ffffff",
+    fontSize: fontSize.base,
+    fontWeight: fontWeight.semibold,
+  },
+
+  // Error state
+  errorIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: radius.full,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: spacing[4],
+  },
+  errorIconText: {
+    fontSize: fontSize["2xl"],
+    fontWeight: fontWeight.bold,
+    color: colors.semantic.error.default,
+  },
+  errorTitle: {
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.semibold,
+    marginBottom: spacing[2],
+  },
+  errorMessage: {
+    fontSize: fontSize.sm,
+    textAlign: "center",
+    lineHeight: 20,
+    marginBottom: spacing[6],
+  },
+  retryButton: {
+    height: 48,
+    paddingHorizontal: spacing[8],
+    backgroundColor: colors.primary[600],
+    borderRadius: radius.sm,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  retryButtonText: {
     color: "#ffffff",
     fontSize: fontSize.base,
     fontWeight: fontWeight.semibold,

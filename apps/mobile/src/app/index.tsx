@@ -1,6 +1,7 @@
-import { Redirect } from "expo-router";
+import { View } from "react-native";
 
+// Root layout의 인증 상태 기반 리다이렉트가 즉시 동작하므로
+// 이 화면은 실제로 보이지 않는다.
 export default function Index() {
-  // TODO: 실제 인증 상태에 따라 분기
-  return <Redirect href="/login" />;
+  return <View />;
 }

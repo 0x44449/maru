@@ -1,9 +1,16 @@
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { useState } from "react";
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import { Image } from "expo-image";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
 import { useTheme } from "@/constants/useTheme";
 import {
+  colors,
   spacing,
   radius,
   fontSize,
@@ -11,31 +18,45 @@ import {
   socialColors,
 } from "@/constants/theme";
 import { signInWithGoogle, signInWithKakao } from "@/libs/auth";
+import ErrorModal from "@/components/ErrorModal";
 
 export default function LoginScreen() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<{
+    title: string;
+    message: string;
+  } | null>(null);
 
-  const handleKakaoLogin = async () => {
+  const handleLogin = async (
+    provider: "kakao" | "google",
+  ) => {
+    setIsLoading(true);
     try {
-      const data = await signInWithKakao();
-      console.log("카카오 로그인 성공:", data);
+      if (provider === "kakao") {
+        await signInWithKakao();
+      } else {
+        await signInWithGoogle();
+      }
+      // 성공 → onAuthStateChange가 발동하여 Zustand 상태 자동 전환
+      // Root layout이 자동으로 올바른 화면으로 라우팅
+    } catch (e) {
+      // 사용자가 로그인 팝업을 취소한 경우는 조용히 무시
+      const errorMessage = e instanceof Error ? e.message : String(e);
+      const isCancelled =
+        errorMessage.includes("cancel") ||
+        errorMessage.includes("Cancel") ||
+        errorMessage.includes("사용자가 취소");
 
-      router.replace("/user-register");
-    } catch (error) {
-      console.error("카카오 로그인 실패:", error);
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    try {
-      const data = await signInWithGoogle();
-      console.log("구글 로그인 성공:", data);
-
-      router.replace("/user-register");
-    } catch (error) {
-      console.error("구글 로그인 실패:", error);
+      if (!isCancelled) {
+        setError({
+          title: "로그인 실패",
+          message: "로그인 중 문제가 발생했습니다. 다시 시도해주세요.",
+        });
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -70,10 +91,11 @@ export default function LoginScreen() {
             styles.socialButton,
             {
               backgroundColor: socialColors.kakao.background,
-              opacity: pressed ? 0.85 : 1,
+              opacity: isLoading ? 0.4 : pressed ? 0.85 : 1,
             },
           ]}
-          onPress={handleKakaoLogin}
+          onPress={() => handleLogin("kakao")}
+          disabled={isLoading}
         >
           <Text style={{ fontSize: 18 }}>💬</Text>
           <Text
@@ -93,10 +115,11 @@ export default function LoginScreen() {
               backgroundColor: socialColors.google.background,
               borderWidth: 1,
               borderColor: socialColors.google.border,
-              opacity: pressed ? 0.85 : 1,
+              opacity: isLoading ? 0.4 : pressed ? 0.85 : 1,
             },
           ]}
-          onPress={handleGoogleLogin}
+          onPress={() => handleLogin("google")}
+          disabled={isLoading}
         >
           <Text style={{ fontSize: 18, fontWeight: "500" }}>G</Text>
           <Text
@@ -110,6 +133,16 @@ export default function LoginScreen() {
         </Pressable>
       </View>
 
+      {/* 로딩 오버레이 */}
+      {isLoading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color={colors.primary[500]} />
+          <Text style={[styles.loadingText, { color: theme.textSecondary }]}>
+            로그인 중...
+          </Text>
+        </View>
+      )}
+
       {/* 하단 안내 */}
       <Text
         style={[
@@ -120,6 +153,14 @@ export default function LoginScreen() {
         시작하면 서비스 이용약관 및 개인정보 처리방침에{"\n"}동의하는 것으로
         간주됩니다.
       </Text>
+
+      {/* 에러 모달 */}
+      <ErrorModal
+        visible={error !== null}
+        title={error?.title ?? ""}
+        message={error?.message ?? ""}
+        onClose={() => setError(null)}
+      />
     </View>
   );
 }
@@ -169,6 +210,17 @@ const styles = StyleSheet.create({
   socialButtonText: {
     fontSize: fontSize.base,
     fontWeight: fontWeight.semibold,
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.3)",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: spacing[3],
+  },
+  loadingText: {
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.medium,
   },
   footer: {
     position: "absolute",

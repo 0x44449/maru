@@ -21,8 +21,10 @@ public class ChatMessageEntity {
     @Column("chat_room_id")
     private String chatRoomId;
 
-    @Column("sender_profile_id")
-    private String senderProfileId;
+    private Integer seq;
+
+    @Column("sender_id")
+    private String senderId;
 
     private MessageType type;
 

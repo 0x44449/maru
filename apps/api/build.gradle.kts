@@ -40,7 +40,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 
     // API Docs (Swagger UI)
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.16")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2")
 
     // Lombok
     compileOnly("org.projectlombok:lombok")

@@ -24,7 +24,6 @@ public class UserController {
 
     @GetMapping("/me")
     @Operation(summary = "내 정보 조회", description = "현재 로그인한 사용자의 정보를 조회합니다.")
-    @AllowPublic
     public UserDto getMe(@RequestPayload JwtPayload jwt) {
         var uid = jwt.sub();
         return userService.getUserById(uid);

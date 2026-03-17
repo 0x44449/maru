@@ -1,10 +1,8 @@
 package com.maru.api.config.auth;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -12,10 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-
-import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
@@ -39,7 +34,6 @@ public class SecurityConfig {
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.decoder(jwtDecoder()))
-                        .authenticationEntryPoint(authenticationEntryPoint())
                 );
 
         return http.build();
@@ -55,18 +49,4 @@ public class SecurityConfig {
                 .build();
     }
 
-    @Bean
-    public AuthenticationEntryPoint authenticationEntryPoint() {
-        return (request, response, authException) -> {
-            response.setStatus(401);
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.setCharacterEncoding("UTF-8");
-
-            Map<String, String> body = Map.of(
-                    "errorCode", "UNAUTHORIZED",
-                    "message", "인증이 필요합니다"
-            );
-            new ObjectMapper().writeValue(response.getOutputStream(), body);
-        };
-    }
 }

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import type { Session } from "@supabase/supabase-js";
-import { supabase } from "@/libs/auth/supabse";
+import { supabase } from "@/libs/auth/supabase";
 import apiClient from "@/api/client";
 import type { ApiError, UserResponse } from "@/api/types";
 
@@ -58,14 +58,11 @@ export const useAuthStore = create<AuthState>()((set, get) => {
       set({ isCheckingUser: true, userFetchError: false });
 
       try {
-        console.log("[auth] checkUser 요청:", process.env.EXPO_PUBLIC_API_URL + "/api/v1/users/me");
         const response = await apiClient.get<UserResponse>("/api/v1/users/me");
         if (currentRequestId !== requestId) return;
-        console.log("[auth] checkUser 성공:", response.data);
         set({ user: response.data, isCheckingUser: false });
       } catch (e) {
         if (currentRequestId !== requestId) return;
-        console.log("[auth] checkUser 에러 원본:", JSON.stringify(e, null, 2));
 
         const apiError = e as ApiError;
         if (apiError.errorCode === "USER_NOT_FOUND") {

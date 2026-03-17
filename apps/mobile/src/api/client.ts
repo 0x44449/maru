@@ -1,5 +1,5 @@
 import axios, { isAxiosError } from "axios";
-import { supabase } from "@/libs/auth/supabse";
+import { supabase } from "@/libs/auth/supabase";
 import type { ApiError } from "./types";
 
 const apiClient = axios.create({

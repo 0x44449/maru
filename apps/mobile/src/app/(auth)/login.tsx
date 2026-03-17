@@ -17,7 +17,7 @@ import {
   fontWeight,
   socialColors,
 } from "@/constants/theme";
-import { signInWithGoogle, signInWithKakao } from "@/libs/auth";
+import { signInWithGoogle, signInWithKakao, AuthError } from "@/libs/auth";
 import ErrorModal from "@/components/ErrorModal";
 
 export default function LoginScreen() {
@@ -29,32 +29,31 @@ export default function LoginScreen() {
     message: string;
   } | null>(null);
 
-  const handleLogin = async (
-    provider: "kakao" | "google",
-  ) => {
+  const handleAuthError = (e: unknown) => {
+    if (e instanceof AuthError && e.code === "AUTH_CANCELLED") return;
+    setError({
+      title: "로그인 실패",
+      message: "로그인 중 문제가 발생했습니다. 다시 시도해주세요.",
+    });
+  };
+
+  const handleKakaoLogin = async () => {
     setIsLoading(true);
     try {
-      if (provider === "kakao") {
-        await signInWithKakao();
-      } else {
-        await signInWithGoogle();
-      }
-      // 성공 → onAuthStateChange가 발동하여 Zustand 상태 자동 전환
-      // Root layout이 자동으로 올바른 화면으로 라우팅
+      await signInWithKakao();
     } catch (e) {
-      // 사용자가 로그인 팝업을 취소한 경우는 조용히 무시
-      const errorMessage = e instanceof Error ? e.message : String(e);
-      const isCancelled =
-        errorMessage.includes("cancel") ||
-        errorMessage.includes("Cancel") ||
-        errorMessage.includes("사용자가 취소");
+      handleAuthError(e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-      if (!isCancelled) {
-        setError({
-          title: "로그인 실패",
-          message: "로그인 중 문제가 발생했습니다. 다시 시도해주세요.",
-        });
-      }
+  const handleGoogleLogin = async () => {
+    setIsLoading(true);
+    try {
+      await signInWithGoogle();
+    } catch (e) {
+      handleAuthError(e);
     } finally {
       setIsLoading(false);
     }
@@ -94,7 +93,7 @@ export default function LoginScreen() {
               opacity: isLoading ? 0.4 : pressed ? 0.85 : 1,
             },
           ]}
-          onPress={() => handleLogin("kakao")}
+          onPress={handleKakaoLogin}
           disabled={isLoading}
         >
           <Text style={{ fontSize: 18 }}>💬</Text>
@@ -118,7 +117,7 @@ export default function LoginScreen() {
               opacity: isLoading ? 0.4 : pressed ? 0.85 : 1,
             },
           ]}
-          onPress={() => handleLogin("google")}
+          onPress={handleGoogleLogin}
           disabled={isLoading}
         >
           <Text style={{ fontSize: 18, fontWeight: "500" }}>G</Text>

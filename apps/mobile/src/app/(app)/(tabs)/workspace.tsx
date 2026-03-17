@@ -3,7 +3,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@/constants/useTheme";
 import { colors, spacing, radius, fontSize, fontWeight } from "@/constants/theme";
 import PersonalProfileIcon from "@/assets/icons/profile/profile_personal.svg";
-import WorkspaceProfileIcon from "@/assets/icons/profile/profile_workspace.svg";
 import WorkClockIcon from "@/assets/icons/workspace/work_clock.svg";
 import NoticeIcon from "@/assets/icons/workspace/notice.svg";
 import ApprovalIcon from "@/assets/icons/workspace/approval.svg";

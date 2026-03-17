@@ -1,4 +1,3 @@
-import { Text } from "react-native";
 import { Tabs } from "expo-router";
 import { useTheme } from "@/constants/useTheme";
 import WorkspaceIcon from "@/assets/icons/bottom/workspace_filled.svg";
@@ -56,8 +55,4 @@ export default function TabLayout() {
       />
     </Tabs>
   );
-}
-
-function TabIcon({ label }: { label: string; color: string }) {
-  return <Text style={{ fontSize: 24 }}>{label}</Text>;
 }

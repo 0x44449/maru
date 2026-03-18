@@ -3,9 +3,10 @@ package com.maru.api.dto;
 import com.maru.api.entity.WorkspaceEntity;
 
 import java.time.Instant;
+import java.util.UUID;
 
 public record WorkspaceDto(
-        String workspaceId,
+        UUID workspaceId,
         String name,
         String description,
         String logoUrl,

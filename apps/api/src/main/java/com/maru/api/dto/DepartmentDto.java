@@ -3,10 +3,11 @@ package com.maru.api.dto;
 import com.maru.api.entity.DepartmentEntity;
 
 import java.time.Instant;
+import java.util.UUID;
 
 public record DepartmentDto(
-        String departmentId,
-        String workspaceId,
+        UUID departmentId,
+        UUID workspaceId,
         String name,
         Integer sortOrder,
         Instant createdAt

@@ -3,9 +3,10 @@ package com.maru.api.dto;
 import com.maru.api.entity.ProfileEntity;
 
 import java.time.Instant;
+import java.util.UUID;
 
 public record ProfileDto(
-        String profileId,
+        UUID profileId,
         ProfileEntity.ProfileType type,
         String displayName,
         String profileImageUrl,

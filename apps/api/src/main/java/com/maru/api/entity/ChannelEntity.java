@@ -7,6 +7,7 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
 import java.time.LocalTime;
+import java.util.UUID;
 
 @Table("channels")
 @Getter
@@ -17,13 +18,13 @@ public class ChannelEntity {
 
     @Id
     @Column("channel_id")
-    private String channelId;
+    private UUID channelId;
 
     @Column("workspace_id")
-    private String workspaceId;
+    private UUID workspaceId;
 
     @Column("profile_id")
-    private String profileId;
+    private UUID profileId;
 
     private String name;
 

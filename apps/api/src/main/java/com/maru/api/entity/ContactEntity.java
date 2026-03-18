@@ -5,6 +5,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Table("contacts")
 @Getter
@@ -14,10 +15,10 @@ import java.time.Instant;
 public class ContactEntity {
 
     @Column("owner_profile_id")
-    private String ownerProfileId;
+    private UUID ownerProfileId;
 
     @Column("contact_profile_id")
-    private String contactProfileId;
+    private UUID contactProfileId;
 
     private String nickname;
 

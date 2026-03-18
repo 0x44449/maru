@@ -5,6 +5,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Table("channel_managers")
 @Getter
@@ -14,10 +15,10 @@ import java.time.Instant;
 public class ChannelManagerEntity {
 
     @Column("channel_id")
-    private String channelId;
+    private UUID channelId;
 
     @Column("profile_id")
-    private String profileId;
+    private UUID profileId;
 
     private ManagerRole role;
 

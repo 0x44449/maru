@@ -39,6 +39,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 
+    // Object Storage
+    implementation("io.minio:minio:8.5.17")
+
     // API Docs (Swagger UI)
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2")
 

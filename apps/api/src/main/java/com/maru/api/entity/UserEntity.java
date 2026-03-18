@@ -6,6 +6,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Table("users")
 @Getter
@@ -16,7 +17,7 @@ public class UserEntity {
 
     @Id
     @Column("user_id")
-    private String userId;
+    private UUID userId;
 
     @Column("auth_provider")
     private AuthProvider authProvider;
@@ -28,8 +29,15 @@ public class UserEntity {
 
     private String name;
 
+    @Column("user_tag")
+    private String userTag;
+
+    @Builder.Default
+    @Column("user_tag_changed")
+    private Boolean userTagChanged = false;
+
     @Column("last_active_profile_id")
-    private String lastActiveProfileId;
+    private UUID lastActiveProfileId;
 
     @Column("created_at")
     private Instant createdAt;

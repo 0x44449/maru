@@ -6,6 +6,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Table("workspaces")
 @Getter
@@ -16,7 +17,7 @@ public class WorkspaceEntity {
 
     @Id
     @Column("workspace_id")
-    private String workspaceId;
+    private UUID workspaceId;
 
     private String name;
 

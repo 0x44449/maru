@@ -6,6 +6,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Table("profiles")
 @Getter
@@ -16,10 +17,10 @@ public class ProfileEntity {
 
     @Id
     @Column("profile_id")
-    private String profileId;
+    private UUID profileId;
 
     @Column("user_id")
-    private String userId;
+    private UUID userId;
 
     private ProfileType type;
 

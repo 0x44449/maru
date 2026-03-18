@@ -6,6 +6,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Table("files")
 @Getter
@@ -16,10 +17,10 @@ public class FileEntity {
 
     @Id
     @Column("file_id")
-    private String fileId;
+    private UUID fileId;
 
     @Column("uploader_id")
-    private String uploaderId;
+    private UUID uploaderId;
 
     @Column("original_name")
     private String originalName;
@@ -34,4 +35,7 @@ public class FileEntity {
 
     @Column("created_at")
     private Instant createdAt;
+
+    @Column("deleted_at")
+    private Instant deletedAt;
 }

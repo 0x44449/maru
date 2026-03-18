@@ -5,6 +5,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Table("chat_members")
 @Getter
@@ -14,10 +15,10 @@ import java.time.Instant;
 public class ChatMemberEntity {
 
     @Column("chat_room_id")
-    private String chatRoomId;
+    private UUID chatRoomId;
 
     @Column("profile_id")
-    private String profileId;
+    private UUID profileId;
 
     private String name;
 
@@ -25,7 +26,7 @@ public class ChatMemberEntity {
     private String iconUrl;
 
     @Column("last_read_message_id")
-    private String lastReadMessageId;
+    private UUID lastReadMessageId;
 
     @Builder.Default
     @Column("notification_enabled")

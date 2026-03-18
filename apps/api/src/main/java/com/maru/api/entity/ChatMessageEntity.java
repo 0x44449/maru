@@ -6,6 +6,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Table("chat_messages")
 @Getter
@@ -16,15 +17,15 @@ public class ChatMessageEntity {
 
     @Id
     @Column("chat_message_id")
-    private String chatMessageId;
+    private UUID chatMessageId;
 
     @Column("chat_room_id")
-    private String chatRoomId;
+    private UUID chatRoomId;
 
     private Integer seq;
 
     @Column("sender_id")
-    private String senderId;
+    private UUID senderId;
 
     private MessageType type;
 

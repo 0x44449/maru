@@ -6,6 +6,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Table("workspace_profiles")
 @Getter
@@ -16,10 +17,10 @@ public class WorkspaceProfileEntity {
 
     @Id
     @Column("profile_id")
-    private String profileId;
+    private UUID profileId;
 
     @Column("workspace_id")
-    private String workspaceId;
+    private UUID workspaceId;
 
     private String position;
 

@@ -4,6 +4,8 @@ import lombok.*;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.UUID;
+
 @Table("department_members")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -12,8 +14,8 @@ import org.springframework.data.relational.core.mapping.Table;
 public class DepartmentMemberEntity {
 
     @Column("department_id")
-    private String departmentId;
+    private UUID departmentId;
 
     @Column("profile_id")
-    private String profileId;
+    private UUID profileId;
 }

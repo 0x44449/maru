@@ -6,6 +6,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Table("workspace_plugins")
 @Getter
@@ -16,10 +17,10 @@ public class WorkspacePluginEntity {
 
     @Id
     @Column("workspace_plugin_id")
-    private String workspacePluginId;
+    private UUID workspacePluginId;
 
     @Column("workspace_id")
-    private String workspaceId;
+    private UUID workspaceId;
 
     @Column("plugin_type")
     private PluginType pluginType;

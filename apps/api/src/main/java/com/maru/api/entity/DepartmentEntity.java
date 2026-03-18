@@ -6,6 +6,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Table("departments")
 @Getter
@@ -16,10 +17,10 @@ public class DepartmentEntity {
 
     @Id
     @Column("department_id")
-    private String departmentId;
+    private UUID departmentId;
 
     @Column("workspace_id")
-    private String workspaceId;
+    private UUID workspaceId;
 
     private String name;
 

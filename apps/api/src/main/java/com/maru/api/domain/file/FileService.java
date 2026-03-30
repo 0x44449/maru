@@ -4,10 +4,13 @@ import com.maru.api.config.exception.WellKnownException;
 import com.maru.api.entity.FileEntity;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Set;
 import java.util.UUID;
@@ -19,6 +22,7 @@ public class FileService {
             "image/jpeg", "image/png", "image/webp"
     );
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    private static final int THUMB_SIZE = 512;
 
     // 이미지 매직 바이트 시그니처
     private static final byte[] PNG_SIGNATURE = {(byte) 0x89, 0x50, 0x4E, 0x47};
@@ -55,35 +59,74 @@ public class FileService {
         // 매직 바이트 검증
         validateMagicBytes(file, contentType);
 
-        // 파일 저장
         UUID fileId = UUID.randomUUID();
         String ext = getExtension(contentType);
-        String storedPath = "avatars/users/" + uploaderId + "/" + fileId + "." + ext;
+        String basePath = "avatars/users/" + uploaderId + "/" + fileId;
+        String originalPath = basePath + "." + ext;
+        String thumbPath = basePath + "_thumb." + ext;
 
+        // 원본 업로드
+        uploadToMinio(file, originalPath, contentType);
+
+        // 썸네일 생성 + 업로드
+        generateAndUploadThumbnail(file, thumbPath, contentType);
+
+        // DB 기록 (상대 경로 저장)
+        var entity = FileEntity.builder()
+                .uploaderId(uploaderId)
+                .originalName(file.getOriginalFilename())
+                .storedPath(originalPath)
+                .contentType(contentType)
+                .size(file.getSize())
+                .build();
+        var saved = fileRepository.save(entity);
+
+        // 썸네일 URL 반환
+        String thumbUrl = endpoint + "/" + bucket + "/" + thumbPath;
+        return new FileUploadResult(saved.getFileId(), thumbUrl, contentType, file.getSize());
+    }
+
+    private void uploadToMinio(MultipartFile file, String objectPath, String contentType) {
         try (InputStream inputStream = file.getInputStream()) {
             minioClient.putObject(
                     PutObjectArgs.builder()
                             .bucket(bucket)
-                            .object(storedPath)
+                            .object(objectPath)
                             .stream(inputStream, file.getSize(), -1)
                             .contentType(contentType)
                             .build());
         } catch (Exception e) {
             throw new RuntimeException("파일 업로드 실패", e);
         }
+    }
 
-        // DB 기록
-        var entity = FileEntity.builder()
-                .uploaderId(uploaderId)
-                .originalName(file.getOriginalFilename())
-                .storedPath(storedPath)
-                .contentType(contentType)
-                .size(file.getSize())
-                .build();
-        var saved = fileRepository.save(entity);
+    private void generateAndUploadThumbnail(MultipartFile file, String thumbPath, String contentType) {
+        try {
+            var outputStream = new ByteArrayOutputStream();
 
-        String url = endpoint + "/" + bucket + "/" + storedPath;
-        return new FileUploadResult(saved.getFileId(), url, contentType, file.getSize());
+            // 정사각형 크롭 + 512x512 리사이즈
+            String outputFormat = contentType.equals("image/png") ? "png" : "jpg";
+            Thumbnails.of(file.getInputStream())
+                    .size(THUMB_SIZE, THUMB_SIZE)
+                    .keepAspectRatio(true)
+                    .outputFormat(outputFormat)
+                    .toOutputStream(outputStream);
+
+            byte[] thumbBytes = outputStream.toByteArray();
+            String thumbContentType = outputFormat.equals("png") ? "image/png" : "image/jpeg";
+
+            try (var inputStream = new ByteArrayInputStream(thumbBytes)) {
+                minioClient.putObject(
+                        PutObjectArgs.builder()
+                                .bucket(bucket)
+                                .object(thumbPath)
+                                .stream(inputStream, thumbBytes.length, -1)
+                                .contentType(thumbContentType)
+                                .build());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("썸네일 생성 실패", e);
+        }
     }
 
     private void validateMagicBytes(MultipartFile file, String contentType) {

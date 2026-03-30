@@ -42,6 +42,9 @@ dependencies {
     // Object Storage
     implementation("io.minio:minio:8.5.17")
 
+    // Image Processing
+    implementation("net.coobird:thumbnailator:0.4.20")
+
     // API Docs (Swagger UI)
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2")
 

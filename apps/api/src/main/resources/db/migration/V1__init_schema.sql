@@ -9,8 +9,6 @@ CREATE TABLE users (
     user_id            UUID         NOT NULL DEFAULT gen_random_uuid(),
     user_tag           VARCHAR(12)  NOT NULL UNIQUE,
     user_tag_changed   BOOLEAN      NOT NULL DEFAULT false,
-    auth_provider      VARCHAR(50)  NOT NULL,
-    auth_provider_id   VARCHAR(255) NOT NULL,
     email              VARCHAR(255) NOT NULL,
     name               VARCHAR(255) NOT NULL,
     last_active_profile_id UUID,
@@ -18,8 +16,7 @@ CREATE TABLE users (
     updated_at         TIMESTAMPTZ  NOT NULL DEFAULT now(),
 
     CONSTRAINT pk_users PRIMARY KEY (user_id),
-    CONSTRAINT uq_users_email UNIQUE (email),
-    CONSTRAINT uq_users_auth_provider UNIQUE (auth_provider, auth_provider_id)
+    CONSTRAINT uq_users_email UNIQUE (email)
 );
 
 -- --------------------------------------------

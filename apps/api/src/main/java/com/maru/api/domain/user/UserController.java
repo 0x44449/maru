@@ -1,8 +1,9 @@
 package com.maru.api.domain.user;
 
 import com.maru.api.config.auth.Authenticated;
-import com.maru.api.config.auth.CredentialPayload;
 import com.maru.api.config.auth.RequestPayload;
+import com.maru.api.config.auth.RequestPayloadDto;
+import com.maru.api.domain.user.dto.ProvisionResultDto;
 import com.maru.api.domain.user.dto.UpdateUserDto;
 import com.maru.api.dto.UserDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,21 +24,21 @@ public class UserController {
 
     @PostMapping("/provision")
     @Operation(summary = "자동 프로비저닝", description = "로그인 직후 호출. 사용자가 없으면 자동 생성, 있으면 기존 정보 반환.")
-    public UserDto provision(@RequestPayload CredentialPayload credential) {
-        return userService.provision(credential);
+    public ProvisionResultDto provision(@RequestPayload RequestPayloadDto payload) {
+        return userService.provision(payload);
     }
 
     @GetMapping("/me")
     @Operation(summary = "내 정보 조회", description = "현재 로그인한 사용자의 정보를 조회합니다.")
-    public UserDto getMe(@RequestPayload CredentialPayload credential) {
-        return userService.getMe(credential);
+    public UserDto getMe(@RequestPayload RequestPayloadDto payload) {
+        return userService.getMe(payload);
     }
 
     @PatchMapping("/me")
     @Operation(summary = "프로필 설정", description = "사용자 태그, 이름, 프로필 이미지를 설정합니다.")
-    public UserDto updateMe(@RequestPayload CredentialPayload credential,
+    public UserDto updateMe(@RequestPayload RequestPayloadDto payload,
                             @RequestBody UpdateUserDto dto) {
-        return userService.updateMe(credential, dto);
+        return userService.updateMe(payload, dto);
     }
 
     @GetMapping("/check-tag")

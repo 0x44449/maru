@@ -14,10 +14,11 @@ public interface UserRepository extends CrudRepository<UserEntity, UUID> {
 
     Optional<UserEntity> findByUserTag(String userTag);
 
-    @Query("SELECT * FROM users WHERE auth_provider = :provider AND auth_provider_id = :providerId")
-    Optional<UserEntity> findByAuthProviderAndAuthProviderId(
-            @Param("provider") String provider,
-            @Param("providerId") String providerId);
-
     boolean existsByUserTag(String userTag);
+
+    @Query("SELECT * FROM insert_user(:userTag, :email, :name)")
+    UserEntity insertUser(
+            @Param("userTag") String userTag,
+            @Param("email") String email,
+            @Param("name") String name);
 }

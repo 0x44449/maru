@@ -467,8 +467,6 @@ WS 생성 버튼
 ```
 User
 ├── user_id: String (PK)
-├── auth_provider: Enum [KAKAO, GOOGLE, APPLE]
-├── auth_provider_id: String (외부 인증 서비스의 사용자 ID)
 ├── email: String (UNIQUE)
 ├── name: String (실명, 본인인증/계정관리용)
 ├── last_active_profile_id: String (nullable)

@@ -19,12 +19,6 @@ public class UserEntity {
     @Column("user_id")
     private UUID userId;
 
-    @Column("auth_provider")
-    private AuthProvider authProvider;
-
-    @Column("auth_provider_id")
-    private String authProviderId;
-
     private String email;
 
     private String name;
@@ -45,7 +39,4 @@ public class UserEntity {
     @Column("updated_at")
     private Instant updatedAt;
 
-    public enum AuthProvider {
-        KAKAO, GOOGLE, APPLE
-    }
 }

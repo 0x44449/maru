@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 import { View, ActivityIndicator, StyleSheet } from "react-native";
 import { Slot, useSegments, useRouter } from "expo-router";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import { useAuthStore, selectStatus } from "@/stores/auth";
 import { colors } from "@/constants/theme";
 
@@ -34,7 +37,15 @@ export default function RootLayout() {
     );
   }
 
-  return <Slot />;
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <KeyboardProvider>
+        <BottomSheetModalProvider>
+          <Slot />
+        </BottomSheetModalProvider>
+      </KeyboardProvider>
+    </GestureHandlerRootView>
+  );
 }
 
 const styles = StyleSheet.create({

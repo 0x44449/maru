@@ -12,6 +12,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     icon: "./assets/maru-ios.icon",
     bundleIdentifier: "app.sandori.maru",
+    infoPlist: {
+      NSPhotoLibraryUsageDescription: "프로필 사진을 설정하기 위해 사진 라이브러리에 접근합니다.",
+      NSCameraUsageDescription: "프로필 사진을 촬영하기 위해 카메라에 접근합니다.",
+    },
   },
   android: {
     adaptiveIcon: {
@@ -28,6 +32,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     "expo-router",
+    "expo-image-picker",
     [
       "expo-splash-screen",
       {

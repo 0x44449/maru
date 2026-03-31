@@ -1,5 +1,6 @@
 package com.maru.api.config.exception;
 
+import com.maru.api.dto.ApiResult;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
@@ -10,9 +11,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(WellKnownException.class)
-    public ResponseEntity<ErrorResponse> handleWellKnown(WellKnownException e) {
-        return ResponseEntity.status(e.getStatus())
-                .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
+    public ApiResult<Void> handleWellKnown(WellKnownException e) {
+        return ApiResult.error(e.getErrorCode(), e.getMessage());
     }
 
     @ExceptionHandler({AccessDeniedException.class, AuthenticationException.class})

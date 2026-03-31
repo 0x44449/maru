@@ -12,8 +12,10 @@ import { useTheme } from "@/constants/useTheme";
 import {
   colors,
   spacing,
+  size,
   radius,
   fontSize,
+  lineHeight,
   fontWeight,
   socialColors,
 } from "@/constants/theme";
@@ -146,7 +148,7 @@ export default function LoginScreen() {
       <Text
         style={[
           styles.footer,
-          { color: theme.textTertiary, bottom: insets.bottom + spacing[6] },
+          { color: theme.textTertiary, bottom: insets.bottom + spacing[5] },
         ]}
       >
         시작하면 서비스 이용약관 및 개인정보 처리방침에{"\n"}동의하는 것으로
@@ -168,7 +170,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    paddingHorizontal: spacing[6],
+    paddingHorizontal: spacing[5],
   },
   backgroundImage: {
     position: "absolute",
@@ -179,7 +181,7 @@ const styles = StyleSheet.create({
   },
   logoArea: {
     alignItems: "center",
-    marginBottom: spacing[12],
+    marginBottom: spacing[10],
   },
   logoIcon: {
     width: 320,
@@ -187,27 +189,27 @@ const styles = StyleSheet.create({
     marginBottom: spacing[3],
   },
   logoText: {
-    fontSize: fontSize["2xl"],
+    fontSize: fontSize[7],
     fontWeight: fontWeight.bold,
     marginBottom: spacing[2],
   },
   logoSubtext: {
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
     fontWeight: fontWeight.regular,
   },
   buttonArea: {
     gap: spacing[3],
   },
   socialButton: {
-    height: 48,
-    borderRadius: radius.lg,
+    height: size[4],
+    borderRadius: radius[4],
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: spacing[2],
   },
   socialButtonText: {
-    fontSize: fontSize.base,
+    fontSize: fontSize[4],
     fontWeight: fontWeight.semibold,
   },
   loadingOverlay: {
@@ -218,16 +220,16 @@ const styles = StyleSheet.create({
     gap: spacing[3],
   },
   loadingText: {
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
     fontWeight: fontWeight.medium,
   },
   footer: {
     position: "absolute",
-    left: spacing[6],
-    right: spacing[6],
-    fontSize: fontSize.xs,
+    left: spacing[5],
+    right: spacing[5],
+    fontSize: fontSize[2],
     fontWeight: fontWeight.regular,
     textAlign: "center",
-    lineHeight: 18,
+    lineHeight: lineHeight[2],
   },
 });

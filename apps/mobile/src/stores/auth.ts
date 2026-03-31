@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/libs/auth/supabase";
-import apiClient from "@/api/client";
-import type { ApiError, UserResponse } from "@/api/types";
+import { authApi } from "@/api/auth";
+import type { UserResponse } from "@/api/types";
 
 export type AuthStatus =
   | "loading"
@@ -58,20 +58,19 @@ export const useAuthStore = create<AuthState>()((set, get) => {
       set({ isCheckingUser: true, userFetchError: false });
 
       try {
-        const response = await apiClient.get<UserResponse>("/api/v1/users/me");
-        if (currentRequestId !== requestId) return;
-        set({ user: response.data, isCheckingUser: false });
-      } catch (e) {
+        const { data: result } = await authApi.login({ fcmToken: null });
         if (currentRequestId !== requestId) return;
 
-        const apiError = e as ApiError;
-        if (apiError.errorCode === "USER_NOT_FOUND") {
+        if (result.success) {
+          set({ user: result.data, isCheckingUser: false });
+        } else if (result.errorCode === "USER_NOT_REGISTERED") {
           set({ user: null, isCheckingUser: false });
-        } else if (apiError.errorCode === "UNAUTHORIZED") {
-          await supabase.auth.signOut();
         } else {
           set({ userFetchError: true, isCheckingUser: false });
         }
+      } catch {
+        if (currentRequestId !== requestId) return;
+        set({ userFetchError: true, isCheckingUser: false });
       }
     },
 

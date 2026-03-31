@@ -1,4 +1,4 @@
-import { Modal, View, Text, Pressable, StyleSheet } from "react-native";
+import { Linking, Modal, View, Text, Pressable, StyleSheet } from "react-native";
 import { useTheme } from "@/constants/useTheme";
 import {
   colors,
@@ -10,22 +10,25 @@ import {
   fontWeight,
 } from "@/constants/theme";
 
-interface ErrorModalProps {
+interface PermissionModalProps {
   visible: boolean;
   title: string;
   message: string;
-  buttonText?: string;
   onClose: () => void;
 }
 
-export default function ErrorModal({
+export default function PermissionModal({
   visible,
   title,
   message,
-  buttonText = "확인",
   onClose,
-}: ErrorModalProps) {
+}: PermissionModalProps) {
   const theme = useTheme();
+
+  const handleOpenSettings = () => {
+    Linking.openSettings();
+    onClose();
+  };
 
   return (
     <Modal
@@ -41,15 +44,6 @@ export default function ErrorModal({
             { backgroundColor: theme.surfaceRaised },
           ]}
         >
-          <View
-            style={[
-              styles.iconContainer,
-              { backgroundColor: colors.semantic.error.light },
-            ]}
-          >
-            <Text style={styles.iconText}>!</Text>
-          </View>
-
           <Text style={[styles.title, { color: theme.textPrimary }]}>
             {title}
           </Text>
@@ -58,18 +52,35 @@ export default function ErrorModal({
             {message}
           </Text>
 
-          <Pressable
-            style={({ pressed }) => [
-              styles.button,
-              {
-                backgroundColor: colors.primary[500],
-                opacity: pressed ? 0.85 : 1,
-              },
-            ]}
-            onPress={onClose}
-          >
-            <Text style={styles.buttonText}>{buttonText}</Text>
-          </Pressable>
+          <View style={styles.buttonRow}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.button,
+                styles.cancelButton,
+                {
+                  backgroundColor: theme.surface,
+                  opacity: pressed ? 0.85 : 1,
+                },
+              ]}
+              onPress={onClose}
+            >
+              <Text style={[styles.cancelButtonText, { color: theme.textSecondary }]}>취소</Text>
+            </Pressable>
+
+            <Pressable
+              style={({ pressed }) => [
+                styles.button,
+                styles.settingsButton,
+                {
+                  backgroundColor: colors.primary[500],
+                  opacity: pressed ? 0.85 : 1,
+                },
+              ]}
+              onPress={handleOpenSettings}
+            >
+              <Text style={styles.settingsButtonText}>설정으로 이동</Text>
+            </Pressable>
+          </View>
         </View>
       </View>
     </Modal>
@@ -90,19 +101,6 @@ const styles = StyleSheet.create({
     padding: spacing[5],
     alignItems: "center",
   },
-  iconContainer: {
-    width: size[4],
-    height: size[4],
-    borderRadius: radius.full,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: spacing[4],
-  },
-  iconText: {
-    fontSize: fontSize[5],
-    fontWeight: fontWeight.bold,
-    color: colors.semantic.error.default,
-  },
   title: {
     fontSize: fontSize[5],
     fontWeight: fontWeight.semibold,
@@ -116,14 +114,25 @@ const styles = StyleSheet.create({
     lineHeight: lineHeight[3],
     marginBottom: spacing[5],
   },
-  button: {
+  buttonRow: {
+    flexDirection: "row",
+    gap: spacing[2],
     width: "100%",
+  },
+  button: {
+    flex: 1,
     height: size[4],
     borderRadius: radius[4],
     justifyContent: "center",
     alignItems: "center",
   },
-  buttonText: {
+  cancelButton: {},
+  cancelButtonText: {
+    fontSize: fontSize[4],
+    fontWeight: fontWeight.semibold,
+  },
+  settingsButton: {},
+  settingsButtonText: {
     color: "#ffffff",
     fontSize: fontSize[4],
     fontWeight: fontWeight.semibold,

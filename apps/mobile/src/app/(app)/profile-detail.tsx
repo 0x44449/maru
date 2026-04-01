@@ -425,16 +425,16 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   heroName: {
-    fontSize: fontSize.xl,
+    fontSize: fontSize[6],
     fontWeight: fontWeight.bold,
     color: "#ffffff",
   },
   heroUserId: {
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
     color: "rgba(255,255,255,0.7)",
   },
   heroStatus: {
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
     color: "rgba(255,255,255,0.85)",
     marginLeft: 0,
   },
@@ -454,7 +454,7 @@ const styles = StyleSheet.create({
   actionBtn: {
     flex: 1,
     height: 44,
-    borderRadius: radius.sm,
+    borderRadius: radius[1],
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   actionBtnText: {
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
     fontWeight: fontWeight.semibold,
     color: "#ffffff",
   },
@@ -485,7 +485,7 @@ const styles = StyleSheet.create({
     borderBottomColor: undefined,
   },
   tabText: {
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
     fontWeight: fontWeight.semibold,
   },
 
@@ -503,7 +503,7 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing[4],
   },
   feedMessage: {
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
     lineHeight: 20,
   },
   feedImageRow: {
@@ -513,13 +513,13 @@ const styles = StyleSheet.create({
   feedImagePlaceholder: {
     width: 80,
     height: 80,
-    borderRadius: radius.sm,
+    borderRadius: radius[1],
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
   },
   feedTime: {
-    fontSize: fontSize.xs,
+    fontSize: fontSize[2],
   },
 
   // About
@@ -527,16 +527,16 @@ const styles = StyleSheet.create({
     padding: spacing[4],
   },
   aboutText: {
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
     lineHeight: 22,
   },
 
   // Empty
   emptyTab: {
     alignItems: "center",
-    paddingTop: spacing[16],
+    paddingTop: spacing[10],
   },
   emptyText: {
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
   },
 });

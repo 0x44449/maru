@@ -315,10 +315,10 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[2],
   },
   dateSeparatorText: {
-    fontSize: fontSize.xs,
+    fontSize: fontSize[2],
     paddingHorizontal: spacing[3],
     paddingVertical: spacing[1],
-    borderRadius: radius.sm,
+    borderRadius: radius[1],
     overflow: "hidden",
   },
 
@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   otherName: {
-    fontSize: fontSize.xs,
+    fontSize: fontSize[2],
     fontWeight: fontWeight.semibold,
   },
   otherBubbleRow: {
@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary[600],
   },
   bubbleMineText: {
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
     lineHeight: 21,
     color: "#ffffff",
   },
@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   bubbleOtherText: {
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
     lineHeight: 21,
   },
   bubbleTime: {
@@ -406,7 +406,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     paddingHorizontal: spacing[4],
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
   },
   sendBtn: {
     width: 36,

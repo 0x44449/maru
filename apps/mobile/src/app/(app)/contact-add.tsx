@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     paddingTop: spacing[2],
   },
   desc: {
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
     marginBottom: spacing[4],
   },
 
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     height: 48,
-    borderRadius: radius.sm,
+    borderRadius: radius[1],
     borderWidth: 1,
     paddingHorizontal: spacing[4],
     fontSize: 15,
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
   searchBtn: {
     height: 48,
     paddingHorizontal: spacing[5],
-    borderRadius: radius.sm,
+    borderRadius: radius[1],
     backgroundColor: colors.primary[600],
     alignItems: "center",
     justifyContent: "center",
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   searchBtnText: {
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
     fontWeight: fontWeight.semibold,
     color: "#ffffff",
   },
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     paddingTop: spacing[10],
   },
   notFoundText: {
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
   },
 
   // Result Card
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: spacing[8],
     paddingHorizontal: spacing[4],
-    borderRadius: radius.sm,
+    borderRadius: radius[1],
     borderWidth: 1,
   },
   resultAvatar: {
@@ -241,16 +241,16 @@ const styles = StyleSheet.create({
     marginBottom: spacing[3],
   },
   resultAvatarText: {
-    fontSize: fontSize.xl,
+    fontSize: fontSize[6],
     fontWeight: fontWeight.semibold,
   },
   resultName: {
-    fontSize: fontSize.lg,
+    fontSize: fontSize[5],
     fontWeight: fontWeight.semibold,
     marginBottom: spacing[1],
   },
   resultId: {
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
     marginBottom: spacing[5],
   },
 
@@ -258,13 +258,13 @@ const styles = StyleSheet.create({
   addBtn: {
     height: 44,
     paddingHorizontal: spacing[8],
-    borderRadius: radius.sm,
+    borderRadius: radius[1],
     backgroundColor: colors.primary[600],
     alignItems: "center",
     justifyContent: "center",
   },
   addBtnText: {
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
     fontWeight: fontWeight.semibold,
     color: "#ffffff",
   },
@@ -273,13 +273,13 @@ const styles = StyleSheet.create({
   addedBtn: {
     height: 44,
     paddingHorizontal: spacing[8],
-    borderRadius: radius.sm,
+    borderRadius: radius[1],
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
   },
   addedBtnText: {
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
     fontWeight: fontWeight.medium,
   },
 });

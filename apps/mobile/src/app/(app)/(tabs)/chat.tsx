@@ -134,7 +134,7 @@ function ChatItemRow({
       ]}
     >
       {/* 아바타 */}
-      <View style={[styles.avatar, { backgroundColor: item.avatarBg, borderRadius: isChannel ? radius.xl : radius.full }]}>
+      <View style={[styles.avatar, { backgroundColor: item.avatarBg, borderRadius: isChannel ? radius[7] : radius.full }]}>
         <Text style={[styles.avatarText, { color: item.avatarColor }]}>
           {item.initials}
         </Text>
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   },
   ctxName: {
     flex: 1,
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
     fontWeight: fontWeight.semibold,
   },
   ctxBadge: {
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     flex: 1,
-    fontSize: fontSize.xl,
+    fontSize: fontSize[6],
     fontWeight: fontWeight.bold,
   },
   headerRight: {
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
   avatar: {
     width: 48,
     height: 48,
-    borderRadius: radius.xl,
+    borderRadius: radius[7],
     alignItems: "center",
     justifyContent: "center",
     position: "relative",
@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   chatName: {
-    fontSize: fontSize.lg,
+    fontSize: fontSize[5],
     fontWeight: fontWeight.medium,
     flexShrink: 1,
   },
@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
   },
   chatPreview: {
     flex: 1,
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
   },
 
   // Badge

@@ -219,12 +219,12 @@ const styles = StyleSheet.create({
   ctxIcon: {
     width: 28,
     height: 28,
-    borderRadius: radius.md,
+    borderRadius: radius[4],
     alignItems: "center",
     justifyContent: "center",
   },
   ctxName: {
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
     fontWeight: fontWeight.semibold,
   },
   header: {
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     paddingBottom: spacing[2],
   },
   headerTitle: {
-    fontSize: fontSize.xl,
+    fontSize: fontSize[6],
     fontWeight: fontWeight.bold,
   },
   scrollArea: {
@@ -267,14 +267,14 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   profileName: {
-    fontSize: fontSize["2xl"],
+    fontSize: fontSize[7],
     fontWeight: fontWeight.bold,
   },
   personalTag: {
     flexDirection: "row",
     paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: radius.sm,
+    borderRadius: radius[1],
   },
   profileEmail: {
     fontSize: 13,
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[3],
     gap: spacing[2],
-    borderRadius: radius.lg,
+    borderRadius: radius[6],
     borderWidth: 1,
   },
   wsItemHeader: {
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
   wsItemIcon: {
     width: 44,
     height: 44,
-    borderRadius: radius.md,
+    borderRadius: radius[4],
     alignItems: "center",
     justifyContent: "center",
   },

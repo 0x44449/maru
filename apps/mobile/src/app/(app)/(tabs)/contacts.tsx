@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   },
   ctxName: {
     flex: 1,
-    fontSize: fontSize.sm,
+    fontSize: fontSize[3],
     fontWeight: fontWeight.semibold,
   },
   ctxBadge: {
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     flex: 1,
-    fontSize: fontSize.xl,
+    fontSize: fontSize[6],
     fontWeight: fontWeight.bold,
   },
   headerRight: {
